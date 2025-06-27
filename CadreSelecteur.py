@@ -21,7 +21,8 @@ destination_path = "./Cadres/"
 TEMPLATE_NAME = 'template.xml'
 TEMPLATE_NAME_STD = 'template_std.xml'
 # nom du cadre definie dans piBooth
-FRAME_NAME = 'frame.png'
+CADRE_NAME_1 = 'cadre_1.png'
+CADRE_NAME_4 = 'cadre_4.png'
 
 
 class CadreSelecteur:
@@ -59,12 +60,12 @@ class CadreSelecteur:
 
         # Add text labels
         label1 = Label(self.top_frame,
-                       text="          Cadres disponibles",
+                       text="                Cadres disponibles",
                        font=label_font)
         label1.pack(side='left', padx=5)
 
         label2 = Label(self.top_frame,
-                       text="Cadre installé          ",
+                       text="Cadre installé                    ",
                        font=label_font)
         label2.pack(side='right', padx=5)
 
@@ -78,6 +79,7 @@ class CadreSelecteur:
 
         # Initialize canvas for drawing source
         self.canvasSrc = Canvas(self.frame_main,
+                                width=450,  # Specify width for source canvas
                                 yscrollcommand=self.scrollbarSrc.set)
         self.canvasSrc.pack(side='left', fill='both', expand=True)
         self.scrollbarSrc.pack(side='left', fill='y')
@@ -96,14 +98,6 @@ class CadreSelecteur:
         self.selected_image = StringVar()
         self.selected_image.set('None')
 
-        # Add label for available frames
-        available_label = Label(self.frame_main, text="Cadres disponibles")
-        available_label.pack(side='left', fill='x', padx=10, pady=5)
-        # Add label for active frame
-        active_label = Label(self.frame_main, text="Cadre actif")
-        active_label.pack(side='right', fill='x', padx=10, pady=5)
-
-
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
 
@@ -118,7 +112,7 @@ class CadreSelecteur:
         """
         self.create_dest_thumbnail()
         for filename in sorted(os.listdir(self.source_directory)):
-            if filename.lower().endswith('.png'):
+            if filename.lower().endswith('_1.png'):
                 self.create_thumbnail_list(filename)
 
         # Update the scroll region to encompass all content
@@ -132,22 +126,33 @@ class CadreSelecteur:
 
         """
         try:
-            file_path = os.path.join(self.destination_directory, FRAME_NAME)
-            print(f'>>> load {file_path}')
+            file_path_1 = os.path.join(self.destination_directory, CADRE_NAME_1)
+            file_path_4 = os.path.join(self.destination_directory, CADRE_NAME_4)
 
             # Clear the canvas before adding a new image
             self.canvasDest.delete("all")
 
-            with Image.open(file_path) as img:
+            with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img = ImageTk.PhotoImage(img)
+                thumbnail_img_1 = ImageTk.PhotoImage(img)
 
+            with Image.open(file_path_4) as img:
+                img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
+                thumbnail_img_4 = ImageTk.PhotoImage(img)
+
+            if thumbnail_img_1 and thumbnail_img_4:
                 # Display the image on the canvas
                 self.canvasDest.create_image((THUMBNAIL_H/2),
                                              (THUMBNAIL_L/2),
-                                             image=thumbnail_img)
+                                             image=thumbnail_img_1)
+                # Display the image on the canvas
+                self.canvasDest.create_image((THUMBNAIL_H/2) + THUMBNAIL_H + 20,
+                                             (THUMBNAIL_L/2),
+                                             image=thumbnail_img_4)
                 # Keep a reference to prevent garbage collection
-                self.canvasDest.image = thumbnail_img
+                # Keep a reference to prevent garbage collection
+                self.canvasDest.image_1 = thumbnail_img_1
+                self.canvasDest.image_4 = thumbnail_img_4
 
         except Exception as e:
             print(f"Error processing file : {e}")
@@ -160,10 +165,18 @@ class CadreSelecteur:
         :param filename: The name of the image file.
         """
         try:
-            file_path = os.path.join(self.source_directory, filename)
-            with Image.open(file_path) as img:
+            file_path_1 = os.path.join(self.source_directory, filename)
+            file_path_4 = os.path.join(self.source_directory,
+                                       filename.replace('_1.png', '_4.png'))
+            with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img = ImageTk.PhotoImage(img)
+                thumbnail_img_1 = ImageTk.PhotoImage(img)
+
+            with Image.open(file_path_4) as img:
+                img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
+                thumbnail_img_4 = ImageTk.PhotoImage(img)
+
+            if thumbnail_img_1 and thumbnail_img_4:
 
                 # Create a frame for each image and radio button
                 item_frame = Frame(self.list_frameSrc)
@@ -174,12 +187,17 @@ class CadreSelecteur:
                                            value=filename)
                 radio_button.pack(side="left", padx=5)
 
-                thumbnail_label = Label(item_frame, image=thumbnail_img)
+                thumbnail_label_1 = Label(item_frame, image=thumbnail_img_1)
                 # Keep a reference to prevent garbage collection
-                thumbnail_label.image = thumbnail_img
-                thumbnail_label.pack(side="left", padx=5)
+                thumbnail_label_1.image = thumbnail_img_1
+                thumbnail_label_4 = Label(item_frame, image=thumbnail_img_4)
+                # Keep a reference to prevent garbage collection
+                thumbnail_label_4.image = thumbnail_img_4
+                thumbnail_label_1.pack(side="left", padx=5)
+                thumbnail_label_4.pack(side="left", padx=5)
 
-                text_label = Label(item_frame, text=filename)
+                text_label = Label(item_frame,
+                                   text=filename.replace('_1.png', ''))
                 text_label.pack(side="left", padx=5)
 
         except Exception as e:
@@ -211,16 +229,22 @@ class CadreSelecteur:
         if selected_file != 'None':
             print(f"Image sélectionnée: {selected_file}")
 
-            source_file = os.path.join(self.source_directory, selected_file)
-            dest_file = os.path.join(self.destination_directory,
-                                     FRAME_NAME)
+            source_file_1 = os.path.join(self.source_directory, selected_file)
+            dest_file_1 = os.path.join(self.destination_directory,
+                                       CADRE_NAME_1)
+            source_file_4 = os.path.join(self.source_directory,
+                                         selected_file.replace('_1.png', '_4.png'))
+            dest_file_4 = os.path.join(self.destination_directory,
+                                       CADRE_NAME_4)
 
             # Copier le fichier cadre
-            print(f">>> Copy :{source_file}\n       to : {dest_file}")
-            copy(source_file, dest_file)
+            print(f">>> Copy :{source_file_1}/{source_file_4}\n"
+                  f"       to : {dest_file_1}/{dest_file_4}")
+            copy(source_file_1, dest_file_1)
+            copy(source_file_4, dest_file_4)
 
             # Copier le fichier template
-            source_file_tpl = source_file.replace('.png', '.xml')
+            source_file_tpl = source_file_1.replace('_1.png', '.xml')
             dest_file_tpl = os.path.join(self.destination_directory,
                                          TEMPLATE_NAME)
 
