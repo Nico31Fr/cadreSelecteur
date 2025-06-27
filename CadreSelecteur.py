@@ -2,7 +2,7 @@
 """ selecteur de cadre pour pibooth """
 
 import os
-from tkinter import Tk, Scrollbar, Canvas, Frame
+from tkinter import Tk, Scrollbar, Canvas, Frame, Entry
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from shutil import copy
@@ -47,17 +47,31 @@ class CadreSelecteur:
         # Set the window size
         self.master.geometry(WINDOWS_SIZE)
 
+        self.top_frame = Frame(master)
+        self.top_frame.pack(fill='x', pady=10)
+
+        # Create text fields
+        self.text_field1 = StringVar()
+        self.text_field2 = StringVar()
+
+        # Font configuration
+        label_font = ("Arial", 14, "bold")
+
+        # Add text labels
+        label1 = Label(self.top_frame,
+                       text="          Cadres disponibles",
+                       font=label_font)
+        label1.pack(side='left', padx=5)
+
+        label2 = Label(self.top_frame,
+                       text="Cadre installé          ",
+                       font=label_font)
+        label2.pack(side='right', padx=5)
+
         # Create a frame with specific size
         self.frame_main = Frame(master, width=800, height=600)
         self.frame_main.pack(fill='both', expand=True)
         self.master.resizable(False, False)  # Prevent window resizing
-
-        # Add label for available frames
-        available_label = Label(self.frame_main, text="Cadres disponibles                                          Cadre Actif")
-        available_label.pack(side='top', fill='x', padx=5, pady=5)
-        # Add label for active frame
-        # active_label = Label(self.frame_main, text="Cadre actif")
-        # active_label.pack(side='top', fill='x', padx=10, pady=5)
 
         # Initialize scrollbar for canvasSrc
         self.scrollbarSrc = Scrollbar(self.frame_main, orient="vertical")
