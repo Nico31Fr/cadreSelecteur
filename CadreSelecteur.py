@@ -11,7 +11,7 @@ from shutil import copy
 WINDOWS_SIZE = "800x600"
 # taille des vignettes
 THUMBNAIL_H = 128
-THUMBNAIL_L = (THUMBNAIL_H/15)*10
+THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
 
 # repertoire avec tous les cadres / templates disponibles
 template_path = "./Templates/"
@@ -148,21 +148,27 @@ class CadreSelecteur:
             if thumbnail_img_1 and thumbnail_img_4:
                 # Display the image on the canvas
                 img_id_1 = self.canvasDest.create_image((THUMBNAIL_H/2),
-                                             (THUMBNAIL_L/2),
-                                             image=thumbnail_img_1)
+                                                        (THUMBNAIL_L/2),
+                                                        image=thumbnail_img_1)
                 # Display the image on the canvas
                 img_id_4 = self.canvasDest.create_image((THUMBNAIL_H/2) +
-                                             THUMBNAIL_H + 20,
-                                             (THUMBNAIL_L/2),
-                                             image=thumbnail_img_4)
+                                                        THUMBNAIL_H + 20,
+                                                        (THUMBNAIL_L/2),
+                                                        image=thumbnail_img_4)
                 # Keep a reference to prevent garbage collection
                 # Keep a reference to prevent garbage collection
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
 
                 # Bind click event to the image objects
-                self.canvasDest.tag_bind(img_id_1, "<Button-1>", lambda e: self.show_full_image(file_path_1))
-                self.canvasDest.tag_bind(img_id_4, "<Button-1>", lambda e: self.show_full_image(file_path_4))
+                self.canvasDest.tag_bind(img_id_1,
+                                         "<Button-1>",
+                                         lambda e1:
+                                         self.show_full_image(file_path_1))
+                self.canvasDest.tag_bind(img_id_4,
+                                         "<Button-1>",
+                                         lambda e2:
+                                         self.show_full_image(file_path_4))
 
         except Exception as e:
             print(f"Error processing file : {e}")
