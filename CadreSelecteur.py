@@ -13,9 +13,9 @@ THUMBNAIL_H = 128
 THUMBNAIL_L = 128
 
 # repertoire avec tous les cadres / templates dispo
-template_path = "C:/Temp/test/template/"
+template_path = "./Templates/"
 # repertoire avec le cadre / template selectionne
-destination_path = "C:/Temp/test/cadre/"
+destination_path = "./Cadres/"
 
 # nom du template definie dans piBooth
 TEMPLATE_NAME = 'template.xml'
