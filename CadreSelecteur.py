@@ -9,10 +9,11 @@ from shutil import copy
 
 # taille de la fenetre
 WINDOWS_SIZE = "800x600"
+# taille des vignettes
 THUMBNAIL_H = 128
-THUMBNAIL_L = 128
+THUMBNAIL_L = (THUMBNAIL_H/15)*10
 
-# repertoire avec tous les cadres / templates dispo
+# repertoire avec tous les cadres / templates disponibles
 template_path = "./Templates/"
 # repertoire avec le cadre / template selectionne
 destination_path = "./Cadres/"
@@ -146,11 +147,11 @@ class CadreSelecteur:
 
             if thumbnail_img_1 and thumbnail_img_4:
                 # Display the image on the canvas
-                self.canvasDest.create_image((THUMBNAIL_H/2),
+                img_id_1 = self.canvasDest.create_image((THUMBNAIL_H/2),
                                              (THUMBNAIL_L/2),
                                              image=thumbnail_img_1)
                 # Display the image on the canvas
-                self.canvasDest.create_image((THUMBNAIL_H/2) +
+                img_id_4 = self.canvasDest.create_image((THUMBNAIL_H/2) +
                                              THUMBNAIL_H + 20,
                                              (THUMBNAIL_L/2),
                                              image=thumbnail_img_4)
@@ -158,6 +159,10 @@ class CadreSelecteur:
                 # Keep a reference to prevent garbage collection
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
+
+                # Bind click event to the image objects
+                self.canvasDest.tag_bind(img_id_1, "<Button-1>", lambda e: self.show_full_image(file_path_1))
+                self.canvasDest.tag_bind(img_id_4, "<Button-1>", lambda e: self.show_full_image(file_path_4))
 
         except Exception as e:
             print(f"Error processing file : {e}")
@@ -200,8 +205,12 @@ class CadreSelecteur:
                 thumbnail_label_4.image = thumbnail_img_4
 
                 # Bind click event to show full size image
-                thumbnail_label_1.bind("<Button-1>", lambda e, f=file_path_1: self.show_full_image(f))
-                thumbnail_label_4.bind("<Button-1>", lambda e, f=file_path_4: self.show_full_image(f))
+                thumbnail_label_1.bind("<Button-1>",
+                                       lambda e1,
+                                       f=file_path_1: self.show_full_image(f))
+                thumbnail_label_4.bind("<Button-1>",
+                                       lambda e4,
+                                       f=file_path_4: self.show_full_image(f))
 
                 thumbnail_label_1.pack(side="left", padx=5)
                 thumbnail_label_4.pack(side="left", padx=5)
@@ -291,7 +300,8 @@ class CadreSelecteur:
         try:
             window = Toplevel(self.master)  # Create a Toplevel window
             window.title("Prévisualisation")
-            # To ensure close action shuts the window without affecting the main app
+            # To ensure close action shuts the window
+            # without affecting the main app
             window.protocol("WM_DELETE_WINDOW", window.destroy)
 
             with Image.open(file_path) as img:
