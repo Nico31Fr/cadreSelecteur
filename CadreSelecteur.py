@@ -9,6 +9,8 @@ from shutil import copy
 
 # taille de la fenetre
 WINDOWS_SIZE = "800x600"
+THUMBNAIL_H = 128
+THUMBNAIL_L = 128
 
 # repertoire avec tous les cadres / templates dispo
 template_path = "C:/Temp/test/template/"
@@ -46,26 +48,47 @@ class CadreSelecteur:
         self.master.geometry(WINDOWS_SIZE)
 
         # Create a frame with specific size
-        self.frame = Frame(master, width=800, height=600)
-        self.frame.pack(fill='both', expand=True)
+        self.frame_main = Frame(master, width=800, height=600)
+        self.frame_main.pack(fill='both', expand=True)
+        self.master.resizable(False, False)  # Prevent window resizing
 
-        # Initialize scrollbar
-        self.scrollbar = Scrollbar(self.frame, orient="vertical")
-        self.scrollbar.pack(side='right', fill='y')
+        # Add label for available frames
+        available_label = Label(self.frame_main, text="Cadres disponibles                                          Cadre Actif")
+        available_label.pack(side='top', fill='x', padx=5, pady=5)
+        # Add label for active frame
+        # active_label = Label(self.frame_main, text="Cadre actif")
+        # active_label.pack(side='top', fill='x', padx=10, pady=5)
 
-        # Initialize canvas for drawing
-        self.canvas = Canvas(self.frame, yscrollcommand=self.scrollbar.set)
-        self.canvas.pack(side='left', fill='both', expand=True)
+        # Initialize scrollbar for canvasSrc
+        self.scrollbarSrc = Scrollbar(self.frame_main, orient="vertical")
 
-        self.scrollbar.config(command=self.canvas.yview)
+        # Initialize canvas for drawing source
+        self.canvasSrc = Canvas(self.frame_main,
+                                yscrollcommand=self.scrollbarSrc.set)
+        self.canvasSrc.pack(side='left', fill='both', expand=True)
+        self.scrollbarSrc.pack(side='left', fill='y')
+
+        self.scrollbarSrc.config(command=self.canvasSrc.yview)
 
         # Create a frame to contain list of thumbnails
-        self.list_frame = Frame(self.canvas)
-        self.canvas.create_window((0, 0), window=self.list_frame, anchor="nw")
+        self.list_frameSrc = Frame(self.canvasSrc)
+        self.canvasSrc.create_window((0, 0), window=self.list_frameSrc, anchor="nw")
+
+        # Initialize canvas for drawing dest
+        self.canvasDest = Canvas(self.frame_main)
+        self.canvasDest.pack(side='right', fill='both', expand=True)
 
         # Variable to store selected image
         self.selected_image = StringVar()
         self.selected_image.set('None')
+
+        # Add label for available frames
+        available_label = Label(self.frame_main, text="Cadres disponibles")
+        available_label.pack(side='left', fill='x', padx=10, pady=5)
+        # Add label for active frame
+        active_label = Label(self.frame_main, text="Cadre actif")
+        active_label.pack(side='right', fill='x', padx=10, pady=5)
+
 
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
@@ -77,12 +100,45 @@ class CadreSelecteur:
         """
         Lists files from the specified directory
         and generates thumbnails for image files.
+        Configures the scroll region after adding items.
         """
+        self.create_dest_thumbnail()
         for filename in sorted(os.listdir(self.source_directory)):
             if filename.lower().endswith('.png'):
-                self.create_thumbnail(filename)
+                self.create_thumbnail_list(filename)
 
-    def create_thumbnail(self, filename):
+        # Update the scroll region to encompass all content
+        self.list_frameSrc.update_idletasks()
+        self.canvasSrc.config(scrollregion=self.canvasSrc.bbox("all"))
+
+    def create_dest_thumbnail(self):
+        """
+        Creates  thumbnail for the destination image file
+        and displays it along with a radio button.
+
+        """
+        try:
+            file_path = os.path.join(self.destination_directory, FRAME_NAME)
+            print(f'>>> load {file_path}')
+
+            # Clear the canvas before adding a new image
+            self.canvasDest.delete("all")
+
+            with Image.open(file_path) as img:
+                img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
+                thumbnail_img = ImageTk.PhotoImage(img)
+
+                # Display the image on the canvas
+                self.canvasDest.create_image((THUMBNAIL_H/2),
+                                             (THUMBNAIL_L/2),
+                                             image=thumbnail_img)
+                # Keep a reference to prevent garbage collection
+                self.canvasDest.image = thumbnail_img
+
+        except Exception as e:
+            print(f"Error processing file : {e}")
+
+    def create_thumbnail_list(self, filename):
         """
         Creates a thumbnail for the specified image file
         and displays it along with a radio button.
@@ -92,11 +148,11 @@ class CadreSelecteur:
         try:
             file_path = os.path.join(self.source_directory, filename)
             with Image.open(file_path) as img:
-                img.thumbnail((128, 128))  # Thumbnail size
+                img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
                 thumbnail_img = ImageTk.PhotoImage(img)
 
                 # Create a frame for each image and radio button
-                item_frame = Frame(self.list_frame)
+                item_frame = Frame(self.list_frameSrc)
                 item_frame.pack(side="top", fill="x", pady=5)
 
                 radio_button = Radiobutton(item_frame,
@@ -168,6 +224,9 @@ class CadreSelecteur:
                 print(f">>> Copy :{source_file_tpl}\n"
                       f"       to : {dest_file_tpl}")
                 copy(source_file_tpl, dest_file_tpl)
+
+            # rafraichie l'image dans dest
+            self.create_dest_thumbnail()
 
         else:
             messagebox.showerror("Erreur",
