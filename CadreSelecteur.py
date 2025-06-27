@@ -2,7 +2,7 @@
 """ selecteur de cadre pour pibooth """
 
 import os
-from tkinter import Tk, Scrollbar, Canvas, Frame, Entry
+from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from shutil import copy
@@ -42,7 +42,7 @@ class CadreSelecteur:
                 for pibooth
         """
         self.master = master
-        self.master.title("Sélecteur de Vignettes")
+        self.master.title("Sélecteur de cadre pour piBooth V0.1")
         self.source_directory = source_directory
         self.destination_directory = destination_directory
         # Set the window size
@@ -88,7 +88,9 @@ class CadreSelecteur:
 
         # Create a frame to contain list of thumbnails
         self.list_frameSrc = Frame(self.canvasSrc)
-        self.canvasSrc.create_window((0, 0), window=self.list_frameSrc, anchor="nw")
+        self.canvasSrc.create_window((0, 0),
+                                     window=self.list_frameSrc,
+                                     anchor="nw")
 
         # Initialize canvas for drawing dest
         self.canvasDest = Canvas(self.frame_main)
@@ -126,8 +128,10 @@ class CadreSelecteur:
 
         """
         try:
-            file_path_1 = os.path.join(self.destination_directory, CADRE_NAME_1)
-            file_path_4 = os.path.join(self.destination_directory, CADRE_NAME_4)
+            file_path_1 = os.path.join(self.destination_directory,
+                                       CADRE_NAME_1)
+            file_path_4 = os.path.join(self.destination_directory,
+                                       CADRE_NAME_4)
 
             # Clear the canvas before adding a new image
             self.canvasDest.delete("all")
@@ -146,7 +150,8 @@ class CadreSelecteur:
                                              (THUMBNAIL_L/2),
                                              image=thumbnail_img_1)
                 # Display the image on the canvas
-                self.canvasDest.create_image((THUMBNAIL_H/2) + THUMBNAIL_H + 20,
+                self.canvasDest.create_image((THUMBNAIL_H/2) +
+                                             THUMBNAIL_H + 20,
                                              (THUMBNAIL_L/2),
                                              image=thumbnail_img_4)
                 # Keep a reference to prevent garbage collection
@@ -193,6 +198,11 @@ class CadreSelecteur:
                 thumbnail_label_4 = Label(item_frame, image=thumbnail_img_4)
                 # Keep a reference to prevent garbage collection
                 thumbnail_label_4.image = thumbnail_img_4
+
+                # Bind click event to show full size image
+                thumbnail_label_1.bind("<Button-1>", lambda e, f=file_path_1: self.show_full_image(f))
+                thumbnail_label_4.bind("<Button-1>", lambda e, f=file_path_4: self.show_full_image(f))
+
                 thumbnail_label_1.pack(side="left", padx=5)
                 thumbnail_label_4.pack(side="left", padx=5)
 
@@ -233,7 +243,8 @@ class CadreSelecteur:
             dest_file_1 = os.path.join(self.destination_directory,
                                        CADRE_NAME_1)
             source_file_4 = os.path.join(self.source_directory,
-                                         selected_file.replace('_1.png', '_4.png'))
+                                         selected_file.replace('_1.png',
+                                                               '_4.png'))
             dest_file_4 = os.path.join(self.destination_directory,
                                        CADRE_NAME_4)
 
@@ -244,7 +255,8 @@ class CadreSelecteur:
             copy(source_file_4, dest_file_4)
 
             # Copier le fichier template
-            source_file_tpl = source_file_1.replace('_1.png', '.xml')
+            source_file_tpl = source_file_1.replace('_1.png',
+                                                    '.xml')
             dest_file_tpl = os.path.join(self.destination_directory,
                                          TEMPLATE_NAME)
 
@@ -271,6 +283,27 @@ class CadreSelecteur:
                                  "Aucune image sélectionnée."
                                  " Veuillez choisir une image.")
             print("Aucune image sélectionnée.")
+
+    def show_full_image(self, file_path, width=720, height=480):
+        """
+        Opens a new window to display the full-size image.
+        """
+        try:
+            window = Toplevel(self.master)  # Create a Toplevel window
+            window.title("Prévisualisation")
+            # To ensure close action shuts the window without affecting the main app
+            window.protocol("WM_DELETE_WINDOW", window.destroy)
+
+            with Image.open(file_path) as img:
+                img_resized = img.resize((width, height), Image.ANTIALIAS)
+                img_full = ImageTk.PhotoImage(img_resized)
+                label = Label(window, image=img_full)
+                label.image = img_full  # Keep a reference
+                label.pack()
+                window.resizable(False, False)
+
+        except Exception as e:
+            print(f"Error displaying full image: {e}")
 
 
 if __name__ == "__main__":
