@@ -18,10 +18,11 @@ template_path = "./Templates/"
 # repertoire avec le cadre / template selectionne
 destination_path = "./Cadres/"
 
-# nom du template definie dans piBooth
+# nom du template définie dans piBooth
 TEMPLATE_NAME = 'template.xml'
+# template par défaut
 TEMPLATE_NAME_STD = 'template_std.xml'
-# nom du cadre definie dans piBooth
+# nom du cadre définie dans piBooth
 CADRE_NAME_1 = 'cadre_1.png'
 CADRE_NAME_4 = 'cadre_4.png'
 
@@ -116,7 +117,7 @@ class CadreSelecteur:
         self.create_dest_thumbnail()
         for filename in sorted(os.listdir(self.source_directory)):
             if filename.lower().endswith('_1.png'):
-                self.create_thumbnail_list(filename)
+                self.create_src_thumbnail(filename)
 
         # Update the scroll region to encompass all content
         self.list_frameSrc.update_idletasks()
@@ -173,7 +174,7 @@ class CadreSelecteur:
         except Exception as e:
             print(f"Error processing file : {e}")
 
-    def create_thumbnail_list(self, filename):
+    def create_src_thumbnail(self, filename):
         """
         Creates a thumbnail for the specified image file
         and displays it along with a radio button.
