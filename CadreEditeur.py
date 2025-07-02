@@ -1,13 +1,25 @@
+# -*- coding: utf-8 -*-
+""" application d'édition de cadre pour PiBooth """
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 
-
 class ImageEditorApp:
+    """
+    Une application d'édition d'image simple permettant aux utilisateurs
+    d'importer des images, d'ajouter du texte, de déplacer/redimensionner les images,
+    et d'enregistrer la composition finale.
+    """
+
     def __init__(self, root):
+        """
+        Initialise l'application ImageEditorApp avec une fenêtre tkinter racine.
+
+        Paramètres :
+            root (tk.Tk): La fenêtre tkinter racine.
+        """
         self.root = root
         self.root.title("Éditeur d'image")
-
         self.canvas = tk.Canvas(root, width=800, height=600)
         self.canvas.pack()
 
@@ -19,79 +31,135 @@ class ImageEditorApp:
 
         self.text = tk.StringVar()
         tk.Entry(root, textvariable=self.text).pack()
-
         tk.Button(root, text="Importer une image", command=self.import_image).pack()
         tk.Button(root, text="Ajouter un texte", command=self.add_text).pack()
         tk.Button(root, text="Enregistrer l'image", command=self.save_image).pack()
 
         self.imported_image = None
         self.imported_image_path = None
+        self.original_image = None
 
         # Variables pour déplacer l'image importée
-        self.image_position = (150, 150)
-        self.image_size = [100, 100]
+        self.image_position = (150, 150)  # Utiliser un tuple
+        self.image_size = (100, 100)  # Utiliser un tuple
 
-        # Définir quelques zones d'exclusion
+        # Définir des zones d'exclusion
         self.exclusion_zones = [
-            (50, 50, 100, 100),  # Format: (x, y, width, height)
-            (250, 200, 100, 50)  # Exemple de deuxième zone
+            (50, 50, 100, 100),
+            (250, 200, 100, 50)
         ]
 
         # Événements de souris pour déplacer/redimensionner
-        self.canvas.bind("<B1-Motion>", self.move_image)
+        self.canvas.bind("<Button-1>", self.start_drag)
+        self.canvas.bind("<B1-Motion>", self.drag_image)
         self.canvas.bind("<MouseWheel>", self.resize_image)
 
+        self.start_drag_position = None
+
     def import_image(self):
+        """
+        Ouvre une boîte de dialogue pour importer une image et
+        met à jour le canvas avec l'image importée,
+        en conservant le ratio original.
+        """
         self.imported_image_path = filedialog.askopenfilename()
         if self.imported_image_path:
-            self.imported_image = Image.open(self.imported_image_path).convert('RGBA')
-            self.imported_image = self.imported_image.resize(self.image_size)
+            self.original_image = Image.open(self.imported_image_path).convert('RGBA')
+
+            # Calculer la nouvelle taille en conservant le ratio
+            original_width, original_height = self.original_image.size
+            aspect_ratio = original_width / original_height
+
+            desired_width = 800
+            desired_height = int(desired_width / aspect_ratio)
+
+            self.image_size = (desired_width, desired_height)
+            self.imported_image = self.original_image.resize(self.image_size, Image.LANCZOS)
+
             self.update_canvas()
 
     def add_text(self):
+        """
+        Ajoute du texte provenant du champ de texte à l'image à une position prédéfinie.
+        """
         self.draw.text((200, 150), self.text.get(), fill=(0, 0, 0, 255), font=ImageFont.load_default())
         self.update_canvas()
 
-    def move_image(self, event):
-        self.image_position = (event.x, event.y)
-        self.update_canvas()
+    def start_drag(self, event):
+        """
+        Initialise l'opération de glissement-déposé en enregistrant la position du curseur.
+
+        Paramètres :
+            event (tk.Event): L'événement de clic de la souris.
+        """
+        self.start_drag_position = (event.x, event.y)
+
+    def drag_image(self, event):
+        """
+        Met à jour la position de l'image importée en fonction du mouvement du curseur.
+
+        Paramètres :
+            event (tk.Event): L'événement de mouvement de la souris.
+        """
+        if self.start_drag_position:
+            dx = event.x - self.start_drag_position[0]
+            dy = event.y - self.start_drag_position[1]
+            self.image_position = (self.image_position[0] + dx, self.image_position[1] + dy)
+            self.start_drag_position = (event.x, event.y)
+            self.update_canvas()
 
     def resize_image(self, event):
-        delta = 10 if event.delta > 0 else -10
-        new_width = max(10, self.image_size[0] + delta)
-        new_height = max(10, self.image_size[1] + delta)
-        self.image_size = [new_width, new_height]
-        if self.imported_image_path:
-            self.imported_image = Image.open(self.imported_image_path).convert('RGBA').resize(self.image_size)
-        self.update_canvas()
+        """
+        Redimensionne l'image importée en fonction de l'événement de la molette de la souris
+        tout en conservant le ratio original.
+
+        Paramètres :
+            event (tk.Event): L'événement de la molette de la souris.
+        """
+        if self.original_image:
+            delta = 10 if event.delta > 0 else -10
+
+            # Calculer la nouvelle taille en conservant le ratio
+            original_width, original_height = self.original_image.size
+            aspect_ratio = original_width / original_height
+
+            new_width = self.image_size[0] + delta
+            new_height = int(new_width / aspect_ratio)
+            # min imagesize is 10/15px
+            new_width = max(15, new_width)
+            new_height = max(10, new_height)
+
+            self.image_size = (new_width, new_height)
+            self.imported_image = self.original_image.resize(self.image_size, Image.LANCZOS)
+
+            self.update_canvas()
 
     def update_canvas(self):
+        """
+        Met à jour le canvas pour refléter l'état actuel de l'image avec les modifications.
+        """
         temp_image = self.image.copy()
-
-        # Coller l'image importée en assurant le masquage correct
         if self.imported_image:
-            resized_image = self.imported_image.resize(self.image_size)
-        #    mask = resized_image.split()[3]  # Utilisation du canal alpha
-        #    mask = mask.resize(resized_image.size)  # Garantie que le masque a la bonne taille
-            temp_image.paste(resized_image, self.image_position,)
+            temp_image.paste(self.imported_image, self.image_position, self.imported_image)
 
-        # Appliquer les zones d'exclusion : les rendre transparentes
         for zone in self.exclusion_zones:
             x, y, w, h = zone
             draw = ImageDraw.Draw(temp_image)
-            draw.rectangle([x, y, x + w, y + h], fill=(255, 255, 255, 0))
+            draw.rectangle((x, y, x + w, y + h), fill=(255, 255, 255, 0))
 
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
 
     def save_image(self):
-        file_path = (filedialog.asksaveasfilename(defaultextension=".png",
-                                                 filetypes=[("PNG files", "*.png"), ("JPEG files", "*.jpg")]))
+        """
+        Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
+        """
+        file_path = filedialog.asksaveasfilename(defaultextension=".png",
+                                                 filetypes=[("PNG files", "*.png"), ("JPEG files", "*.jpg")])
         if file_path:
             self.image.save(file_path)
 
-
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = ImageEditorApp(root)
-    root.mainloop()
+    tk_root = tk.Tk()
+    app = ImageEditorApp(tk_root)
+    tk_root.mainloop()
