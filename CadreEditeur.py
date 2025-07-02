@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 
+
 class ImageEditorApp:
     """
     Une application d'édition d'image simple permettant aux utilisateurs
@@ -16,24 +17,34 @@ class ImageEditorApp:
         Initialise l'application ImageEditorApp avec une fenêtre tkinter racine.
 
         Paramètres :
-            root (tk.Tk): La fenêtre tkinter racine.
+            root (tk.Tk) : La fenêtre tkinter racine.
         """
         self.root = root
         self.root.title("Éditeur d'image")
-        self.canvas = tk.Canvas(root, width=800, height=600)
+
+        # Dimension de l'interface
+        self.window_width = 800
+        self.window_height = 600
+        self.canvas = tk.Canvas(root, width=self.window_width, height=self.window_height)
         self.canvas.pack()
 
         # Fond blanc
-        self.image = Image.new('RGBA', (3600, 2400), (255, 255, 255, 255))
-        self.draw = ImageDraw.Draw(self.image)
-        self.tk_image = ImageTk.PhotoImage(self.image)
+        self.image_de_font = Image.new('RGBA', (3600, 2400), (255, 255, 255, 255))
+        self.draw = ImageDraw.Draw(self.image_de_font)
+
+        # Redimensionnement pour affichage
+        self.display_image = self.image_de_font.resize((self.window_width, self.window_height))
+        self.tk_image = ImageTk.PhotoImage(self.display_image)
         self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
+        controls_frame = tk.Frame(root)
+        controls_frame.pack()
+
         self.text = tk.StringVar()
-        tk.Entry(root, textvariable=self.text).pack()
-        tk.Button(root, text="Importer une image", command=self.import_image).pack()
-        tk.Button(root, text="Ajouter un texte", command=self.add_text).pack()
-        tk.Button(root, text="Enregistrer l'image", command=self.save_image).pack()
+        tk.Button(controls_frame, text="Importer une image", command=self.import_image).pack(side='left')
+        tk.Entry(controls_frame, textvariable=self.text).pack(side='left')  # Aligner à gauche
+        tk.Button(controls_frame, text="Ajouter le texte", command=self.add_text).pack(side='left')
+        tk.Button(controls_frame, text="Enregistrer l'image", command=self.save_image).pack(side='left')
 
         self.imported_image = None
         self.imported_image_path = None
@@ -70,11 +81,11 @@ class ImageEditorApp:
             original_width, original_height = self.original_image.size
             aspect_ratio = original_width / original_height
 
-            desired_width = 800
+            desired_width = self.window_width
             desired_height = int(desired_width / aspect_ratio)
 
             self.image_size = (desired_width, desired_height)
-            self.imported_image = self.original_image.resize(self.image_size, Image.LANCZOS)
+            self.imported_image = self.original_image.resize(self.image_size)
 
             self.update_canvas()
 
@@ -90,7 +101,7 @@ class ImageEditorApp:
         Initialise l'opération de glissement-déposé en enregistrant la position du curseur.
 
         Paramètres :
-            event (tk.Event): L'événement de clic de la souris.
+            event (tk.Event) : L'événement de clic de la souris.
         """
         self.start_drag_position = (event.x, event.y)
 
@@ -99,7 +110,7 @@ class ImageEditorApp:
         Met à jour la position de l'image importée en fonction du mouvement du curseur.
 
         Paramètres :
-            event (tk.Event): L'événement de mouvement de la souris.
+            event (tk.Event) : L'événement de mouvement de la souris.
         """
         if self.start_drag_position:
             dx = event.x - self.start_drag_position[0]
@@ -114,7 +125,7 @@ class ImageEditorApp:
         tout en conservant le ratio original.
 
         Paramètres :
-            event (tk.Event): L'événement de la molette de la souris.
+            event (tk.Event) : L'événement de la molette de la souris.
         """
         if self.original_image:
             delta = 10 if event.delta > 0 else -10
@@ -130,7 +141,7 @@ class ImageEditorApp:
             new_height = max(10, new_height)
 
             self.image_size = (new_width, new_height)
-            self.imported_image = self.original_image.resize(self.image_size, Image.LANCZOS)
+            self.imported_image = self.original_image.resize(self.image_size)
 
             self.update_canvas()
 
@@ -138,7 +149,9 @@ class ImageEditorApp:
         """
         Met à jour le canvas pour refléter l'état actuel de l'image avec les modifications.
         """
-        temp_image = self.image.copy()
+        display_image = self.image_de_font.resize((self.window_width, self.window_height))
+        temp_image = display_image.copy()
+
         if self.imported_image:
             temp_image.paste(self.imported_image, self.image_position, self.imported_image)
 
@@ -157,7 +170,8 @@ class ImageEditorApp:
         file_path = filedialog.asksaveasfilename(defaultextension=".png",
                                                  filetypes=[("PNG files", "*.png"), ("JPEG files", "*.jpg")])
         if file_path:
-            self.image.save(file_path)
+            self.original_image.save(file_path)
+
 
 if __name__ == "__main__":
     tk_root = tk.Tk()
