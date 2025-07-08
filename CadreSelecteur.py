@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ selecteur de cadre pour pibooth """
 
-import os
+from os import path, listdir
 from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
@@ -115,7 +115,7 @@ class CadreSelecteur:
         Configures the scroll region after adding items.
         """
         self.create_dest_thumbnail()
-        for filename in sorted(os.listdir(self.source_directory)):
+        for filename in sorted(listdir(self.source_directory)):
             if filename.lower().endswith('_1.png'):
                 self.create_src_thumbnail(filename)
 
@@ -130,9 +130,9 @@ class CadreSelecteur:
 
         """
         try:
-            file_path_1 = os.path.join(self.destination_directory,
+            file_path_1 = path.join(self.destination_directory,
                                        CADRE_NAME_1)
-            file_path_4 = os.path.join(self.destination_directory,
+            file_path_4 = path.join(self.destination_directory,
                                        CADRE_NAME_4)
 
             # Clear the canvas before adding a new image
@@ -182,8 +182,8 @@ class CadreSelecteur:
         :param filename: The name of the image file.
         """
         try:
-            file_path_1 = os.path.join(self.source_directory, filename)
-            file_path_4 = os.path.join(self.source_directory,
+            file_path_1 = path.join(self.source_directory, filename)
+            file_path_4 = path.join(self.source_directory,
                                        filename.replace('_1.png', '_4.png'))
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
@@ -255,13 +255,13 @@ class CadreSelecteur:
         if selected_file != 'None':
             print(f"Image sélectionnée: {selected_file}")
 
-            source_file_1 = os.path.join(self.source_directory, selected_file)
-            dest_file_1 = os.path.join(self.destination_directory,
+            source_file_1 = path.join(self.source_directory, selected_file)
+            dest_file_1 = path.join(self.destination_directory,
                                        CADRE_NAME_1)
-            source_file_4 = os.path.join(self.source_directory,
+            source_file_4 = path.join(self.source_directory,
                                          selected_file.replace('_1.png',
                                                                '_4.png'))
-            dest_file_4 = os.path.join(self.destination_directory,
+            dest_file_4 = path.join(self.destination_directory,
                                        CADRE_NAME_4)
 
             # Copier le fichier cadre
@@ -273,17 +273,17 @@ class CadreSelecteur:
             # Copier le fichier template
             source_file_tpl = source_file_1.replace('_1.png',
                                                     '.xml')
-            dest_file_tpl = os.path.join(self.destination_directory,
+            dest_file_tpl = path.join(self.destination_directory,
                                          TEMPLATE_NAME)
 
-            if os.path.exists(source_file_tpl):
+            if path.exists(source_file_tpl):
                 print(f">>> Copy :{source_file_tpl}\n"
                       f"       to : {dest_file_tpl}")
                 copy(source_file_tpl, dest_file_tpl)
             else:
-                source_file_tpl = os.path.join(self.source_directory,
+                source_file_tpl = path.join(self.source_directory,
                                                TEMPLATE_NAME_STD)
-                dest_file_tpl = os.path.join(self.destination_directory,
+                dest_file_tpl = path.join(self.destination_directory,
                                              TEMPLATE_NAME)
                 print('pas de fichier frame associé au cadre,'
                       ' copy du template standard')
@@ -312,7 +312,7 @@ class CadreSelecteur:
             window.protocol("WM_DELETE_WINDOW", window.destroy)
 
             with Image.open(file_path) as img:
-                img_resized = img.resize((width, height), Image.ANTIALIAS)
+                img_resized = img.resize((width, height))
                 img_full = ImageTk.PhotoImage(img_resized)
                 label = Label(window, image=img_full)
                 label.image = img_full  # Keep a reference
@@ -327,22 +327,22 @@ if __name__ == "__main__":
 
     # verification de la presence des répertoire sources et dest.
     message_error = ''
-    if not os.path.exists(template_path):
+    if not path.exists(template_path):
         message_error = message_error +\
                         "SOURCES :\nle repertoire :" +\
                         template_path +\
                         " n'est pas accessible\n\n"
 
-    if not os.path.exists(destination_path):
+    if not path.exists(destination_path):
         message_error = message_error + \
                         "DESTINATION:\nle repertoire :" + \
                         destination_path + \
                         " n'est pas accessible\n\n"
 
     # verification de la presence du template par default.
-    template_dft_file = os.path.join(template_path,
+    template_dft_file = path.join(template_path,
                                      TEMPLATE_NAME_STD)
-    if not os.path.exists(template_dft_file):
+    if not path.exists(template_dft_file):
         message_error = message_error + \
                         "TEMPLATE:\nle fichier :" + \
                         template_dft_file + \
