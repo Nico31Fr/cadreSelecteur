@@ -23,7 +23,7 @@ class ImageEditorApp:
         self.root = root
         self.root.title("Éditeur d'image")
         # Dimension de la fenêtre
-        self.WINDOWS = "700x500"
+        self.WINDOWS = "700x600"
         # Dimension de l'interface, doit être de ratio 1.5
         self.CANVA_W = 600
         self.CANVA_H = 400
@@ -58,24 +58,36 @@ class ImageEditorApp:
         self.controls_frame = tk.Frame(root)
         self.controls_frame.pack()
 
+        # configure la grille pour les boutons
+        self.controls_frame.rowconfigure(0, weight=2)
+        self.controls_frame.rowconfigure(1, weight=1)
+        self.controls_frame.rowconfigure(2, weight=1)
+        self.controls_frame.rowconfigure(3, weight=1)
+        self.controls_frame.columnconfigure(0, weight=1)
+        self.controls_frame.columnconfigure(1, weight=2)
+
         self.text = tk.StringVar()
         # Créer un bouton pour ouvrir le sélecteur de couleur
-        self.bouton = tk.Button(self.controls_frame, text="Choisir une couleur", command=self.choisir_couleur)
-        self.bouton.pack(side='left')
+        self.bouton = tk.Button(self.controls_frame, text="couleur du fond", command=self.choisir_couleur)
+        self.bouton.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
         # Créer un label pour afficher la couleur sélectionnée
-        self.label_couleur = tk.Label(self.controls_frame, text="Aucune couleur sélectionnée", width=30, height=5)
-        self.label_couleur.pack(side='left')
-
-        tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).pack(side='top')
-        tk.Entry(self.controls_frame, textvariable=self.text).pack(side='top')
-        tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).pack(side='top')
-        tk.Button(self.controls_frame, text="Enregistrer l'image", command=self.save_image).pack(side='top')
+        self.label_couleur = tk.Label(self.controls_frame, text=" ", width=10, height=5)
+        self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+        tk.Entry(self.controls_frame, textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame, text="Enregistrer l'image", command=self.save_image).grid(column=0, row=4, sticky=tk.EW, padx=5, pady=5)
 
         self.imported_image_path = None
         self.display_imported_image = None
         self.image_imported_image = None
         self.original_image = None
-        self.background_couleur = (255, 255, 255, 255)
+        self.background_couleur = '#FFFFFF'
+
+        # Mettre à jour la couleur et le texte du label_couleur
+        # avec la valeur par default
+        self.label_couleur.config(bg=self.background_couleur)
+        self.label_couleur.config(text=self.background_couleur)
 
         # Variables pour déplacer l'image importée
         self.display_position = (150, 150)
@@ -210,7 +222,7 @@ class ImageEditorApp:
                                     self.image_position,
                                     self.image_imported_image)
 
-        # insère les zones tranparentes (Display et Image)
+        # insère les zones transparentes (Display et Image)
         for zone in self.exclusion_zones:
             d_x, d_y, d_w, d_h = zone
             i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
@@ -230,9 +242,9 @@ class ImageEditorApp:
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
         if couleur[1]:
             self.background_couleur = couleur[1]
+            # Mettre à jour la couleur et le texte du label
             self.label_couleur.config(bg=str(couleur[1]))
-            # Mettre à jour le texte du label avec le code hexadécimal de la couleur
-            self.label_couleur.config(text=f"Couleur : {couleur[1]}")
+            self.label_couleur.config(text=str(couleur[1]))
             self.update_canvas()
 
     def save_image(self):
