@@ -13,17 +13,14 @@ class ImageEditorApp:
     et d'enregistrer la composition finale.
     """
 
-    def __init__(self, root):
+    def __init__(self, root, exclusion_zones):
         """
         Initialise l'application ImageEditorApp avec une fenêtre tkinter racine.
 
         Paramètres :
             root (tk.Tk) : La fenêtre tkinter racine.
         """
-        self.root = root
-        self.root.title("Éditeur d'image")
-        # Dimension de la fenêtre
-        self.WINDOWS = "700x600"
+
         # Dimension de l'interface, doit être de ratio 1.5
         self.CANVA_W = 600
         self.CANVA_H = 400
@@ -31,11 +28,6 @@ class ImageEditorApp:
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
         self.RATIO = int(self.IMAGE_W / self.CANVA_W)
-
-        # Fixer la taille de la fenêtre
-        tk_root.geometry(self.WINDOWS)  # Largeur = 400 pixels, Hauteur = 300 pixels
-        # Optionnel : Empêcher le redimensionnement de la fenêtre
-        tk_root.resizable(False, False)
 
         # creation dun canva qui va afficher l'image
         # Créer un cadre (Frame)
@@ -96,18 +88,7 @@ class ImageEditorApp:
         self.display_imported_image_size = (0, 0)
         self.image_imported_image_size = (0, 0)
 
-        # Définir des zones d'exclusion
-        # <mxGeometry x="20" y="420" width="110" height="160" as="geometry" />
-        # <mxGeometry x="145" y="420" width="110" height="160" as="geometry" />
-        # <mxGeometry x="270" y="420" width="110" height="160" as="geometry" />
-        # <mxGeometry x="20" y="20" width="280" height="350" as="geometry" />
-        # Y X H W
-        self.exclusion_zones = [
-            (420, 20, 160, 110),
-            (420, 145, 160, 110),
-            (420, 270, 160, 110),
-            (20, 20, 350, 280)
-        ]
+        self.exclusion_zones = exclusion_zones
 
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
@@ -257,6 +238,57 @@ class ImageEditorApp:
             self.image_export.save(file_path)
 
 if __name__ == "__main__":
+    # Définir des zones d'exclusion
+    # <mxGeometry x="20" y="420" width="110" height="160" as="geometry" />
+    # <mxGeometry x="145" y="420" width="110" height="160" as="geometry" />
+    # <mxGeometry x="270" y="420" width="110" height="160" as="geometry" />
+    # <mxGeometry x="20" y="20" width="280" height="350" as="geometry" />
+    # Y X H W
+    exclusion_zones_4 = [
+        (420, 20, 160, 110),
+        (420, 145, 160, 110),
+        (420, 270, 160, 110),
+        (20, 20, 350, 280)
+    ]
+    # <mxGeometry x="20" y="420" width="110" height="160" as="geometry" />
+    # <mxGeometry x="145" y="420" width="110" height="160" as="geometry" />
+    # <mxGeometry x="270" y="420" width="110" height="160" as="geometry" />
+    # <mxGeometry x="20" y="20" width="280" height="350" as="geometry" />
+    # Y X H W
+    exclusion_zones_4 = [
+        (420, 20, 160, 110),
+        (420, 145, 160, 110),
+        (420, 270, 160, 110),
+        (20, 20, 350, 280)]
+    # <mxGeometry x="50" y="20" width="330" height="470" as="geometry" />
+    # Y X H W
+    exclusion_zones_1 = [
+        (50, 20, 470, 330),
+    ]
+
+    # Dimension de la fenêtre
+    WINDOWS = "1400x600"
+
     tk_root = tk.Tk()
-    app = ImageEditorApp(tk_root)
+
+    # Fixer la taille de la fenêtre
+    tk_root.geometry(WINDOWS)  # Largeur = 700 pixels, Hauteur = 1200 pixels
+    # Optionnel : Empêcher le redimensionnement de la fenêtre
+    tk_root.resizable(False, False)
+    tk_root.title("Créateur de cadre V0.1")
+
+    # Création de frame parent
+    main_frame = tk.Frame(tk_root)
+    main_frame.pack(expand=True, fill='both')
+
+    # App1 frame
+    app1_frame = tk.Frame(main_frame)
+    app1_frame.pack(side="left", fill="both", expand=True)
+    app1 = ImageEditorApp(app1_frame, exclusion_zones_1)
+
+    # App4 frame
+    app4_frame = tk.Frame(main_frame)
+    app4_frame.pack(side="left", fill="both", expand=True)
+    app4 = ImageEditorApp(app4_frame, exclusion_zones_4)
+
     tk_root.mainloop()
