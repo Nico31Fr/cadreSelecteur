@@ -4,7 +4,7 @@
 import tkinter as tk
 from tkinter import filedialog, colorchooser
 from PIL import Image, ImageDraw, ImageFont, ImageTk
-
+from re import fullmatch
 
 class ImageEditorApp:
     """
@@ -28,6 +28,12 @@ class ImageEditorApp:
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
         self.RATIO = int(self.IMAGE_W / self.CANVA_W)
+
+        self.imported_image_path = None
+        self.display_imported_image = None
+        self.image_imported_image = None
+        self.original_image = None
+        self.background_couleur = '#FFFFFF'
 
         # creation dun canva qui va afficher l'image
         # Créer un cadre (Frame)
@@ -57,29 +63,30 @@ class ImageEditorApp:
         self.controls_frame.rowconfigure(3, weight=1)
         self.controls_frame.columnconfigure(0, weight=1)
         self.controls_frame.columnconfigure(1, weight=2)
+        self.controls_frame.columnconfigure(2, weight=2)
 
         self.text = tk.StringVar()
+        self.texte_background_value = tk.StringVar()
+
         # Créer un bouton pour ouvrir le sélecteur de couleur
-        self.bouton = tk.Button(self.controls_frame, text="couleur du fond", command=self.choisir_couleur)
-        self.bouton.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
+        tk.Label(self.controls_frame, text="couleur du fond :").grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value)
+        self.texte_background.insert(0, self.background_couleur)
+        self.texte_background.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
         # Créer un label pour afficher la couleur sélectionnée
-        self.label_couleur = tk.Label(self.controls_frame, text=" ", width=10, height=5)
+        self.label_couleur = tk.Label(self.controls_frame, text=" ")
         self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
+        # texte
         tk.Entry(self.controls_frame, textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
         tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+        # import image
         tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+        # save as
         tk.Button(self.controls_frame, text="Enregistrer l'image", command=self.save_image).grid(column=0, row=4, sticky=tk.EW, padx=5, pady=5)
 
-        self.imported_image_path = None
-        self.display_imported_image = None
-        self.image_imported_image = None
-        self.original_image = None
-        self.background_couleur = '#FFFFFF'
-
-        # Mettre à jour la couleur et le texte du label_couleur
-        # avec la valeur par default
+        # Mettre à jour la couleur du label_couleur
         self.label_couleur.config(bg=self.background_couleur)
-        self.label_couleur.config(text=self.background_couleur)
 
         # Variables pour déplacer l'image importée
         self.display_position = (150, 150)
@@ -94,6 +101,10 @@ class ImageEditorApp:
         self.canvas.bind("<Button-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_image)
         self.canvas.bind("<MouseWheel>", self.resize_image)
+
+        # Lier une fonction à la modification de la valeur de l'Entry
+        self.texte_background_value.trace_add("write",
+                                              self.on_color_entry_change)
 
         self.start_drag_position = None
         self.update_canvas()
@@ -218,15 +229,30 @@ class ImageEditorApp:
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
 
-    def choisir_couleur(self):
+    def choisir_couleur(self, event=None):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
+        print(event)
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
-        if couleur[1]:
+        if couleur[1] :
             self.background_couleur = couleur[1]
             # Mettre à jour la couleur et le texte du label
             self.label_couleur.config(bg=str(couleur[1]))
-            self.label_couleur.config(text=str(couleur[1]))
+            self.texte_background.delete(0, tk.END)  # Efface le champ existant
+            self.texte_background.insert(0, str(couleur[1]))
             self.update_canvas()
+
+    def on_color_entry_change(self, *args):
+        """
+        une nouvelle valeur de couleur a été saisie, mettre à jour
+        """
+
+        color_code = self.texte_background_value.get()
+        match = fullmatch(r'^#[0-9A-Fa-f]{6}$', color_code)
+        if match:
+            self.background_couleur = color_code
+            self.label_couleur.config(bg=color_code)
+            self.update_canvas()
+
 
     def save_image(self):
         """
@@ -250,16 +276,7 @@ if __name__ == "__main__":
         (420, 270, 160, 110),
         (20, 20, 350, 280)
     ]
-    # <mxGeometry x="20" y="420" width="110" height="160" as="geometry" />
-    # <mxGeometry x="145" y="420" width="110" height="160" as="geometry" />
-    # <mxGeometry x="270" y="420" width="110" height="160" as="geometry" />
-    # <mxGeometry x="20" y="20" width="280" height="350" as="geometry" />
-    # Y X H W
-    exclusion_zones_4 = [
-        (420, 20, 160, 110),
-        (420, 145, 160, 110),
-        (420, 270, 160, 110),
-        (20, 20, 350, 280)]
+
     # <mxGeometry x="50" y="20" width="330" height="470" as="geometry" />
     # Y X H W
     exclusion_zones_1 = [
