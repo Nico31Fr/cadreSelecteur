@@ -2,7 +2,7 @@
 """ Module d'édition de cadre pour PiBooth """
 
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, colorchooser
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 
 
@@ -22,13 +22,27 @@ class ImageEditorApp:
         """
         self.root = root
         self.root.title("Éditeur d'image")
+        # Dimension de la fenêtre
+        self.WINDOWS = "700x500"
         # Dimension de l'interface, doit être de ratio 1.5
-        self.WINDOWS_W = 600
-        self.WINDOWS_H = 400
+        self.CANVA_W = 600
+        self.CANVA_H = 400
+        # Dimension de l'image géneré
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
-        self.RATIO = int(self.IMAGE_W / self.WINDOWS_W)
-        self.canvas = tk.Canvas(root, width=self.WINDOWS_W, height=self.WINDOWS_H)
+        self.RATIO = int(self.IMAGE_W / self.CANVA_W)
+
+        # Fixer la taille de la fenêtre
+        tk_root.geometry(self.WINDOWS)  # Largeur = 400 pixels, Hauteur = 300 pixels
+        # Optionnel : Empêcher le redimensionnement de la fenêtre
+        tk_root.resizable(False, False)
+
+        # creation dun canva qui va afficher l'image
+        # Créer un cadre (Frame)
+        self.frame = tk.Frame(root, borderwidth=2, relief="solid")
+        self.frame.pack()
+
+        self.canvas = tk.Canvas(self.frame, width=self.CANVA_W, height=self.CANVA_H)
         self.canvas.pack()
         # Fond blanc
         self.image_de_font = Image.new('RGBA',
@@ -37,23 +51,31 @@ class ImageEditorApp:
         self.draw = ImageDraw.Draw(self.image_de_font)
         # Redimensionnement pour affichage
         self.image_export = self.image_de_font.copy()
-        self.display_image = self.image_export.resize((self.WINDOWS_W, self.WINDOWS_H))
+        self.display_image = self.image_export.resize((self.CANVA_W, self.CANVA_H))
         self.tk_image = ImageTk.PhotoImage(self.display_image)
         self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
-        controls_frame = tk.Frame(root)
-        controls_frame.pack()
+        self.controls_frame = tk.Frame(root)
+        self.controls_frame.pack()
 
         self.text = tk.StringVar()
-        tk.Button(controls_frame, text="Importer une image", command=self.import_image).pack(side='left')
-        tk.Entry(controls_frame, textvariable=self.text).pack(side='left')
-        tk.Button(controls_frame, text="Ajouter le texte", command=self.add_text).pack(side='left')
-        tk.Button(controls_frame, text="Enregistrer l'image", command=self.save_image).pack(side='left')
+        # Créer un bouton pour ouvrir le sélecteur de couleur
+        self.bouton = tk.Button(self.controls_frame, text="Choisir une couleur", command=self.choisir_couleur)
+        self.bouton.pack(side='left')
+        # Créer un label pour afficher la couleur sélectionnée
+        self.label_couleur = tk.Label(self.controls_frame, text="Aucune couleur sélectionnée", width=30, height=5)
+        self.label_couleur.pack(side='left')
+
+        tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).pack(side='top')
+        tk.Entry(self.controls_frame, textvariable=self.text).pack(side='top')
+        tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).pack(side='top')
+        tk.Button(self.controls_frame, text="Enregistrer l'image", command=self.save_image).pack(side='top')
 
         self.imported_image_path = None
         self.display_imported_image = None
         self.image_imported_image = None
         self.original_image = None
+        self.background_couleur = (255, 255, 255, 255)
 
         # Variables pour déplacer l'image importée
         self.display_position = (150, 150)
@@ -96,7 +118,7 @@ class ImageEditorApp:
             original_width, original_height = self.original_image.size
             aspect_ratio = original_width / original_height
 
-            desired_width = self.WINDOWS_W
+            desired_width = self.CANVA_W
             desired_height = int(desired_width / aspect_ratio)
 
             self.display_imported_image_size = (desired_width, desired_height)
@@ -121,11 +143,19 @@ class ImageEditorApp:
         self.start_drag_position = (event.x, event.y)
 
     def drag_image(self, event):
+        """
+        drag and drop de l'image importé avec la souris
+
+        Paramètres :
+            event (tk.Event) : L'événement de mouvement de la souris.
+        """
         if self.start_drag_position:
             dx = event.x - self.start_drag_position[0]
             dy = event.y - self.start_drag_position[1]
+            # met à jour la position de l'image importé dans le canva
             self.display_position = (self.display_position[0] + dx,
                                      self.display_position[1] + dy)
+            # met à jour la position de l'image importé dans l'image'
             self.image_position = (self.display_position[0] * self.RATIO,
                                    self.display_position[1] * self.RATIO)
             self.start_drag_position = (event.x, event.y)
@@ -162,8 +192,12 @@ class ImageEditorApp:
         """
         Met à jour le canvas pour refléter l'état actuel de l'image.
         """
-        display_image = self.image_de_font.resize((self.WINDOWS_W,
-                                                   self.WINDOWS_H))
+
+        self.image_de_font = Image.new('RGBA',
+                                       (self.IMAGE_W, self.IMAGE_H),
+                                       self.background_couleur)
+        display_image = self.image_de_font.resize((self.CANVA_W,
+                                                   self.CANVA_H))
 
         temp_image = display_image.copy()
         self.image_export = self.image_de_font.copy()
@@ -191,6 +225,15 @@ class ImageEditorApp:
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
 
+    def choisir_couleur(self):
+        """ Ouvrir une boîte de dialogue de sélection de couleur """
+        couleur = colorchooser.askcolor(title="Choisissez une couleur")
+        if couleur[1]:
+            self.background_couleur = couleur[1]
+            self.label_couleur.config(bg=str(couleur[1]))
+            # Mettre à jour le texte du label avec le code hexadécimal de la couleur
+            self.label_couleur.config(text=f"Couleur : {couleur[1]}")
+            self.update_canvas()
 
     def save_image(self):
         """

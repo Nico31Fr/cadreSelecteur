@@ -7,7 +7,7 @@ from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from shutil import copy
 
-# taille de la fenetre
+# taille de la fenêtre
 WINDOWS_SIZE = "800x600"
 # taille des vignettes
 THUMBNAIL_H = 128
