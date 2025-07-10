@@ -2,9 +2,10 @@
 """ Module d'édition de cadre pour PiBooth """
 
 import tkinter as tk
-from tkinter import filedialog, colorchooser
+from tkinter import filedialog, colorchooser, messagebox
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 from re import fullmatch
+from os import path
 
 class ImageEditorApp:
     """
@@ -82,8 +83,6 @@ class ImageEditorApp:
         tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
         # import image
         tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
-        # save as
-        tk.Button(self.controls_frame, text="Enregistrer l'image", command=self.save_image).grid(column=0, row=4, sticky=tk.EW, padx=5, pady=5)
 
         # Mettre à jour la couleur du label_couleur
         self.label_couleur.config(bg=self.background_couleur)
@@ -254,14 +253,50 @@ class ImageEditorApp:
             self.update_canvas()
 
 
-    def save_image(self):
+    def save_image(self, out_path: str):
         """
         Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
         """
-        file_path = filedialog.asksaveasfilename(defaultextension=".png",
-                                                 filetypes=[("PNG files", "*.png")])
-        if file_path:
-            self.image_export.save(file_path)
+        extension = str('_' + str(len(self.exclusion_zones)) + '.png')
+        out_path = out_path + extension
+        self.image_export.save(out_path)
+
+def save_images(app_1, app_4):
+    """
+    lance l'enregistrement des deux fichiers
+    """
+
+    path_im = select_directory()
+    if path_im is not None:
+        app_1.save_image(path_im)
+        app_4.save_image(path_im)
+
+
+def select_directory():
+    """
+    sélectionne le repertoire de sortie
+    et construction du path de sortie avec le nom du projet
+    """
+
+    tmp_prj_name = prj_name_var.get()
+
+    if tmp_prj_name == "":
+        messagebox.showerror(title='erreur nom du projet',
+                             message="saisir le nom du projet")
+        return None
+
+    # Ouvre la boîte de dialogue pour la sélection du répertoire
+    selected_dir = filedialog.askdirectory()
+    path_prj_name = path.join(selected_dir, tmp_prj_name)
+
+    if selected_dir :  # Vérifie si l'utilisateur a sélectionné un répertoire
+        print(f"Répertoire de sortie sélectionné : {path_prj_name}")
+        return path_prj_name
+    else:
+        messagebox.showerror(title='erreur repertoire',
+                             message="selectionner un repertoire de sortie")
+        return None
+
 
 if __name__ == "__main__":
     # Définir des zones d'exclusion
@@ -307,5 +342,18 @@ if __name__ == "__main__":
     app4_frame = tk.Frame(main_frame)
     app4_frame.pack(side="left", fill="both", expand=True)
     app4 = ImageEditorApp(app4_frame, exclusion_zones_4)
+
+    # import image
+    prj_name = 'cadre_xxx'
+    prj_name_var = tk.StringVar()
+    # saisie du nom du pack cadre
+    tk.Label(tk_root, text="Nom du set de cadre :").pack()
+    texte_projet_name = tk.Entry(tk_root, textvariable=prj_name_var)
+    texte_projet_name.insert(0, prj_name)
+    texte_projet_name.pack()
+    # Bouton pour enregistrer les cadres
+    tk.Button(tk_root,
+              text="enregistrer les cadres",
+              command=lambda: save_images(app1, app4)).pack()
 
     tk_root.mainloop()
