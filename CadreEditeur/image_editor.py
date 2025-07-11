@@ -7,6 +7,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageTk
 from re import fullmatch
 from os import path
 
+from tkfontchooser import askfont
+
 class ImageEditorApp:
     """
     Une application d'édition d'image simple permettant aux utilisateurs
@@ -79,8 +81,9 @@ class ImageEditorApp:
         self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
         # texte
-        tk.Entry(self.controls_frame, textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
         tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Entry(self.controls_frame, textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame, text='Police', command=self.callback_font).grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
         # import image
         tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
 
@@ -132,6 +135,9 @@ class ImageEditorApp:
     def add_text(self):
         """
         Ajoute du texte provenant du champ de texte à l'image à une position prédéfinie.
+
+        see https://github.com/PrabhanjanJois/textEditor_using_Tkinter-jois_textEditor-
+
         """
         self.draw.text((200, 150), self.text.get(), fill=(0, 0, 0, 255), font=ImageFont.load_default())
         self.update_canvas()
@@ -260,6 +266,24 @@ class ImageEditorApp:
         extension = str('_' + str(len(self.exclusion_zones)) + '.png')
         out_path = out_path + extension
         self.image_export.save(out_path)
+
+
+    def callback_font(self):
+        """
+        lorsque le boutton font est cliquer lance l'interface
+         de selection de police d'écriture
+        """
+        font = askfont(self.controls_frame, title="Police")
+        if font:
+            # spaces in the family name need to be escaped
+            font['family'] = font['family'].replace(' ', '\ ')
+            font_str = "%(family)s %(size)i %(weight)s %(slant)s" % font
+            if font['underline']:
+                font_str += ' underline'
+            if font['overstrike']:
+                font_str += ' overstrike'
+            #label.configure(font=font_str,
+            #                text='Chosen font: ' + font_str.replace('\ ', ' '))
 
 def save_images(app_1, app_4):
     """
