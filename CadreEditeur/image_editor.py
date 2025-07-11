@@ -2,10 +2,11 @@
 """ Module d'édition de cadre pour PiBooth """
 
 import tkinter as tk
-from tkinter import filedialog, colorchooser, messagebox
+from tkinter import filedialog, colorchooser, messagebox, font
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 from re import fullmatch
 from os import path
+import matplotlib.font_manager as fm
 
 from tkfontchooser import askfont
 
@@ -31,6 +32,7 @@ class ImageEditorApp:
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
         self.RATIO = int(self.IMAGE_W / self.CANVA_W)
+        self.FONT_PATH = "C:/Windows/Fonts"
 
         self.imported_image_path = None
         self.display_imported_image = None
@@ -38,12 +40,19 @@ class ImageEditorApp:
         self.original_image = None
         self.background_couleur = '#FFFFFF'
 
+        # variable pour la gestion du texte
+        self.sel_font = font.Font(family="Helvetica", size=12, weight="bold")
+        self.pil_font = ImageFont.truetype(font="msgothic.ttc")
+        self.texte_position = (0, 0)
+
         # creation dun canva qui va afficher l'image
         # Créer un cadre (Frame)
         self.frame = tk.Frame(root, borderwidth=2, relief="solid")
         self.frame.pack()
 
-        self.canvas = tk.Canvas(self.frame, width=self.CANVA_W, height=self.CANVA_H)
+        self.canvas = tk.Canvas(self.frame,
+                                width=self.CANVA_W,
+                                height=self.CANVA_H)
         self.canvas.pack()
         # Fond blanc
         self.image_de_font = Image.new('RGBA',
@@ -52,9 +61,13 @@ class ImageEditorApp:
         self.draw = ImageDraw.Draw(self.image_de_font)
         # Redimensionnement pour affichage
         self.image_export = self.image_de_font.copy()
-        self.display_image = self.image_export.resize((self.CANVA_W, self.CANVA_H))
+        self.display_image = self.image_export.resize((self.CANVA_W,
+                                                       self.CANVA_H))
         self.tk_image = ImageTk.PhotoImage(self.display_image)
-        self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
+        self.canvas_image_id = self.canvas.create_image(0,
+                                                        0,
+                                                        anchor=tk.NW,
+                                                        image=self.tk_image)
 
         self.controls_frame = tk.Frame(root)
         self.controls_frame.pack()
@@ -111,6 +124,55 @@ class ImageEditorApp:
         self.start_drag_position = None
         self.update_canvas()
 
+    @staticmethod
+    def find_font_path(font_name):
+        """
+        trouve le chemin de la police
+        """
+        # Obtenir la liste de toutes les polices système
+        font_paths = fm.findSystemFonts(fontpaths=None, fontext='ttf')
+
+        for font_path in font_paths:
+            # Vérifier si le nom de la police correspond
+            prop = fm.FontProperties(fname=font_path)
+            if prop.get_name().lower() == font_name.replace('@','').lower():
+                return font_path
+        return None
+
+    def add_text(self):
+        """
+        Ajoute du texte provenant du champ de texte
+        à l'image à une position prédéfinie.
+
+        see https://github.com/PrabhanjanJois/textEditor_using_Tkinter-jois_textEditor-
+
+        """
+        print(f'>>> font: {self.sel_font["family"]}')
+        # Obtenir la police et sa taille
+        font_name = self.find_font_path(self.sel_font['family'])
+        font_size = self.sel_font['size']
+
+        print(f'>>> {font_name} - {font_size} -> {self.text.get()}')
+
+        if font_name is not None:
+            self.pil_font = ImageFont.truetype(font=font_name, size=font_size)
+        else:
+            self.pil_font = ImageFont.truetype(font="msgothic.ttc")
+
+        self.update_canvas()
+
+
+    def callback_font(self):
+        """
+        lorsque le boutton font est cliquer lance l'interface
+         de selection de police d'écriture
+        """
+        self.sel_font = askfont(self.controls_frame,
+                       text=self.text.get(),
+                       title="Police")
+
+
+
     def import_image(self):
         """
         Ouvre une boîte de dialogue pour importer une image et
@@ -132,15 +194,6 @@ class ImageEditorApp:
             self.image_imported_image = self.original_image.copy()
             self.update_canvas()
 
-    def add_text(self):
-        """
-        Ajoute du texte provenant du champ de texte à l'image à une position prédéfinie.
-
-        see https://github.com/PrabhanjanJois/textEditor_using_Tkinter-jois_textEditor-
-
-        """
-        self.draw.text((200, 150), self.text.get(), fill=(0, 0, 0, 255), font=ImageFont.load_default())
-        self.update_canvas()
 
     def start_drag(self, event):
         """
@@ -150,6 +203,7 @@ class ImageEditorApp:
             event (tk.Event) : L'événement de clic de la souris.
         """
         self.start_drag_position = (event.x, event.y)
+
 
     def drag_image(self, event):
         """
@@ -169,6 +223,7 @@ class ImageEditorApp:
                                    self.display_position[1] * self.RATIO)
             self.start_drag_position = (event.x, event.y)
             self.update_canvas()
+
 
     def resize_image(self, event):
         """
@@ -197,6 +252,7 @@ class ImageEditorApp:
 
             self.update_canvas()
 
+
     def update_canvas(self):
         """
         Met à jour le canvas pour refléter l'état actuel de l'image.
@@ -219,20 +275,33 @@ class ImageEditorApp:
                                     self.image_position,
                                     self.image_imported_image)
 
+        # insère le texte
+        # Crée un objet ImageDraw pour dessiner sur l'image
+        draw_d = ImageDraw.Draw(temp_image)
+        draw_i = ImageDraw.Draw(self.image_export)
+
+        draw_d.text((0, 0),
+                       self.text.get(),
+                       fill=(0, 0, 0, 255),
+                       font=self.pil_font)
+        draw_i.text((0, 0),
+                       self.text.get(),
+                       fill=(0, 0, 0, 255),
+                       font=self.pil_font)
+
         # insère les zones transparentes (Display et Image)
         for zone in self.exclusion_zones:
             d_x, d_y, d_w, d_h = zone
             i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
-            draw_d = ImageDraw.Draw(temp_image)
             draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
                            fill=(255, 255, 255, 0))
-            draw_i = ImageDraw.Draw(self.image_export)
             draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h),
                            fill=(255, 255, 255, 0))
 
         # met a jour l'IHM
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
+
 
     def choisir_couleur(self, event=None):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
@@ -245,6 +314,7 @@ class ImageEditorApp:
             self.texte_background.delete(0, tk.END)  # Efface le champ existant
             self.texte_background.insert(0, str(couleur[1]))
             self.update_canvas()
+
 
     def on_color_entry_change(self, *args):
         """
@@ -267,23 +337,6 @@ class ImageEditorApp:
         out_path = out_path + extension
         self.image_export.save(out_path)
 
-
-    def callback_font(self):
-        """
-        lorsque le boutton font est cliquer lance l'interface
-         de selection de police d'écriture
-        """
-        font = askfont(self.controls_frame, title="Police")
-        if font:
-            # spaces in the family name need to be escaped
-            font['family'] = font['family'].replace(' ', '\ ')
-            font_str = "%(family)s %(size)i %(weight)s %(slant)s" % font
-            if font['underline']:
-                font_str += ' underline'
-            if font['overstrike']:
-                font_str += ' overstrike'
-            #label.configure(font=font_str,
-            #                text='Chosen font: ' + font_str.replace('\ ', ' '))
 
 def save_images(app_1, app_4):
     """
