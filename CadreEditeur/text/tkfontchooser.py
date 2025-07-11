@@ -46,14 +46,14 @@ except ValueError:
     TR = LANGUAGES["en"]
 
 
-# --- tkfontchooser class
+# --- text class
 class FontChooser(Toplevel):
     """Font chooser dialog."""
 
     def __init__(self, master, font_dict={}, text="Abcd", title="Font Chooser",
                  **kwargs):
         """
-        Create a new tkfontchooser instance.
+        Create a new text instance.
 
         Arguments:
 
@@ -103,7 +103,7 @@ class FontChooser(Toplevel):
         for i in range(len(self.fonts)):
             self.fonts[i] = self.fonts[i].replace(" ", "\ ")
         max_length = int(2.5 * max([len(font) for font in self.fonts])) // 3
-        self.sizes = ["%i" % i for i in (list(range(6, 17)) + list(range(18, 32, 2)))]
+        self.sizes = ["%i" % i for i in (list(range(6, 17)) + list(range(18, 82, 2)))]
         # --- font default
         font_dict["weight"] = font_dict.get("weight", "normal")
         font_dict["slant"] = font_dict.get("slant", "roman")
@@ -118,26 +118,26 @@ class FontChooser(Toplevel):
         options_frame = Frame(self, relief='groove', borderwidth=2)
         self.font_family = StringVar(self, " ".join(self.fonts))
         self.font_size = StringVar(self, " ".join(self.sizes))
-        self.var_bold = BooleanVar(self, font_dict["weight"] == "bold")
-        b_bold = Checkbutton(options_frame, text=TR["Bold"],
-                             command=self.toggle_bold,
-                             variable=self.var_bold)
-        b_bold.grid(row=0, sticky="w", padx=4, pady=(4, 2))
-        self.var_italic = BooleanVar(self, font_dict["slant"] == "italic")
-        b_italic = Checkbutton(options_frame, text=TR["Italic"],
-                               command=self.toggle_italic,
-                               variable=self.var_italic)
-        b_italic.grid(row=1, sticky="w", padx=4, pady=2)
-        self.var_underline = BooleanVar(self, font_dict["underline"])
-        b_underline = Checkbutton(options_frame, text=TR["Underline"],
-                                  command=self.toggle_underline,
-                                  variable=self.var_underline)
-        b_underline.grid(row=2, sticky="w", padx=4, pady=2)
-        self.var_overstrike = BooleanVar(self, font_dict["overstrike"])
-        b_overstrike = Checkbutton(options_frame, text=TR["Overstrike"],
-                                   variable=self.var_overstrike,
-                                   command=self.toggle_overstrike)
-        b_overstrike.grid(row=3, sticky="w", padx=4, pady=(2, 4))
+        #self.var_bold = BooleanVar(self, font_dict["weight"] == "bold")
+        #b_bold = Checkbutton(options_frame, text=TR["Bold"],
+        #                     command=self.toggle_bold,
+        #                     variable=self.var_bold)
+        #b_bold.grid(row=0, sticky="w", padx=4, pady=(4, 2))
+        #self.var_italic = BooleanVar(self, font_dict["slant"] == "italic")
+        #b_italic = Checkbutton(options_frame, text=TR["Italic"],
+        #                       command=self.toggle_italic,
+        #                       variable=self.var_italic)
+        #b_italic.grid(row=1, sticky="w", padx=4, pady=2)
+        #self.var_underline = BooleanVar(self, font_dict["underline"])
+        #b_underline = Checkbutton(options_frame, text=TR["Underline"],
+        #                          command=self.toggle_underline,
+        #                          variable=self.var_underline)
+        #b_underline.grid(row=2, sticky="w", padx=4, pady=2)
+        #self.var_overstrike = BooleanVar(self, font_dict["overstrike"])
+        #b_overstrike = Checkbutton(options_frame, text=TR["Overstrike"],
+        #                           variable=self.var_overstrike,
+        #                           command=self.toggle_overstrike)
+        #b_overstrike.grid(row=3, sticky="w", padx=4, pady=(2, 4))
         # ------ Size and family
         self.var_size = StringVar(self)
         self.entry_family = Entry(self, width=max_length, validate="key",

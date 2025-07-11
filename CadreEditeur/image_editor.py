@@ -8,7 +8,8 @@ from re import fullmatch
 from os import path
 import matplotlib.font_manager as fm
 
-from tkfontchooser import askfont
+from text import askfont
+
 
 class ImageEditorApp:
     """
@@ -28,7 +29,7 @@ class ImageEditorApp:
         # Dimension de l'interface, doit être de ratio 1.5
         self.CANVA_W = 600
         self.CANVA_H = 400
-        # Dimension de l'image géneré
+        # Dimension de l'image générée
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
         self.RATIO = int(self.IMAGE_W / self.CANVA_W)
@@ -41,8 +42,14 @@ class ImageEditorApp:
         self.background_couleur = '#FFFFFF'
 
         # variable pour la gestion du texte
-        self.sel_font = font.Font(family="Helvetica", size=12, weight="bold")
-        self.pil_font = ImageFont.truetype(font="msgothic.ttc")
+        self.sel_font = {
+            'family': "arial",
+            'size': 12,
+#            'weight': 'normal',            # 'bold'/'normal'
+#            'slant': 'roman',              # 'italic'/'roman'
+        }
+        self.font_name : str = "msgothic.ttc"
+        self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
         self.texte_position = (0, 0)
 
         # creation dun canva qui va afficher l'image
@@ -94,11 +101,10 @@ class ImageEditorApp:
         self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
         # texte
-        tk.Button(self.controls_frame, text="Ajouter le texte", command=self.add_text).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
         tk.Entry(self.controls_frame, textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
-        tk.Button(self.controls_frame, text='Police', command=self.callback_font).grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame, text='Police', command=self.callback_font).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
         # import image
-        tk.Button(self.controls_frame, text="Importer une image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame, text="Image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
 
         # Mettre à jour la couleur du label_couleur
         self.label_couleur.config(bg=self.background_couleur)
@@ -120,12 +126,12 @@ class ImageEditorApp:
         # Lier une fonction à la modification de la valeur de l'Entry
         self.texte_background_value.trace_add("write",
                                               self.on_color_entry_change)
-
+        self.text.trace_add("write", self.on_text_change)
         self.start_drag_position = None
         self.update_canvas()
 
     @staticmethod
-    def find_font_path(font_name):
+    def find_font_path(font_name_to_find):
         """
         trouve le chemin de la police
         """
@@ -135,42 +141,45 @@ class ImageEditorApp:
         for font_path in font_paths:
             # Vérifier si le nom de la police correspond
             prop = fm.FontProperties(fname=font_path)
-            if prop.get_name().lower() == font_name.replace('@','').lower():
+            if prop.get_name().lower() == font_name_to_find.replace('@','').lower():
                 return font_path
         return None
 
-    def add_text(self):
+
+    def on_text_change(self, *args):
         """
         Ajoute du texte provenant du champ de texte
         à l'image à une position prédéfinie.
 
-        see https://github.com/PrabhanjanJois/textEditor_using_Tkinter-jois_textEditor-
+        See https://github.com/PrabhanjanJois/textEditor_using_Tkinter-jois_textEditor-
 
         """
-        print(f'>>> font: {self.sel_font["family"]}')
-        # Obtenir la police et sa taille
-        font_name = self.find_font_path(self.sel_font['family'])
-        font_size = self.sel_font['size']
 
-        print(f'>>> {font_name} - {font_size} -> {self.text.get()}')
-
-        if font_name is not None:
-            self.pil_font = ImageFont.truetype(font=font_name, size=font_size)
-        else:
-            self.pil_font = ImageFont.truetype(font="msgothic.ttc")
-
-        self.update_canvas()
+        if args:
+            self.pil_font = ImageFont.truetype(font=self.font_name,
+                                               size=self.sel_font['size'])
+            self.update_canvas()
 
 
     def callback_font(self):
         """
-        lorsque le boutton font est cliquer lance l'interface
+        lorsque le boutton font est cliqué lance l'interface
          de selection de police d'écriture
         """
-        self.sel_font = askfont(self.controls_frame,
-                       text=self.text.get(),
-                       title="Police")
+        font_selected = askfont(self.controls_frame,
+                                text=self.text.get(),
+                                title="Police",
+                                family=self.sel_font['family'],
+                                size=self.sel_font['size'],)
 
+        # met à jour la police sélectionné
+        if font_selected:
+            self.sel_font = font_selected
+            font_name_found = self.find_font_path(self.sel_font['family'])
+            if font_name_found is not None:
+                self.font_name = font_name_found
+            # mise à jour de l'IHM
+            self.on_text_change('from selector')
 
 
     def import_image(self):
@@ -280,6 +289,9 @@ class ImageEditorApp:
         draw_d = ImageDraw.Draw(temp_image)
         draw_i = ImageDraw.Draw(self.image_export)
 
+        pil_font_i = ImageFont.truetype(font=self.font_name,
+                                            size=(self.sel_font['size'] * self.RATIO))
+
         draw_d.text((0, 0),
                        self.text.get(),
                        fill=(0, 0, 0, 255),
@@ -287,7 +299,7 @@ class ImageEditorApp:
         draw_i.text((0, 0),
                        self.text.get(),
                        fill=(0, 0, 0, 255),
-                       font=self.pil_font)
+                       font=pil_font_i)
 
         # insère les zones transparentes (Display et Image)
         for zone in self.exclusion_zones:
@@ -305,7 +317,6 @@ class ImageEditorApp:
 
     def choisir_couleur(self, event=None):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
-        print(event)
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
         if couleur[1] :
             self.background_couleur = couleur[1]
@@ -321,12 +332,13 @@ class ImageEditorApp:
         une nouvelle valeur de couleur a été saisie, mettre à jour
         """
 
-        color_code = self.texte_background_value.get()
-        match = fullmatch(r'^#[0-9A-Fa-f]{6}$', color_code)
-        if match:
-            self.background_couleur = color_code
-            self.label_couleur.config(bg=color_code)
-            self.update_canvas()
+        if args:
+            color_code = self.texte_background_value.get()
+            match = fullmatch(r'^#[0-9A-Fa-f]{6}$', color_code)
+            if match:
+                self.background_couleur = color_code
+                self.label_couleur.config(bg=color_code)
+                self.update_canvas()
 
 
     def save_image(self, out_path: str):
@@ -366,8 +378,7 @@ def select_directory():
     selected_dir = filedialog.askdirectory()
     path_prj_name = path.join(selected_dir, tmp_prj_name)
 
-    if selected_dir :  # Vérifie si l'utilisateur a sélectionné un répertoire
-        print(f"Répertoire de sortie sélectionné : {path_prj_name}")
+    if selected_dir :  # Vérifie si l'utilisateur à sélectionner un répertoire
         return path_prj_name
     else:
         messagebox.showerror(title='erreur repertoire',
