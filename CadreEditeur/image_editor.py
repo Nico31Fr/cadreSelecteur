@@ -49,7 +49,6 @@ class ImageEditor:
                         }
         self.font_name: str = "msgothic.ttc"
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
-        self.texte_position = (0, 0)
 
         # Variables pour déplacer l'image importée
         self.display_position = (150, 150)
@@ -57,6 +56,11 @@ class ImageEditor:
                                self.display_position[1] * self.RATIO)
         self.display_imported_image_size = (0, 0)
         self.image_imported_image_size = (0, 0)
+
+        # Variables pour déplacer le texte
+        self.text_display_position = (0, 0)
+        self.text_image_position = (self.text_display_position[0] * self.RATIO,
+                                    self.text_display_position[1] * self.RATIO)
 
         self.exclusion_zones = exclusion_zones
 
@@ -240,12 +244,29 @@ class ImageEditor:
         if self.start_drag_position:
             dx = event.x - self.start_drag_position[0]
             dy = event.y - self.start_drag_position[1]
-            # met à jour la position de l'image importé dans le canva
-            self.display_position = (self.display_position[0] + dx,
-                                     self.display_position[1] + dy)
-            # met à jour la position de l'image importé dans l'image'
-            self.image_position = (self.display_position[0] * self.RATIO,
-                                   self.display_position[1] * self.RATIO)
+
+            new_disp_x = self.display_position[0] + dx
+            new_disp_y = self.display_position[1] + dy
+            new_img_x = new_disp_x * self.RATIO
+            new_img_y = new_disp_y * self.RATIO
+
+            if self.selection.get() == 'C_Image':
+                # met à jour la position de l'image importé dans le canva
+                self.display_position = (new_disp_x,
+                                         new_disp_y)
+                # met à jour la position de l'image importé dans l'image'
+                self.image_position = (new_img_x,
+                                       new_img_y)
+            else:
+                # met à jour la position du texte dans le canva
+                self.text_display_position = (self.text_display_position[0] + dx,
+                                         self.text_display_position[1] + dy)
+                # met à jour la position du texte dans l'image'
+                self.text_image_position = (self.text_display_position[0] * self.RATIO,
+                                       self.text_display_position[1] * self.RATIO)
+
+            print(self.start_drag_position)
+
             self.start_drag_position = (event.x, event.y)
             self.update_canvas()
 
@@ -306,11 +327,11 @@ class ImageEditor:
         pil_font_i = ImageFont.truetype(font=self.font_name,
                                         size=(self.sel_font['size'] * self.RATIO))
 
-        draw_d.text((0, 0),
+        draw_d.text(self.text_display_position,
                     self.text.get(),
                     fill=(0, 0, 0, 255),
                     font=self.pil_font)
-        draw_i.text((0, 0),
+        draw_i.text(self.text_image_position,
                     self.text.get(),
                     fill=(0, 0, 0, 255),
                     font=pil_font_i)
