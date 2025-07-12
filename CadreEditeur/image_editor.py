@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageTk
 from re import fullmatch
 from os import path
 from json import dump, load
+from pathlib import Path
 
 import matplotlib.font_manager as fm
 
@@ -130,6 +131,8 @@ class ImageEditor:
         tk.Button(self.controls_frame,
                   text='Image',
                   command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+        self.label_image = tk.Label(self.controls_frame, text='')
+        self.label_image.grid(column=1, row=3, sticky=tk.EW, padx=5, pady=5)
 
         # bouton radio pour selection calque actif
         # Variable pour stocker la sélection
@@ -230,6 +233,7 @@ class ImageEditor:
                                               desired_height*self.RATIO)
             self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
 
+            self.label_image.config(text=Path(self.imported_image_path).name)
 
             self.update_canvas()
 
