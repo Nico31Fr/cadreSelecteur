@@ -6,6 +6,8 @@ from tkinter import filedialog, colorchooser, messagebox
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 from re import fullmatch
 from os import path
+from json import dump, load
+
 import matplotlib.font_manager as fm
 
 from text import askfont
@@ -152,7 +154,8 @@ class ImageEditor:
         self.texte_background_value.trace_add("write",
                                               self.on_color_entry_change)
         self.text.trace_add("write", self.on_text_change)
-        self.start_drag_position = None
+        self.img_start_drag_pos = None
+        self.txt_start_drag_pos = None
         self.update_canvas()
 
     @staticmethod
@@ -223,6 +226,11 @@ class ImageEditor:
             self.display_imported_image_size = (desired_width, desired_height)
             self.display_imported_image = self.original_image.resize(self.display_imported_image_size)
             self.image_imported_image = self.original_image.copy()
+            self.image_imported_image_size = (desired_width*self.RATIO,
+                                              desired_height*self.RATIO)
+            self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
+
+
             self.update_canvas()
 
     def start_drag(self, event):
@@ -232,7 +240,10 @@ class ImageEditor:
         Paramètres :
             event (tk.Event) : L'événement de clic de la souris.
         """
-        self.start_drag_position = (event.x, event.y)
+        if self.selection.get() == 'C_Image':
+            self.img_start_drag_pos = (event.x, event.y)
+        else:
+            self.txt_start_drag_pos = (event.x, event.y)
 
     def drag_image(self, event):
         """
@@ -241,33 +252,43 @@ class ImageEditor:
         Paramètres :
             event (tk.Event) : L'événement de mouvement de la souris.
         """
-        if self.start_drag_position:
-            dx = event.x - self.start_drag_position[0]
-            dy = event.y - self.start_drag_position[1]
+        if self.img_start_drag_pos and self.selection.get() == 'C_Image':
+            dx = event.x - self.img_start_drag_pos[0]
+            dy = event.y - self.img_start_drag_pos[1]
 
             new_disp_x = self.display_position[0] + dx
             new_disp_y = self.display_position[1] + dy
             new_img_x = new_disp_x * self.RATIO
             new_img_y = new_disp_y * self.RATIO
 
-            if self.selection.get() == 'C_Image':
-                # met à jour la position de l'image importé dans le canva
-                self.display_position = (new_disp_x,
-                                         new_disp_y)
-                # met à jour la position de l'image importé dans l'image'
-                self.image_position = (new_img_x,
-                                       new_img_y)
-            else:
-                # met à jour la position du texte dans le canva
-                self.text_display_position = (self.text_display_position[0] + dx,
-                                         self.text_display_position[1] + dy)
-                # met à jour la position du texte dans l'image'
-                self.text_image_position = (self.text_display_position[0] * self.RATIO,
-                                       self.text_display_position[1] * self.RATIO)
+            # met à jour la position de l'image importé dans le canva
+            self.display_position = (new_disp_x,
+                                     new_disp_y)
+            # met à jour la position de l'image importé dans l'image'
+            self.image_position = (new_img_x,
+                                   new_img_y)
 
-            print(self.start_drag_position)
+            self.img_start_drag_pos = (event.x, event.y)
+            self.update_canvas()
 
-            self.start_drag_position = (event.x, event.y)
+        if self.txt_start_drag_pos and self.selection.get() == 'C_Texte':
+
+            dx = event.x - self.img_start_drag_pos[0]
+            dy = event.y - self.img_start_drag_pos[1]
+
+            new_disp_x = self.display_position[0] + dx
+            new_disp_y = self.display_position[1] + dy
+            new_img_x = new_disp_x * self.RATIO
+            new_img_y = new_disp_y * self.RATIO
+
+            # met à jour la position du texte dans le canva
+            self.text_display_position = (new_disp_x,
+                                          new_disp_y)
+            # met à jour la position du texte dans l'image'
+            self.text_image_position = (new_img_x,
+                                        new_img_y)
+
+            self.txt_start_drag_pos = (event.x, event.y)
             self.update_canvas()
 
     def resize_image(self, event):
@@ -277,7 +298,7 @@ class ImageEditor:
         Paramètres :
             event (tk.Event) : L'événement de mouvement de la souris.
         """
-        if self.original_image:
+        if self.original_image and self.selection.get() == 'C_Image':
             delta = 10 if event.delta > 0 else -10
             # Calculer la nouvelle taille en conservant le ratio
             original_width, original_height = self.original_image.size
@@ -457,6 +478,71 @@ class ImageEditorApp:
                                  message="selectionner un repertoire de sortie")
             return None
 
+    # section pour la sauvegarde recharge d'un projet - à debugger
+
+    def save_project(self):
+        """Sauvegarde l'état actuel du projet dans un fichier JSON."""
+        project_data = {
+            "project_name": self.prj_name_var.get(),
+            "app1": {
+                "text": self.app1.text.get(),
+                "font": self.app1.sel_font,
+                "background_color": self.app1.background_couleur,
+                "image_path": self.app1.imported_image_path,
+                "display_position": self.app1.display_position,
+                "text_display_position": self.app1.text_display_position,
+            },
+            "app4": {
+                "text": self.app4.text.get(),
+                "font": self.app4.sel_font,
+                "background_color": self.app4.background_couleur,
+                "image_path": self.app4.imported_image_path,
+                "display_position": self.app4.display_position,
+                "text_display_position": self.app4.text_display_position,
+            }
+        }
+
+        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        if file_path:
+            with open(file_path, 'w') as file:
+                dump(project_data, file)
+            messagebox.showinfo("Sauvegarde réussie", "Le projet a été sauvegardé avec succès.")
+
+    def load_project(self):
+        """Charge un projet depuis un fichier JSON."""
+        file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+        if file_path:
+            with open(file_path, 'r') as file:
+                project_data = load(file)
+
+            self.prj_name_var.set(project_data["project_name"])
+            self._load_editor_state(self.app1, project_data["app1"])
+            self._load_editor_state(self.app4, project_data["app4"])
+
+    @staticmethod
+    def _load_editor_state(editor, data):
+        """Charge l'état d'un éditeur spécifique."""
+        editor.text.set(data["text"])
+        editor.sel_font = data["font"]
+        editor.background_couleur = data["background_color"]
+        editor.texte_background_value.set(data["background_color"])
+        editor.label_couleur.config(bg=data["background_color"])
+
+        if data["image_path"]:
+            editor.import_image_path = data["image_path"]
+            editor.original_image = Image.open(editor.import_image_path).convert('RGBA')
+            original_width, original_height = editor.original_image.size
+            aspect_ratio = original_width / original_height
+            desired_width = editor.CANVA_W
+            desired_height = int(desired_width / aspect_ratio)
+            editor.display_imported_image_size = (desired_width, desired_height)
+            editor.display_imported_image = editor.original_image.resize(editor.display_imported_image_size)
+            editor.image_imported_image = editor.original_image.copy()
+
+        editor.display_position = data["display_position"]
+        editor.text_display_position = data["text_display_position"]
+
+        editor.update_canvas()
 
 if __name__ == "__main__":
 
