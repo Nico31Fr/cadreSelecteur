@@ -2,7 +2,7 @@
 """ Module d'édition de cadre pour PiBooth """
 
 import tkinter as tk
-from tkinter import filedialog, colorchooser, messagebox, font
+from tkinter import filedialog, colorchooser, messagebox
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 from re import fullmatch
 from os import path
@@ -11,7 +11,7 @@ import matplotlib.font_manager as fm
 from text import askfont
 
 
-class ImageEditorApp:
+class ImageEditor:
     """
     Une application d'édition d'image simple permettant aux utilisateurs
     d'importer des images, d'ajouter du texte, de déplacer/redimensionner les images,
@@ -20,7 +20,7 @@ class ImageEditorApp:
 
     def __init__(self, root, exclusion_zones):
         """
-        Initialise l'application ImageEditorApp avec une fenêtre tkinter racine.
+        Initialise l'application ImageEditor avec une fenêtre tkinter racine.
 
         Paramètres :
             root (tk.Tk) : La fenêtre tkinter racine.
@@ -33,7 +33,6 @@ class ImageEditorApp:
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
         self.RATIO = int(self.IMAGE_W / self.CANVA_W)
-        self.FONT_PATH = "C:/Windows/Fonts"
 
         self.imported_image_path = None
         self.display_imported_image = None
@@ -43,12 +42,12 @@ class ImageEditorApp:
 
         # variable pour la gestion du texte
         self.sel_font = {
-            'family': "arial",
-            'size': 12,
-#            'weight': 'normal',            # 'bold'/'normal'
-#            'slant': 'roman',              # 'italic'/'roman'
-        }
-        self.font_name : str = "msgothic.ttc"
+                        'family': "arial",
+                        'size': 12
+                        # 'weight': 'normal',            # 'bold'/'normal'
+                        # 'slant': 'roman',              # 'italic'/'roman'
+                        }
+        self.font_name: str = "msgothic.ttc"
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
         self.texte_position = (0, 0)
 
@@ -101,10 +100,15 @@ class ImageEditorApp:
         self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
         # texte
-        tk.Entry(self.controls_frame, textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
-        tk.Button(self.controls_frame, text='Police', command=self.callback_font).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Entry(self.controls_frame,
+                 textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame,
+                  text='Police',
+                  command=self.callback_font).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
         # import image
-        tk.Button(self.controls_frame, text="Image", command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame,
+                  text="Image",
+                  command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
 
         # Mettre à jour la couleur du label_couleur
         self.label_couleur.config(bg=self.background_couleur)
@@ -141,10 +145,9 @@ class ImageEditorApp:
         for font_path in font_paths:
             # Vérifier si le nom de la police correspond
             prop = fm.FontProperties(fname=font_path)
-            if prop.get_name().lower() == font_name_to_find.replace('@','').lower():
+            if prop.get_name().lower() == font_name_to_find.replace('@', '').lower():
                 return font_path
         return None
-
 
     def on_text_change(self, *args):
         """
@@ -159,7 +162,6 @@ class ImageEditorApp:
             self.pil_font = ImageFont.truetype(font=self.font_name,
                                                size=self.sel_font['size'])
             self.update_canvas()
-
 
     def callback_font(self):
         """
@@ -180,7 +182,6 @@ class ImageEditorApp:
                 self.font_name = font_name_found
             # mise à jour de l'IHM
             self.on_text_change('from selector')
-
 
     def import_image(self):
         """
@@ -203,7 +204,6 @@ class ImageEditorApp:
             self.image_imported_image = self.original_image.copy()
             self.update_canvas()
 
-
     def start_drag(self, event):
         """
         Initialise l'opération de glissement-déposé en enregistrant la position du curseur.
@@ -212,7 +212,6 @@ class ImageEditorApp:
             event (tk.Event) : L'événement de clic de la souris.
         """
         self.start_drag_position = (event.x, event.y)
-
 
     def drag_image(self, event):
         """
@@ -233,10 +232,9 @@ class ImageEditorApp:
             self.start_drag_position = (event.x, event.y)
             self.update_canvas()
 
-
     def resize_image(self, event):
         """
-        redimensionne l'image importé en fonction de la molette souris
+        redimensionne l'image importée en fonction de la molette souris
 
         Paramètres :
             event (tk.Event) : L'événement de mouvement de la souris.
@@ -260,7 +258,6 @@ class ImageEditorApp:
             self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
 
             self.update_canvas()
-
 
     def update_canvas(self):
         """
@@ -290,42 +287,40 @@ class ImageEditorApp:
         draw_i = ImageDraw.Draw(self.image_export)
 
         pil_font_i = ImageFont.truetype(font=self.font_name,
-                                            size=(self.sel_font['size'] * self.RATIO))
+                                        size=(self.sel_font['size'] * self.RATIO))
 
         draw_d.text((0, 0),
-                       self.text.get(),
-                       fill=(0, 0, 0, 255),
-                       font=self.pil_font)
+                    self.text.get(),
+                    fill=(0, 0, 0, 255),
+                    font=self.pil_font)
         draw_i.text((0, 0),
-                       self.text.get(),
-                       fill=(0, 0, 0, 255),
-                       font=pil_font_i)
+                    self.text.get(),
+                    fill=(0, 0, 0, 255),
+                    font=pil_font_i)
 
         # insère les zones transparentes (Display et Image)
         for zone in self.exclusion_zones:
             d_x, d_y, d_w, d_h = zone
             i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
             draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
-                           fill=(255, 255, 255, 0))
+                             fill=(255, 255, 255, 0))
             draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h),
-                           fill=(255, 255, 255, 0))
+                             fill=(255, 255, 255, 0))
 
         # met a jour l'IHM
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
 
-
     def choisir_couleur(self, event=None):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
-        if couleur[1] :
+        if couleur[1]:
             self.background_couleur = couleur[1]
             # Mettre à jour la couleur et le texte du label
             self.label_couleur.config(bg=str(couleur[1]))
             self.texte_background.delete(0, tk.END)  # Efface le champ existant
             self.texte_background.insert(0, str(couleur[1]))
             self.update_canvas()
-
 
     def on_color_entry_change(self, *args):
         """
@@ -340,7 +335,6 @@ class ImageEditorApp:
                 self.label_couleur.config(bg=color_code)
                 self.update_canvas()
 
-
     def save_image(self, out_path: str):
         """
         Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
@@ -350,55 +344,83 @@ class ImageEditorApp:
         self.image_export.save(out_path)
 
 
-def save_images(app_1, app_4):
-    """
-    lance l'enregistrement des deux fichiers
-    """
+class ImageEditorApp:
 
-    path_im = select_directory()
-    if path_im is not None:
-        app_1.save_image(path_im)
-        app_4.save_image(path_im)
+    def __init__(self, root, exclusion_zones):
 
+        # Dimension de la fenêtre
+        self.WINDOWS = "1400x600"
+        self.tk_root = root
 
-def select_directory():
-    """
-    sélectionne le repertoire de sortie
-    et construction du path de sortie avec le nom du projet
-    """
+        # Fixer la taille de la fenêtre
+        self.tk_root.geometry(self.WINDOWS)  # Largeur = 700 pixels, Hauteur = 1200 pixels
+        # Optionnel : Empêcher le redimensionnement de la fenêtre
+        self.tk_root.resizable(False, False)
+        self.tk_root.title("Créateur de cadre V0.1")
 
-    tmp_prj_name = prj_name_var.get()
+        # Création de frame parent
+        self.main_frame = tk.Frame(self.tk_root)
+        self.main_frame.pack(expand=True, fill='both')
 
-    if tmp_prj_name == "":
-        messagebox.showerror(title='erreur nom du projet',
-                             message="saisir le nom du projet")
-        return None
+        # App1 frame
+        self.app1_frame = tk.Frame(self.main_frame)
+        self.app1_frame.pack(side="left", fill="both", expand=True)
+        self.app1 = ImageEditor(self.app1_frame, exclusion_zones[0])
 
-    # Ouvre la boîte de dialogue pour la sélection du répertoire
-    selected_dir = filedialog.askdirectory()
-    path_prj_name = path.join(selected_dir, tmp_prj_name)
+        # App4 frame
+        self.app4_frame = tk.Frame(self.main_frame)
+        self.app4_frame.pack(side="left", fill="both", expand=True)
+        self.app4 = ImageEditor(self.app4_frame, exclusion_zones[1])
 
-    if selected_dir :  # Vérifie si l'utilisateur à sélectionner un répertoire
-        return path_prj_name
-    else:
-        messagebox.showerror(title='erreur repertoire',
-                             message="selectionner un repertoire de sortie")
-        return None
+        # import image
+        self.prj_name = 'cadre_xxx'
+        self.prj_name_var = tk.StringVar()
+        # saisie du nom du pack cadre
+        tk.Label(self.tk_root, text="Nom du set de cadre :").pack()
+        self.texte_projet_name = tk.Entry(self.tk_root, textvariable=self.prj_name_var)
+        self.texte_projet_name.insert(0, self.prj_name)
+        self.texte_projet_name.pack()
+        # Bouton pour enregistrer les cadres
+        tk.Button(self.tk_root,
+                  text="enregistrer les cadres",
+                  command=lambda: self.save_images(self.app1, self.app4)).pack()
+
+    def save_images(self, app_1, app_4):
+        """
+        lance l'enregistrement des deux fichiers
+        """
+
+        path_im = self.select_directory()
+        if path_im is not None:
+            app_1.save_image(path_im)
+            app_4.save_image(path_im)
+
+    def select_directory(self):
+        """
+        sélectionne le repertoire de sortie
+        et construction du path de sortie avec le nom du projet
+        """
+
+        tmp_prj_name = self.prj_name_var.get()
+
+        if tmp_prj_name == "":
+            messagebox.showerror(title='erreur nom du projet',
+                                 message="saisir le nom du projet")
+            return None
+
+        # Ouvre la boîte de dialogue pour la sélection du répertoire
+        selected_dir = filedialog.askdirectory()
+        path_prj_name = path.join(selected_dir, tmp_prj_name)
+
+        if selected_dir:  # Vérifie si l'utilisateur à sélectionner un répertoire
+            return path_prj_name
+        else:
+            messagebox.showerror(title='erreur repertoire',
+                                 message="selectionner un repertoire de sortie")
+            return None
 
 
 if __name__ == "__main__":
-    # Définir des zones d'exclusion
-    # <mxGeometry x="20" y="420" width="110" height="160" as="geometry" />
-    # <mxGeometry x="145" y="420" width="110" height="160" as="geometry" />
-    # <mxGeometry x="270" y="420" width="110" height="160" as="geometry" />
-    # <mxGeometry x="20" y="20" width="280" height="350" as="geometry" />
-    # Y X H W
-    exclusion_zones_4 = [
-        (420, 20, 160, 110),
-        (420, 145, 160, 110),
-        (420, 270, 160, 110),
-        (20, 20, 350, 280)
-    ]
 
     # <mxGeometry x="50" y="20" width="330" height="470" as="geometry" />
     # Y X H W
@@ -406,42 +428,6 @@ if __name__ == "__main__":
         (50, 20, 470, 330),
     ]
 
-    # Dimension de la fenêtre
-    WINDOWS = "1400x600"
-
     tk_root = tk.Tk()
-
-    # Fixer la taille de la fenêtre
-    tk_root.geometry(WINDOWS)  # Largeur = 700 pixels, Hauteur = 1200 pixels
-    # Optionnel : Empêcher le redimensionnement de la fenêtre
-    tk_root.resizable(False, False)
-    tk_root.title("Créateur de cadre V0.1")
-
-    # Création de frame parent
-    main_frame = tk.Frame(tk_root)
-    main_frame.pack(expand=True, fill='both')
-
-    # App1 frame
-    app1_frame = tk.Frame(main_frame)
-    app1_frame.pack(side="left", fill="both", expand=True)
-    app1 = ImageEditorApp(app1_frame, exclusion_zones_1)
-
-    # App4 frame
-    app4_frame = tk.Frame(main_frame)
-    app4_frame.pack(side="left", fill="both", expand=True)
-    app4 = ImageEditorApp(app4_frame, exclusion_zones_4)
-
-    # import image
-    prj_name = 'cadre_xxx'
-    prj_name_var = tk.StringVar()
-    # saisie du nom du pack cadre
-    tk.Label(tk_root, text="Nom du set de cadre :").pack()
-    texte_projet_name = tk.Entry(tk_root, textvariable=prj_name_var)
-    texte_projet_name.insert(0, prj_name)
-    texte_projet_name.pack()
-    # Bouton pour enregistrer les cadres
-    tk.Button(tk_root,
-              text="enregistrer les cadres",
-              command=lambda: save_images(app1, app4)).pack()
-
+    ImageEditorApp(tk_root, (exclusion_zones_1, exclusion_zones_1))
     tk_root.mainloop()

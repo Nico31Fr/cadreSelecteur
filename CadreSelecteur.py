@@ -131,9 +131,9 @@ class CadreSelecteur:
         """
         try:
             file_path_1 = path.join(self.destination_directory,
-                                       CADRE_NAME_1)
+                                    CADRE_NAME_1)
             file_path_4 = path.join(self.destination_directory,
-                                       CADRE_NAME_4)
+                                    CADRE_NAME_4)
 
             # Clear the canvas before adding a new image
             self.canvasDest.delete("all")
@@ -184,7 +184,7 @@ class CadreSelecteur:
         try:
             file_path_1 = path.join(self.source_directory, filename)
             file_path_4 = path.join(self.source_directory,
-                                       filename.replace('_1.png', '_4.png'))
+                                    filename.replace('_1.png', '_4.png'))
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
                 thumbnail_img_1 = ImageTk.PhotoImage(img)
@@ -257,12 +257,12 @@ class CadreSelecteur:
 
             source_file_1 = path.join(self.source_directory, selected_file)
             dest_file_1 = path.join(self.destination_directory,
-                                       CADRE_NAME_1)
+                                    CADRE_NAME_1)
             source_file_4 = path.join(self.source_directory,
-                                         selected_file.replace('_1.png',
-                                                               '_4.png'))
+                                      selected_file.replace('_1.png',
+                                                            '_4.png'))
             dest_file_4 = path.join(self.destination_directory,
-                                       CADRE_NAME_4)
+                                    CADRE_NAME_4)
 
             # Copier le fichier cadre
             print(f">>> Copy :{source_file_1}/{source_file_4}\n"
@@ -274,7 +274,7 @@ class CadreSelecteur:
             source_file_tpl = source_file_1.replace('_1.png',
                                                     '.xml')
             dest_file_tpl = path.join(self.destination_directory,
-                                         TEMPLATE_NAME)
+                                      TEMPLATE_NAME)
 
             if path.exists(source_file_tpl):
                 print(f">>> Copy :{source_file_tpl}\n"
@@ -282,9 +282,9 @@ class CadreSelecteur:
                 copy(source_file_tpl, dest_file_tpl)
             else:
                 source_file_tpl = path.join(self.source_directory,
-                                               TEMPLATE_NAME_STD)
+                                            TEMPLATE_NAME_STD)
                 dest_file_tpl = path.join(self.destination_directory,
-                                             TEMPLATE_NAME)
+                                          TEMPLATE_NAME)
                 print('pas de fichier frame associé au cadre,'
                       ' copy du template standard')
                 print(f">>> Copy :{source_file_tpl}\n"
@@ -341,7 +341,7 @@ if __name__ == "__main__":
 
     # verification de la presence du template par default.
     template_dft_file = path.join(template_path,
-                                     TEMPLATE_NAME_STD)
+                                  TEMPLATE_NAME_STD)
     if not path.exists(template_dft_file):
         message_error = message_error + \
                         "TEMPLATE:\nle fichier :" + \
