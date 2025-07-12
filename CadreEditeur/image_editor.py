@@ -51,11 +51,19 @@ class ImageEditor:
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
         self.texte_position = (0, 0)
 
+        # Variables pour déplacer l'image importée
+        self.display_position = (150, 150)
+        self.image_position = (self.display_position[0] * self.RATIO,
+                               self.display_position[1] * self.RATIO)
+        self.display_imported_image_size = (0, 0)
+        self.image_imported_image_size = (0, 0)
+
+        self.exclusion_zones = exclusion_zones
+
         # creation dun canva qui va afficher l'image
         # Créer un cadre (Frame)
         self.frame = tk.Frame(root, borderwidth=2, relief="solid")
         self.frame.pack()
-
         self.canvas = tk.Canvas(self.frame,
                                 width=self.CANVA_W,
                                 height=self.CANVA_H)
@@ -65,6 +73,7 @@ class ImageEditor:
                                        (self.IMAGE_W, self.IMAGE_H),
                                        (255, 255, 255, 255))
         self.draw = ImageDraw.Draw(self.image_de_font)
+
         # Redimensionnement pour affichage
         self.image_export = self.image_de_font.copy()
         self.display_image = self.image_export.resize((self.CANVA_W,
@@ -74,11 +83,10 @@ class ImageEditor:
                                                         0,
                                                         anchor=tk.NW,
                                                         image=self.tk_image)
-
         self.controls_frame = tk.Frame(root)
         self.controls_frame.pack()
 
-        # configure la grille pour les boutons
+        # configure la grille pour les boutons 4 lignes x 3 colonnes
         self.controls_frame.rowconfigure(0, weight=2)
         self.controls_frame.rowconfigure(1, weight=1)
         self.controls_frame.rowconfigure(2, weight=1)
@@ -87,9 +95,12 @@ class ImageEditor:
         self.controls_frame.columnconfigure(1, weight=2)
         self.controls_frame.columnconfigure(2, weight=2)
 
+        # variables texte
         self.text = tk.StringVar()
+        # variable pour afficher le code couleur
         self.texte_background_value = tk.StringVar()
 
+        # bouton et saisie pour la couleur de fond
         # Créer un bouton pour ouvrir le sélecteur de couleur
         tk.Label(self.controls_frame, text="couleur du fond :").grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
         self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value)
@@ -99,28 +110,34 @@ class ImageEditor:
         self.label_couleur = tk.Label(self.controls_frame, text=" ")
         self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
-        # texte
+        # Mettre à jour la couleur du label_couleur
+        self.label_couleur.config(bg=self.background_couleur)
+
+        # bouton et saisie pour le texte
         tk.Entry(self.controls_frame,
                  textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
         tk.Button(self.controls_frame,
                   text='Police',
                   command=self.callback_font).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
-        # import image
+
+        # bouton pour import image
         tk.Button(self.controls_frame,
-                  text="Image",
+                  text='Image',
                   command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
 
-        # Mettre à jour la couleur du label_couleur
-        self.label_couleur.config(bg=self.background_couleur)
-
-        # Variables pour déplacer l'image importée
-        self.display_position = (150, 150)
-        self.image_position = (self.display_position[0] * self.RATIO,
-                               self.display_position[1] * self.RATIO)
-        self.display_imported_image_size = (0, 0)
-        self.image_imported_image_size = (0, 0)
-
-        self.exclusion_zones = exclusion_zones
+        # bouton radio pour selection calque actif
+        # Variable pour stocker la sélection
+        self.selection = tk.StringVar(value='C_Image')
+        self.radio_image = tk.Radiobutton(self.controls_frame,
+                                          variable=self.selection,
+                                          text='Calque Image',
+                                          value='C_Image')
+        self.radio_image.grid(column=2, row=3, sticky=tk.EW, padx=5, pady=5)
+        self.radio_texte = tk.Radiobutton(self.controls_frame,
+                                          variable=self.selection,
+                                          text='Calque Texte',
+                                          value='C_Texte')
+        self.radio_texte.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
 
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
