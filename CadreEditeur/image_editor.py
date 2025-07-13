@@ -54,9 +54,9 @@ class ImageEditor:
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
 
         # Variables pour déplacer l'image importée
-        self.display_position = (150, 150)
-        self.image_position = (self.display_position[0] * self.RATIO,
-                               self.display_position[1] * self.RATIO)
+        self.img_display_position = (150, 150)
+        self.img_image_position = (self.img_display_position[0] * self.RATIO,
+                                   self.img_display_position[1] * self.RATIO)
         self.display_imported_image_size = (0, 0)
         self.image_imported_image_size = (0, 0)
 
@@ -120,19 +120,20 @@ class ImageEditor:
         # Mettre à jour la couleur du label_couleur
         self.label_couleur.config(bg=self.background_couleur)
 
-        # bouton et saisie pour le texte
-        tk.Entry(self.controls_frame,
-                 textvariable=self.text).grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
-        tk.Button(self.controls_frame,
-                  text='Police',
-                  command=self.callback_font).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
-
         # bouton pour import image
         tk.Button(self.controls_frame,
                   text='Image',
-                  command=self.import_image).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+                  command=self.import_image).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
         self.label_image = tk.Label(self.controls_frame, text='')
-        self.label_image.grid(column=1, row=3, sticky=tk.EW, padx=5, pady=5)
+        self.label_image.grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
+
+        # bouton et saisie pour le texte
+        tk.Entry(self.controls_frame,
+                 textvariable=self.text).grid(column=1, row=3, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame,
+                  text='Police',
+                  command=self.callback_font).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
+
 
         # bouton radio pour selection calque actif
         # Variable pour stocker la sélection
@@ -141,12 +142,12 @@ class ImageEditor:
                                           variable=self.selection,
                                           text='Calque Image',
                                           value='C_Image')
-        self.radio_image.grid(column=2, row=3, sticky=tk.EW, padx=5, pady=5)
+        self.radio_image.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
         self.radio_texte = tk.Radiobutton(self.controls_frame,
                                           variable=self.selection,
                                           text='Calque Texte',
                                           value='C_Texte')
-        self.radio_texte.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
+        self.radio_texte.grid(column=2, row=3, sticky=tk.EW, padx=5, pady=5)
 
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
@@ -180,9 +181,6 @@ class ImageEditor:
         """
         Ajoute du texte provenant du champ de texte
         à l'image à une position prédéfinie.
-
-        See https://github.com/PrabhanjanJois/textEditor_using_Tkinter-jois_textEditor-
-
         """
 
         if args:
@@ -192,7 +190,7 @@ class ImageEditor:
 
     def callback_font(self):
         """
-        lorsque le boutton font est cliqué lance l'interface
+        lorsque le bouton font est cliqué lance l'interface
          de selection de police d'écriture
         """
         font_selected = askfont(self.controls_frame,
@@ -260,16 +258,16 @@ class ImageEditor:
             dx = event.x - self.img_start_drag_pos[0]
             dy = event.y - self.img_start_drag_pos[1]
 
-            new_disp_x = self.display_position[0] + dx
-            new_disp_y = self.display_position[1] + dy
+            new_disp_x = self.img_display_position[0] + dx
+            new_disp_y = self.img_display_position[1] + dy
             new_img_x = new_disp_x * self.RATIO
             new_img_y = new_disp_y * self.RATIO
 
             # met à jour la position de l'image importé dans le canva
-            self.display_position = (new_disp_x,
-                                     new_disp_y)
+            self.img_display_position = (new_disp_x,
+                                         new_disp_y)
             # met à jour la position de l'image importé dans l'image'
-            self.image_position = (new_img_x,
+            self.img_image_position = (new_img_x,
                                    new_img_y)
 
             self.img_start_drag_pos = (event.x, event.y)
@@ -277,11 +275,11 @@ class ImageEditor:
 
         if self.txt_start_drag_pos and self.selection.get() == 'C_Texte':
 
-            dx = event.x - self.img_start_drag_pos[0]
-            dy = event.y - self.img_start_drag_pos[1]
+            dx = event.x - self.txt_start_drag_pos[0]
+            dy = event.y - self.txt_start_drag_pos[1]
 
-            new_disp_x = self.display_position[0] + dx
-            new_disp_y = self.display_position[1] + dy
+            new_disp_x = self.text_display_position[0] + dx
+            new_disp_y = self.text_display_position[1] + dy
             new_img_x = new_disp_x * self.RATIO
             new_img_y = new_disp_y * self.RATIO
 
@@ -322,58 +320,6 @@ class ImageEditor:
 
             self.update_canvas()
 
-    def update_canvas(self):
-        """
-        Met à jour le canvas pour refléter l'état actuel de l'image.
-        """
-
-        self.image_de_font = Image.new('RGBA',
-                                       (self.IMAGE_W, self.IMAGE_H),
-                                       self.background_couleur)
-        display_image = self.image_de_font.resize((self.CANVA_W,
-                                                   self.CANVA_H))
-
-        temp_image = display_image.copy()
-        self.image_export = self.image_de_font.copy()
-
-        if self.display_imported_image:
-            temp_image.paste(self.display_imported_image,
-                             self.display_position,
-                             self.display_imported_image)
-            self.image_export.paste(self.image_imported_image,
-                                    self.image_position,
-                                    self.image_imported_image)
-
-        # insère le texte
-        # Crée un objet ImageDraw pour dessiner sur l'image
-        draw_d = ImageDraw.Draw(temp_image)
-        draw_i = ImageDraw.Draw(self.image_export)
-
-        pil_font_i = ImageFont.truetype(font=self.font_name,
-                                        size=(self.sel_font['size'] * self.RATIO))
-
-        draw_d.text(self.text_display_position,
-                    self.text.get(),
-                    fill=(0, 0, 0, 255),
-                    font=self.pil_font)
-        draw_i.text(self.text_image_position,
-                    self.text.get(),
-                    fill=(0, 0, 0, 255),
-                    font=pil_font_i)
-
-        # insère les zones transparentes (Display et Image)
-        for zone in self.exclusion_zones:
-            d_x, d_y, d_w, d_h = zone
-            i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
-            draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
-                             fill=(255, 255, 255, 0))
-            draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h),
-                             fill=(255, 255, 255, 0))
-
-        # met a jour l'IHM
-        self.tk_image = ImageTk.PhotoImage(temp_image)
-        self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
-
     def choisir_couleur(self, event=None):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
@@ -406,6 +352,58 @@ class ImageEditor:
         out_path = out_path + extension
         self.image_export.save(out_path)
 
+    def update_canvas(self):
+        """
+        Met à jour le canvas pour refléter l'état actuel de l'image.
+        """
+
+        self.image_de_font = Image.new('RGBA',
+                                       (self.IMAGE_W, self.IMAGE_H),
+                                       self.background_couleur)
+        display_image = self.image_de_font.resize((self.CANVA_W,
+                                                   self.CANVA_H))
+
+        temp_image = display_image.copy()
+        self.image_export = self.image_de_font.copy()
+
+        # insère l'image importée
+        if self.display_imported_image:
+            temp_image.paste(self.display_imported_image,
+                             self.img_display_position,
+                             self.display_imported_image)
+            self.image_export.paste(self.image_imported_image,
+                                    self.img_image_position,
+                                    self.image_imported_image)
+
+        # insère le texte
+        # Crée un objet ImageDraw pour dessiner sur l'image
+        draw_d = ImageDraw.Draw(temp_image)
+        draw_i = ImageDraw.Draw(self.image_export)
+
+        pil_font_i = ImageFont.truetype(font=self.font_name,
+                                        size=(self.sel_font['size'] * self.RATIO))
+
+        draw_d.text(self.text_display_position,
+                    self.text.get(),
+                    fill=(0, 0, 0, 255),
+                    font=self.pil_font)
+        draw_i.text(self.text_image_position,
+                    self.text.get(),
+                    fill=(0, 0, 0, 255),
+                    font=pil_font_i)
+
+        # insère les zones transparentes (Display et Image)
+        for zone in self.exclusion_zones:
+            d_x, d_y, d_w, d_h = zone
+            i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
+            draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
+                             fill=(255, 255, 255, 0))
+            draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h),
+                             fill=(255, 255, 255, 0))
+
+        # met a jour l'IHM
+        self.tk_image = ImageTk.PhotoImage(temp_image)
+        self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
 
 class ImageEditorApp:
 
@@ -413,6 +411,7 @@ class ImageEditorApp:
 
         # Dimension de la fenêtre
         self.WINDOWS = "1400x600"
+        self.prj_name = 'cadre_xxx'
         self.tk_root = root
 
         # Fixer la taille de la fenêtre
@@ -423,32 +422,55 @@ class ImageEditorApp:
 
         # Création de frame parent
         self.main_frame = tk.Frame(self.tk_root)
-        self.main_frame.pack(expand=True, fill='both')
+        self.main_frame.pack(side='top', expand=True, fill='both')
+
+        # configure la grille pour les boutons 4 lignes x 3 colonnes
+        self.main_frame.rowconfigure(0, weight=2)
+        self.main_frame.rowconfigure(1, weight=1)
+        self.main_frame.columnconfigure(0, weight=1)
+        self.main_frame.columnconfigure(1, weight=2)
 
         # App1 frame
         self.app1_frame = tk.Frame(self.main_frame)
-        self.app1_frame.pack(side="left", fill="both", expand=True)
+        self.app1_frame.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
         self.app1 = ImageEditor(self.app1_frame, exclusion_zones[0])
 
         # App4 frame
         self.app4_frame = tk.Frame(self.main_frame)
-        self.app4_frame.pack(side="left", fill="both", expand=True)
+        self.app4_frame.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         self.app4 = ImageEditor(self.app4_frame, exclusion_zones[1])
 
-        # import image
-        self.prj_name = 'cadre_xxx'
-        self.prj_name_var = tk.StringVar()
-        # saisie du nom du pack cadre
-        tk.Label(self.tk_root, text="Nom du set de cadre :").pack()
-        self.texte_projet_name = tk.Entry(self.tk_root, textvariable=self.prj_name_var)
-        self.texte_projet_name.insert(0, self.prj_name)
-        self.texte_projet_name.pack()
-        # Bouton pour enregistrer les cadres
-        tk.Button(self.tk_root,
-                  text="enregistrer les cadres",
-                  command=lambda: self.save_images(self.app1, self.app4)).pack()
+        # frame load save and export
+        self.export_frame = tk.Frame(self.main_frame)
+        self.export_frame.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
 
-    def save_images(self, app_1, app_4):
+        # configure la grille pour les boutons 4 lignes x 3 colonnes
+        self.export_frame.rowconfigure(0, weight=2)
+        self.export_frame.rowconfigure(1, weight=1)
+        self.export_frame.columnconfigure(0, weight=1)
+        self.export_frame.columnconfigure(1, weight=2)
+        self.export_frame.columnconfigure(2, weight=2)
+
+        # charger / sauvegarder le projet
+        button_load = tk.Button(self.export_frame, text='charger', command=lambda: self.load_project())
+        button_save = tk.Button(self.export_frame, text='Sauvegarder', command=lambda: self.save_project())
+        button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+        button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
+
+        # export
+        # export / nom du projet
+        tk.Label(self.export_frame, text="Nom du set de cadre :").grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
+        self.prj_name_var = tk.StringVar()
+        self.texte_projet_name = tk.Entry(self.export_frame, textvariable=self.prj_name_var)
+        self.texte_projet_name.insert(0, self.prj_name)
+        self.texte_projet_name.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
+        # export / Bouton pour générer les cadres
+        button_export = tk.Button(self.export_frame,
+                                    text="Générer les cadres",
+                                    command=lambda: self.genere_images(self.app1, self.app4))
+        button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
+
+    def genere_images(self, app_1, app_4):
         """
         lance l'enregistrement des deux fichiers
         """
@@ -491,17 +513,19 @@ class ImageEditorApp:
             "app1": {
                 "text": self.app1.text.get(),
                 "font": self.app1.sel_font,
+                "font_name": self.app1.font_name,
                 "background_color": self.app1.background_couleur,
                 "image_path": self.app1.imported_image_path,
-                "display_position": self.app1.display_position,
+                "display_position": self.app1.img_display_position,
                 "text_display_position": self.app1.text_display_position,
             },
             "app4": {
                 "text": self.app4.text.get(),
                 "font": self.app4.sel_font,
+                "font_name": self.app4.font_name,
                 "background_color": self.app4.background_couleur,
                 "image_path": self.app4.imported_image_path,
-                "display_position": self.app4.display_position,
+                "display_position": self.app4.img_display_position,
                 "text_display_position": self.app4.text_display_position,
             }
         }
@@ -523,30 +547,40 @@ class ImageEditorApp:
             self._load_editor_state(self.app1, project_data["app1"])
             self._load_editor_state(self.app4, project_data["app4"])
 
+            self.app1.on_text_change('from load')
+            self.app4.on_text_change('from load')
+            # editor.update_canvas()
+
     @staticmethod
     def _load_editor_state(editor, data):
         """Charge l'état d'un éditeur spécifique."""
         editor.text.set(data["text"])
         editor.sel_font = data["font"]
+        editor.font_name = data["font_name"]
         editor.background_couleur = data["background_color"]
         editor.texte_background_value.set(data["background_color"])
         editor.label_couleur.config(bg=data["background_color"])
 
         if data["image_path"]:
-            editor.import_image_path = data["image_path"]
-            editor.original_image = Image.open(editor.import_image_path).convert('RGBA')
+            editor.imported_image_path = data["image_path"]
+            editor.original_image = Image.open(editor.imported_image_path).convert('RGBA')
             original_width, original_height = editor.original_image.size
             aspect_ratio = original_width / original_height
+
             desired_width = editor.CANVA_W
             desired_height = int(desired_width / aspect_ratio)
+
             editor.display_imported_image_size = (desired_width, desired_height)
             editor.display_imported_image = editor.original_image.resize(editor.display_imported_image_size)
             editor.image_imported_image = editor.original_image.copy()
+            editor.image_imported_image_size = (desired_width*editor.RATIO,
+                                              desired_height*editor.RATIO)
+            editor.image_imported_image = editor.original_image.resize(editor.image_imported_image_size)
+            editor.label_image.config(text=Path(editor.imported_image_path).name)
 
-        editor.display_position = data["display_position"]
+        editor.img_display_position = data["display_position"]
         editor.text_display_position = data["text_display_position"]
 
-        editor.update_canvas()
 
 if __name__ == "__main__":
 
