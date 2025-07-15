@@ -44,12 +44,7 @@ class ImageEditor:
         self.background_couleur = '#FFFFFF'
 
         # variable pour la gestion du texte
-        self.sel_font = {
-                        'family': "arial",
-                        'size': 12
-                        # 'weight': 'normal',            # 'bold'/'normal'
-                        # 'slant': 'roman',              # 'italic'/'roman'
-                        }
+        self.sel_font = {'family': "arial", 'size': 12}
         self.font_name: str = "msgothic.ttc"
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
 
@@ -86,12 +81,14 @@ class ImageEditor:
         self.display_image = self.image_export.resize((self.CANVA_W,
                                                        self.CANVA_H))
         self.tk_image = ImageTk.PhotoImage(self.display_image)
-        self.canvas_image_id = self.canvas.create_image(0,
-                                                        0,
-                                                        anchor=tk.NW,
-                                                        image=self.tk_image)
+        self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
         self.controls_frame = tk.Frame(root)
         self.controls_frame.pack()
+
+        # variables texte
+        self.text = tk.StringVar()
+        # variable pour afficher le code couleur
+        self.texte_background_value = tk.StringVar()
 
         # configure la grille pour les boutons 4 lignes x 3 colonnes
         self.controls_frame.rowconfigure(0, weight=2)
@@ -102,38 +99,32 @@ class ImageEditor:
         self.controls_frame.columnconfigure(1, weight=2)
         self.controls_frame.columnconfigure(2, weight=2)
 
-        # variables texte
-        self.text = tk.StringVar()
-        # variable pour afficher le code couleur
-        self.texte_background_value = tk.StringVar()
-
-        # bouton et saisie pour la couleur de fond
-        # Créer un bouton pour ouvrir le sélecteur de couleur
-        tk.Label(self.controls_frame, text="couleur du fond :").grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
-        self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value)
-        self.texte_background.insert(0, self.background_couleur)
-        self.texte_background.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
-        # Créer un label pour afficher la couleur sélectionnée
-        self.label_couleur = tk.Label(self.controls_frame, text=" ")
-        self.label_couleur.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
-        self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
-        # Mettre à jour la couleur du label_couleur
-        self.label_couleur.config(bg=self.background_couleur)
+        # bouton et saisie pour le texte
+        tk.Entry(self.controls_frame,
+                 textvariable=self.text).grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame,
+                  text='Police',
+                  command=self.callback_font).grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
 
         # bouton pour import image
         tk.Button(self.controls_frame,
                   text='Image',
-                  command=self.import_image).grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+                  command=self.import_image).grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
         self.label_image = tk.Label(self.controls_frame, text='')
-        self.label_image.grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
+        self.label_image.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
 
-        # bouton et saisie pour le texte
-        tk.Entry(self.controls_frame,
-                 textvariable=self.text).grid(column=1, row=3, sticky=tk.EW, padx=5, pady=5)
-        tk.Button(self.controls_frame,
-                  text='Police',
-                  command=self.callback_font).grid(column=0, row=3, sticky=tk.EW, padx=5, pady=5)
-
+        # bouton et saisie pour la couleur de fond
+        # Créer un bouton pour ouvrir le sélecteur de couleur
+        tk.Label(self.controls_frame, text="couleur du fond :").grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
+        self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value)
+        self.texte_background.insert(0, self.background_couleur)
+        self.texte_background.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
+        # Créer un label pour afficher la couleur sélectionnée
+        self.label_couleur = tk.Label(self.controls_frame, text=" ")
+        self.label_couleur.grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
+        self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
+        # Mettre à jour la couleur du label_couleur
+        self.label_couleur.config(bg=self.background_couleur)
 
         # bouton radio pour selection calque actif
         # Variable pour stocker la sélection
@@ -142,12 +133,12 @@ class ImageEditor:
                                           variable=self.selection,
                                           text='Calque Image',
                                           value='C_Image')
-        self.radio_image.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
+        self.radio_image.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
         self.radio_texte = tk.Radiobutton(self.controls_frame,
                                           variable=self.selection,
                                           text='Calque Texte',
                                           value='C_Texte')
-        self.radio_texte.grid(column=2, row=3, sticky=tk.EW, padx=5, pady=5)
+        self.radio_texte.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
