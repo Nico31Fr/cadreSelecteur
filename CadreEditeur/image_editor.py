@@ -47,6 +47,11 @@ class ImageEditor:
         self.sel_font = {'family': "arial", 'size': 12}
         self.font_name: str = "msgothic.ttc"
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
+        self.font_color = '#000000'
+        # Variables pour déplacer le texte
+        self.text_display_position = (0, 0)
+        self.text_image_position = (self.text_display_position[0] * self.RATIO,
+                                    self.text_display_position[1] * self.RATIO)
 
         # Variables pour déplacer l'image importée
         self.img_display_position = (150, 150)
@@ -54,11 +59,6 @@ class ImageEditor:
                                    self.img_display_position[1] * self.RATIO)
         self.display_imported_image_size = (0, 0)
         self.image_imported_image_size = (0, 0)
-
-        # Variables pour déplacer le texte
-        self.text_display_position = (0, 0)
-        self.text_image_position = (self.text_display_position[0] * self.RATIO,
-                                    self.text_display_position[1] * self.RATIO)
 
         self.exclusion_zones = exclusion_zones
 
@@ -97,14 +97,18 @@ class ImageEditor:
         self.controls_frame.rowconfigure(3, weight=1)
         self.controls_frame.columnconfigure(0, weight=1)
         self.controls_frame.columnconfigure(1, weight=2)
-        self.controls_frame.columnconfigure(2, weight=2)
+        self.controls_frame.columnconfigure(2, weight=1)
+        self.controls_frame.columnconfigure(3, weight=2)
 
         # bouton et saisie pour le texte
-        tk.Entry(self.controls_frame,
-                 textvariable=self.text).grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         tk.Button(self.controls_frame,
                   text='Police',
                   command=self.callback_font).grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
+        tk.Entry(self.controls_frame,
+                 textvariable=self.text).grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame,
+                  text='Couleur',
+                  command=lambda: self.choisir_couleur('font')).grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
         # bouton pour import image
         tk.Button(self.controls_frame,
@@ -116,13 +120,13 @@ class ImageEditor:
         # bouton et saisie pour la couleur de fond
         # Créer un bouton pour ouvrir le sélecteur de couleur
         tk.Label(self.controls_frame, text="couleur du fond :").grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
-        self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value)
+        self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value, width=8)
         self.texte_background.insert(0, self.background_couleur)
         self.texte_background.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
         # Créer un label pour afficher la couleur sélectionnée
         self.label_couleur = tk.Label(self.controls_frame, text=" ")
         self.label_couleur.grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
-        self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur())
+        self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur('background'))
         # Mettre à jour la couleur du label_couleur
         self.label_couleur.config(bg=self.background_couleur)
 
@@ -133,12 +137,12 @@ class ImageEditor:
                                           variable=self.selection,
                                           text='Calque Image',
                                           value='C_Image')
-        self.radio_image.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
+        self.radio_image.grid(column=3, row=1, sticky=tk.EW, padx=5, pady=5)
         self.radio_texte = tk.Radiobutton(self.controls_frame,
                                           variable=self.selection,
                                           text='Calque Texte',
                                           value='C_Texte')
-        self.radio_texte.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.radio_texte.grid(column=3, row=0, sticky=tk.EW, padx=5, pady=5)
 
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
@@ -311,15 +315,19 @@ class ImageEditor:
 
             self.update_canvas()
 
-    def choisir_couleur(self, event=None):
+    def choisir_couleur(self, event):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
-        if couleur[1]:
+        if couleur[1] and event == 'background':
             self.background_couleur = couleur[1]
             # Mettre à jour la couleur et le texte du label
             self.label_couleur.config(bg=str(couleur[1]))
             self.texte_background.delete(0, tk.END)  # Efface le champ existant
             self.texte_background.insert(0, str(couleur[1]))
+            self.update_canvas()
+        if couleur[1] and event == 'font':
+            self.font_color = couleur[1]
+            # Mettre à jour la couleur et le texte du label
             self.update_canvas()
 
     def on_color_entry_change(self, *args):
@@ -376,11 +384,11 @@ class ImageEditor:
 
         draw_d.text(self.text_display_position,
                     self.text.get(),
-                    fill=(0, 0, 0, 255),
+                    fill=self.font_color,
                     font=self.pil_font)
         draw_i.text(self.text_image_position,
                     self.text.get(),
-                    fill=(0, 0, 0, 255),
+                    fill=self.font_color,
                     font=pil_font_i)
 
         # insère les zones transparentes (Display et Image)
@@ -504,6 +512,7 @@ class ImageEditorApp:
             "app1": {
                 "text": self.app1.text.get(),
                 "font": self.app1.sel_font,
+                "font_color": self.app1.font_color,
                 "font_name": self.app1.font_name,
                 "background_color": self.app1.background_couleur,
                 "image_path": self.app1.imported_image_path,
@@ -513,6 +522,7 @@ class ImageEditorApp:
             "app4": {
                 "text": self.app4.text.get(),
                 "font": self.app4.sel_font,
+                "font_color": self.app4.font_color,
                 "font_name": self.app4.font_name,
                 "background_color": self.app4.background_couleur,
                 "image_path": self.app4.imported_image_path,
@@ -547,6 +557,7 @@ class ImageEditorApp:
         """Charge l'état d'un éditeur spécifique."""
         editor.text.set(data["text"])
         editor.sel_font = data["font"]
+        editor.font_color = data["font_color"]
         editor.font_name = data["font_name"]
         editor.background_couleur = data["background_color"]
         editor.texte_background_value.set(data["background_color"])
