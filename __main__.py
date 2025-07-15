@@ -2,6 +2,8 @@ from CadreSelecteur import CadreSelecteur, template_path, destination_path
 from CadreSelecteur import TEMPLATE_NAME_STD
 from tkinter import Tk, messagebox
 from os import path
+
+
 if __name__ == "__main__":
 
     # verification de la presence des répertoire sources et dest.
@@ -20,7 +22,7 @@ if __name__ == "__main__":
 
     # verification de la presence du template par default.
     template_dft_file = path.join(template_path,
-                                     TEMPLATE_NAME_STD)
+                                  TEMPLATE_NAME_STD)
     if not path.exists(template_dft_file):
         message_error = message_error + \
                         "TEMPLATE:\nle fichier :" + \

@@ -17,8 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from tkinter import Toplevel, Listbox, StringVar, BooleanVar, TclError
-from tkinter.ttk import Checkbutton, Frame, Label, Button, Scrollbar, Style, Entry
+from tkinter import Toplevel, Listbox, StringVar, TclError
+# from tkinter import BooleanVar
+from tkinter.ttk import Frame, Label, Button, Scrollbar, Style, Entry
+# from tkinter.ttk import Checkbutton
 from tkinter.font import families, Font
 
 from locale import getdefaultlocale
@@ -101,7 +103,7 @@ class FontChooser(Toplevel):
         self.fonts.append("TkDefaultFont")
         self.fonts.sort()
         for i in range(len(self.fonts)):
-            self.fonts[i] = self.fonts[i].replace(" ", "\ ")
+            self.fonts[i] = self.fonts[i].replace(" ", r"\ ")
         max_length = int(2.5 * max([len(font) for font in self.fonts])) // 3
         self.sizes = ["%i" % i for i in (list(range(6, 17)) + list(range(18, 82, 2)))]
         # --- font default
@@ -110,7 +112,7 @@ class FontChooser(Toplevel):
         font_dict["underline"] = font_dict.get("underline", False)
         font_dict["overstrike"] = font_dict.get("overstrike", False)
         font_dict["family"] = font_dict.get("family",
-                                            self.fonts[0].replace('\ ', ' '))
+                                            self.fonts[0].replace(r'\ ', ' '))
         font_dict["size"] = font_dict.get("size", 10)
 
         # --- creation of the widgets
@@ -118,26 +120,26 @@ class FontChooser(Toplevel):
         options_frame = Frame(self, relief='groove', borderwidth=2)
         self.font_family = StringVar(self, " ".join(self.fonts))
         self.font_size = StringVar(self, " ".join(self.sizes))
-        #self.var_bold = BooleanVar(self, font_dict["weight"] == "bold")
-        #b_bold = Checkbutton(options_frame, text=TR["Bold"],
+        # self.var_bold = BooleanVar(self, font_dict["weight"] == "bold")
+        # b_bold = Checkbutton(options_frame, text=TR["Bold"],
         #                     command=self.toggle_bold,
         #                     variable=self.var_bold)
-        #b_bold.grid(row=0, sticky="w", padx=4, pady=(4, 2))
-        #self.var_italic = BooleanVar(self, font_dict["slant"] == "italic")
-        #b_italic = Checkbutton(options_frame, text=TR["Italic"],
+        # b_bold.grid(row=0, sticky="w", padx=4, pady=(4, 2))
+        # self.var_italic = BooleanVar(self, font_dict["slant"] == "italic")
+        # b_italic = Checkbutton(options_frame, text=TR["Italic"],
         #                       command=self.toggle_italic,
         #                       variable=self.var_italic)
-        #b_italic.grid(row=1, sticky="w", padx=4, pady=2)
-        #self.var_underline = BooleanVar(self, font_dict["underline"])
-        #b_underline = Checkbutton(options_frame, text=TR["Underline"],
+        # b_italic.grid(row=1, sticky="w", padx=4, pady=2)
+        # self.var_underline = BooleanVar(self, font_dict["underline"])
+        # b_underline = Checkbutton(options_frame, text=TR["Underline"],
         #                          command=self.toggle_underline,
         #                          variable=self.var_underline)
-        #b_underline.grid(row=2, sticky="w", padx=4, pady=2)
-        #self.var_overstrike = BooleanVar(self, font_dict["overstrike"])
-        #b_overstrike = Checkbutton(options_frame, text=TR["Overstrike"],
+        # b_underline.grid(row=2, sticky="w", padx=4, pady=2)
+        # self.var_overstrike = BooleanVar(self, font_dict["overstrike"])
+        # b_overstrike = Checkbutton(options_frame, text=TR["Overstrike"],
         #                           variable=self.var_overstrike,
         #                           command=self.toggle_overstrike)
-        #b_overstrike.grid(row=3, sticky="w", padx=4, pady=(2, 4))
+        # b_overstrike.grid(row=3, sticky="w", padx=4, pady=(2, 4))
         # ------ Size and family
         self.var_size = StringVar(self)
         self.entry_family = Entry(self, width=max_length, validate="key",
@@ -177,7 +179,7 @@ class FontChooser(Toplevel):
         self.entry_size.insert(0, font_dict["size"])
 
         try:
-            i = self.fonts.index(self.entry_family.get().replace(" ", "\ "))
+            i = self.fonts.index(self.entry_family.get().replace(" ", r"\ "))
         except ValueError:
             # unknown font
             i = 0
@@ -245,9 +247,9 @@ class FontChooser(Toplevel):
     def keypress(self, event):
         """Select the first font whose name begin by the key pressed."""
         key = event.char.lower()
-        l = [i for i in self.fonts if i[0].lower() == key]
-        if l:
-            i = self.fonts.index(l[0])
+        lst = [i for i in self.fonts if i[0].lower() == key]
+        if lst:
+            i = self.fonts.index(lst[0])
             self.list_family.selection_clear(0, "end")
             self.list_family.selection_set(i)
             self.list_family.see(i)
@@ -355,7 +357,7 @@ class FontChooser(Toplevel):
     def change_font_family(self, event=None):
         """Update font preview family."""
         family = self.entry_family.get()
-        if family.replace(" ", "\ ") in self.fonts:
+        if family.replace(" ", r"\ ") in self.fonts:
             self.preview_font.configure(family=family)
 
     def change_font_size(self, event=None):
@@ -365,10 +367,10 @@ class FontChooser(Toplevel):
 
     def validate_font_size(self, d, ch, V):
         """Validation of the size entry content."""
-        l = [i for i in self.sizes if i[:len(ch)] == ch]
+        l_ = [i for i in self.sizes if i[:len(ch)] == ch]
         i = None
-        if l:
-            i = self.sizes.index(l[0])
+        if l_:
+            i = self.sizes.index(l_[0])
         elif ch.isdigit():
             sizes = list(self.sizes)
             sizes.append(ch)
@@ -407,17 +409,17 @@ class FontChooser(Toplevel):
             return True
         else:
             txt = txt[:int(pos)] + modif + txt[int(pos):]
-            ch = txt.replace(" ", "\ ")
-            l = [i for i in self.fonts if i[:len(ch)] == ch]
-            if l:
-                i = self.fonts.index(l[0])
+            ch = txt.replace(" ", r"\ ")
+            list_font = [i for i in self.fonts if i[:len(ch)] == ch]
+            if list_font:
+                i = self.fonts.index(list_font[0])
                 self.list_family.selection_clear(0, "end")
                 self.list_family.selection_set(i)
                 deb = self.list_family.nearest(0)
                 fin = self.list_family.nearest(self.list_family.winfo_height())
                 index = self.entry_family.index("insert")
                 self.entry_family.delete(0, "end")
-                self.entry_family.insert(0, l[0].replace("\ ", " "))
+                self.entry_family.insert(0, list_font[0].replace(r"\ ", " "))
                 self.entry_family.selection_range(index + 1, "end")
                 self.entry_family.icursor(index + 1)
                 if V != "forced":
@@ -515,8 +517,6 @@ if __name__ == "__main__":
     """Example."""
     from tkinter import Tk
 
-    from sys import platform
-
     root = Tk()
 
     label = Label(root, text='Chosen font: ')
@@ -526,14 +526,14 @@ if __name__ == "__main__":
         font = askfont(root, title="Choose a font")
         if font:
             # spaces in the family name need to be escaped
-            font['family'] = font['family'].replace(' ', '\ ')
+            font['family'] = font['family'].replace(' ', r'\ ')
             font_str = "%(family)s %(size)i %(weight)s %(slant)s" % font
             if font['underline']:
                 font_str += ' underline'
             if font['overstrike']:
                 font_str += ' overstrike'
             label.configure(font=font_str,
-                            text='Chosen font: ' + font_str.replace('\ ', ' '))
+                            text='Chosen font: ' + font_str.replace(r'\ ', ' '))
 
     Button(root, text='Font Chooser',
            command=callback).pack(padx=10, pady=(4, 10))
