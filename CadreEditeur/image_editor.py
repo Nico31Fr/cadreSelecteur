@@ -263,7 +263,7 @@ class ImageEditor:
                                          new_disp_y)
             # met à jour la position de l'image importé dans l'image'
             self.img_image_position = (new_img_x,
-                                   new_img_y)
+                                       new_img_y)
 
             self.img_start_drag_pos = (event.x, event.y)
             self.update_canvas()
@@ -404,6 +404,7 @@ class ImageEditor:
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
 
+
 class ImageEditorApp:
 
     def __init__(self, root, exclusion_zones):
@@ -465,8 +466,8 @@ class ImageEditorApp:
         self.texte_projet_name.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
         # export / Bouton pour générer les cadres
         button_export = tk.Button(self.export_frame,
-                                    text="Générer les cadres",
-                                    command=lambda: self.genere_images(self.app1, self.app4))
+                                  text="Générer les cadres",
+                                  command=lambda: self.genere_images(self.app1, self.app4))
         button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
 
     def genere_images(self, app_1, app_4):
@@ -576,7 +577,7 @@ class ImageEditorApp:
             editor.display_imported_image = editor.original_image.resize(editor.display_imported_image_size)
             editor.image_imported_image = editor.original_image.copy()
             editor.image_imported_image_size = (desired_width*editor.RATIO,
-                                              desired_height*editor.RATIO)
+                                                desired_height*editor.RATIO)
             editor.image_imported_image = editor.original_image.resize(editor.image_imported_image_size)
             editor.label_image.config(text=Path(editor.imported_image_path).name)
 
