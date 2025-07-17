@@ -65,7 +65,7 @@ class ImageEditor:
         # creation dun canva qui va afficher l'image
         # Créer un cadre (Frame)
         self.frame = tk.Frame(root, borderwidth=2, relief="solid")
-        self.frame.pack()
+        self.frame.pack(side='top')
         self.canvas = tk.Canvas(self.frame,
                                 width=self.CANVA_W,
                                 height=self.CANVA_H)
@@ -82,8 +82,21 @@ class ImageEditor:
                                                        self.CANVA_H))
         self.tk_image = ImageTk.PhotoImage(self.display_image)
         self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
+
+        #affichage de l'image des layers
+        # Charger l'image à l'aide de PIL
+        img_layer = Image.open("./layers.png")
+        img_layer = img_layer.resize((75, 75))
+        self.img_layer_tk = ImageTk.PhotoImage(img_layer)
+        # Créer un Canvas
+        canvas_img_layer = tk.Canvas(root, width=80, height=80)
+        canvas_img_layer.pack(side='right', fill='x')
+        # Ajoute l'image au Canvas
+        canvas_img_layer.create_image(5, 5, anchor='nw', image= self.img_layer_tk)
+
+        # creation de la 'control frame'
         self.controls_frame = tk.Frame(root)
-        self.controls_frame.pack()
+        self.controls_frame.pack(fill='x')
 
         # variables texte
         self.text = tk.StringVar()
@@ -98,7 +111,7 @@ class ImageEditor:
         self.controls_frame.columnconfigure(0, weight=1)
         self.controls_frame.columnconfigure(1, weight=2)
         self.controls_frame.columnconfigure(2, weight=1)
-        self.controls_frame.columnconfigure(3, weight=2)
+        self.controls_frame.columnconfigure(3, weight=1)
 
         # bouton et saisie pour le texte
         tk.Button(self.controls_frame,
@@ -430,7 +443,7 @@ class ImageEditorApp:
         self.main_frame.columnconfigure(2, weight=1)
 
         # App1 frame
-        self.app1_frame = tk.Frame(self.main_frame)
+        self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
         self.app1_frame.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
         self.app1 = ImageEditor(self.app1_frame, exclusion_zones[0])
 
@@ -453,12 +466,12 @@ class ImageEditorApp:
         button_save.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
 
         # App4 frame
-        self.app4_frame = tk.Frame(self.main_frame)
+        self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
         self.app4_frame.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
         self.app4 = ImageEditor(self.app4_frame, exclusion_zones[1])
 
         # frame load save and export
-        self.export_frame = tk.Frame(self.main_frame)
+        self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
         self.export_frame.grid(column=0, row=1, columnspan=3, padx=5, pady=5)
 
         # configure la grille pour les boutons 4 lignes x 3 colonnes
