@@ -179,8 +179,6 @@ class ImageEditor:
         """
 
         if args:
-            self.pil_font = ImageFont.truetype(font=self.font_name,
-                                               size=self.sel_font['size'])
             self.update_canvas()
 
     def callback_font(self):
@@ -320,10 +318,6 @@ class ImageEditor:
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
         if couleur[1] and event == 'background':
             self.background_couleur = couleur[1]
-            # Mettre à jour la couleur et le texte du label
-            self.label_couleur.config(bg=str(couleur[1]))
-            self.texte_background.delete(0, tk.END)  # Efface le champ existant
-            self.texte_background.insert(0, str(couleur[1]))
             self.update_canvas()
         if couleur[1] and event == 'font':
             self.font_color = couleur[1]
@@ -340,7 +334,6 @@ class ImageEditor:
             match = fullmatch(r'^#[0-9A-Fa-f]{6}$', color_code)
             if match:
                 self.background_couleur = color_code
-                self.label_couleur.config(bg=color_code)
                 self.update_canvas()
 
     def save_image(self, out_path: str):
@@ -356,6 +349,9 @@ class ImageEditor:
         Met à jour le canvas pour refléter l'état actuel de l'image.
         """
 
+        self.label_couleur.config(bg=self.background_couleur)
+        self.texte_background.delete(0, tk.END)  # Efface le champ existant
+        self.texte_background.insert(0, self.background_couleur)
         self.image_de_font = Image.new('RGBA',
                                        (self.IMAGE_W, self.IMAGE_H),
                                        self.background_couleur)
@@ -379,6 +375,8 @@ class ImageEditor:
         draw_d = ImageDraw.Draw(temp_image)
         draw_i = ImageDraw.Draw(self.image_export)
 
+        self.pil_font = ImageFont.truetype(font=self.font_name,
+                                           size=self.sel_font['size'])
         pil_font_i = ImageFont.truetype(font=self.font_name,
                                         size=(self.sel_font['size'] * self.RATIO))
 
@@ -427,22 +425,41 @@ class ImageEditorApp:
         # configure la grille pour les boutons 4 lignes x 3 colonnes
         self.main_frame.rowconfigure(0, weight=2)
         self.main_frame.rowconfigure(1, weight=1)
-        self.main_frame.columnconfigure(0, weight=1)
+        self.main_frame.columnconfigure(0, weight=2)
         self.main_frame.columnconfigure(1, weight=2)
+        self.main_frame.columnconfigure(2, weight=1)
 
         # App1 frame
         self.app1_frame = tk.Frame(self.main_frame)
         self.app1_frame.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
         self.app1 = ImageEditor(self.app1_frame, exclusion_zones[0])
 
+        # bouton synchronisation droite gauche
+        button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
+        button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
+        button_load.grid(column=1, row=0, sticky=tk.SE, padx=5, pady=10)
+        button_save.grid(column=1, row=0, sticky=tk.SW, padx=5, pady=10)
+        button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('image', '1_4'))
+        button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('image', '4_1'))
+        button_load.grid(column=1, row=0, sticky=tk.SE, padx=5, pady=40)
+        button_save.grid(column=1, row=0, sticky=tk.SW, padx=5, pady=40)
+        button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('text', '1_4'))
+        button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('text', '4_1'))
+        button_load.grid(column=1, row=0, sticky=tk.SE, padx=5, pady=70)
+        button_save.grid(column=1, row=0, sticky=tk.SW, padx=5, pady=70)
+        button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
+        button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
+        button_load.grid(column=1, row=0, sticky=tk.E, padx=5, pady=5)
+        button_save.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
+
         # App4 frame
         self.app4_frame = tk.Frame(self.main_frame)
-        self.app4_frame.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.app4_frame.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
         self.app4 = ImageEditor(self.app4_frame, exclusion_zones[1])
 
         # frame load save and export
         self.export_frame = tk.Frame(self.main_frame)
-        self.export_frame.grid(column=0, row=1, columnspan=2, padx=5, pady=5)
+        self.export_frame.grid(column=0, row=1, columnspan=3, padx=5, pady=5)
 
         # configure la grille pour les boutons 4 lignes x 3 colonnes
         self.export_frame.rowconfigure(0, weight=2)
@@ -584,6 +601,58 @@ class ImageEditorApp:
         editor.img_display_position = data["display_position"]
         editor.text_display_position = data["text_display_position"]
 
+    def copy_conf(self, layer, dir):
+        """
+        copie la configuration d'une layer vers l'autre
+
+        layer : calque à prendre en compte :
+                'background', 'image', 'text' or 'all
+        dir : copie de 1 vers 4 ou 4 vers 1 '1_4' or '4_1'
+        """
+        if layer == 'background' or layer == 'all':
+            if dir == '1_4':
+                self.app4.background_couleur = self.app1.background_couleur
+            elif dir == '4_1':
+                self.app1.background_couleur = self.app4.background_couleur
+            else:
+                print(f'ERROR: {dir} is not a valid DIR')
+        if layer == 'image' or layer == 'all':
+            if dir == '1_4':
+                self.app4.imported_image_path = self.app1.imported_image_path
+                self.app4.original_image = self.app1.original_image
+                self.app4.display_imported_image_size = self.app1.display_imported_image_size
+                self.app4.display_imported_image = self.app1.display_imported_image
+                self.app4.image_imported_image =self.app1.image_imported_image
+                self.app4.image_imported_image_size = self.app1.image_imported_image_size
+                self.app4.img_display_position = self.app1.img_display_position
+            elif dir == '4_1':
+                self.app1.imported_image_path = self.app4.imported_image_path
+                self.app1.original_image = self.app4.original_image
+                self.app1.display_imported_image_size = self.app4.display_imported_image_size
+                self.app1.display_imported_image = self.app4.display_imported_image
+                self.app1.image_imported_image =self.app4.image_imported_image
+                self.app1.image_imported_image_size = self.app4.image_imported_image_size
+                self.app1.img_display_position = self.app4.img_display_position
+            else:
+                print(f'ERROR: {dir} is not a valid DIR')
+        if layer == 'text' or layer == 'all':
+            if dir == '1_4':
+                self.app4.text.set(self.app1.text.get())
+                self.app4.sel_font = self.app1.sel_font
+                self.app4.font_color = self.app1.font_color
+                self.app4.font_name = self.app1.font_name
+                self.app4.text_display_position = self.app1.text_display_position
+            elif dir == '4_1':
+                self.app1.text.set(self.app4.text.get())
+                self.app1.sel_font = self.app4.sel_font
+                self.app1.font_color = self.app4.font_color
+                self.app1.font_name = self.app4.font_name
+                self.app1.text_display_position = self.app4.text_display_position
+            else:
+                print(f'ERROR: {dir} is not a valid DIR')
+
+        self.app1.update_canvas()
+        self.app4.update_canvas()
 
 if __name__ == "__main__":
 
