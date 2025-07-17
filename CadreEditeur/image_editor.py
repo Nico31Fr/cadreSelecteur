@@ -27,6 +27,7 @@ class ImageEditor:
 
         Paramètres :
             root (tk.Tk) : La fenêtre tkinter racine.
+            Exclusion_zones : liste contenant les zone à garder en transparent
         """
 
         # Dimension de l'interface, doit être de ratio 1.5
@@ -83,7 +84,7 @@ class ImageEditor:
         self.tk_image = ImageTk.PhotoImage(self.display_image)
         self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
-        #affichage de l'image des layers
+        # affichage de l'image des layers
         # Charger l'image à l'aide de PIL
         img_layer = Image.open("./layers.png")
         img_layer = img_layer.resize((75, 75))
@@ -92,7 +93,7 @@ class ImageEditor:
         canvas_img_layer = tk.Canvas(root, width=80, height=80)
         canvas_img_layer.pack(side='right', fill='x')
         # Ajoute l'image au Canvas
-        canvas_img_layer.create_image(5, 5, anchor='nw', image= self.img_layer_tk)
+        canvas_img_layer.create_image(5, 5, anchor='nw', image=self.img_layer_tk)
 
         # creation de la 'control frame'
         self.controls_frame = tk.Frame(root)
@@ -159,7 +160,7 @@ class ImageEditor:
 
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
-        self.canvas.bind("<B1-Motion>", self.drag_image)
+        self.canvas.bind("<B1-Motion>", self.drag_drop)
         self.canvas.bind("<MouseWheel>", self.resize_image)
 
         # Lier une fonction à la modification de la valeur de l'Entry
@@ -253,9 +254,9 @@ class ImageEditor:
         else:
             self.txt_start_drag_pos = (event.x, event.y)
 
-    def drag_image(self, event):
+    def drag_drop(self, event):
         """
-        drag and drop de l'image importé avec la souris
+        gestion du drag and drop
 
         Paramètres :
             event (tk.Event) : L'événement de mouvement de la souris.
@@ -266,15 +267,10 @@ class ImageEditor:
 
             new_disp_x = self.img_display_position[0] + dx
             new_disp_y = self.img_display_position[1] + dy
-            new_img_x = new_disp_x * self.RATIO
-            new_img_y = new_disp_y * self.RATIO
 
             # met à jour la position de l'image importé dans le canva
             self.img_display_position = (new_disp_x,
                                          new_disp_y)
-            # met à jour la position de l'image importé dans l'image'
-            self.img_image_position = (new_img_x,
-                                       new_img_y)
 
             self.img_start_drag_pos = (event.x, event.y)
             self.update_canvas()
@@ -286,15 +282,10 @@ class ImageEditor:
 
             new_disp_x = self.text_display_position[0] + dx
             new_disp_y = self.text_display_position[1] + dy
-            new_img_x = new_disp_x * self.RATIO
-            new_img_y = new_disp_y * self.RATIO
 
             # met à jour la position du texte dans le canva
             self.text_display_position = (new_disp_x,
                                           new_disp_y)
-            # met à jour la position du texte dans l'image'
-            self.text_image_position = (new_img_x,
-                                        new_img_y)
 
             self.txt_start_drag_pos = (event.x, event.y)
             self.update_canvas()
@@ -353,6 +344,7 @@ class ImageEditor:
         """
         Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
         """
+        self.update_canvas()
         extension = str('_' + str(len(self.exclusion_zones)) + '.png')
         out_path = out_path + extension
         self.image_export.save(out_path)
@@ -373,6 +365,12 @@ class ImageEditor:
 
         temp_image = display_image.copy()
         self.image_export = self.image_de_font.copy()
+
+        # mise à jour des positions texte et image dans l'image exporté
+        self.text_image_position = (self.text_display_position[0] * self.RATIO,
+                                    self.text_display_position[1] * self.RATIO)
+        self.img_image_position = (self.img_display_position[0] * self.RATIO,
+                                   self.img_display_position[1] * self.RATIO)
 
         # insère l'image importée
         if self.display_imported_image:
@@ -417,7 +415,12 @@ class ImageEditor:
 
 
 class ImageEditorApp:
-
+    """
+    Image editor avec les deux frames de modif de cadre
+        + synchro D/G
+        + sauvegarde restore
+        + export
+    """
     def __init__(self, root, exclusion_zones):
 
         # Dimension de la fenêtre
@@ -487,7 +490,6 @@ class ImageEditorApp:
         button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
         button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
-        # export
         # export / nom du projet
         tk.Label(self.export_frame, text="Nom du set de cadre :").grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
         self.prj_name_var = tk.StringVar()
@@ -497,10 +499,10 @@ class ImageEditorApp:
         # export / Bouton pour générer les cadres
         button_export = tk.Button(self.export_frame,
                                   text="Générer les cadres",
-                                  command=lambda: self.genere_images(self.app1, self.app4))
+                                  command=lambda: self.gen_images(self.app1, self.app4))
         button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
 
-    def genere_images(self, app_1, app_4):
+    def gen_images(self, app_1, app_4):
         """
         lance l'enregistrement des deux fichiers
         """
@@ -547,6 +549,7 @@ class ImageEditorApp:
                 "font_name": self.app1.font_name,
                 "background_color": self.app1.background_couleur,
                 "image_path": self.app1.imported_image_path,
+                "image_size": self.app1.display_imported_image_size,
                 "display_position": self.app1.img_display_position,
                 "text_display_position": self.app1.text_display_position,
             },
@@ -557,6 +560,7 @@ class ImageEditorApp:
                 "font_name": self.app4.font_name,
                 "background_color": self.app4.background_couleur,
                 "image_path": self.app4.imported_image_path,
+                "image_size": self.app4.display_imported_image_size,
                 "display_position": self.app4.img_display_position,
                 "text_display_position": self.app4.text_display_position,
             }
@@ -597,24 +601,20 @@ class ImageEditorApp:
         if data["image_path"]:
             editor.imported_image_path = data["image_path"]
             editor.original_image = Image.open(editor.imported_image_path).convert('RGBA')
-            original_width, original_height = editor.original_image.size
-            aspect_ratio = original_width / original_height
-
-            desired_width = editor.CANVA_W
-            desired_height = int(desired_width / aspect_ratio)
-
-            editor.display_imported_image_size = (desired_width, desired_height)
+            editor.display_imported_image_size = data['image_size']
             editor.display_imported_image = editor.original_image.resize(editor.display_imported_image_size)
             editor.image_imported_image = editor.original_image.copy()
-            editor.image_imported_image_size = (desired_width*editor.RATIO,
-                                                desired_height*editor.RATIO)
+            editor.image_imported_image_size = (editor.display_imported_image_size[0] * editor.RATIO,
+                                                editor.display_imported_image_size[1] * editor.RATIO)
             editor.image_imported_image = editor.original_image.resize(editor.image_imported_image_size)
             editor.label_image.config(text=Path(editor.imported_image_path).name)
 
         editor.img_display_position = data["display_position"]
         editor.text_display_position = data["text_display_position"]
 
-    def copy_conf(self, layer, dir):
+    # gestion de la synchro droite gauche
+
+    def copy_conf(self, layer, direction):
         """
         copie la configuration d'une layer vers l'autre
 
@@ -623,49 +623,50 @@ class ImageEditorApp:
         dir : copie de 1 vers 4 ou 4 vers 1 '1_4' or '4_1'
         """
         if layer == 'background' or layer == 'all':
-            if dir == '1_4':
+            if direction == '1_4':
                 self.app4.background_couleur = self.app1.background_couleur
-            elif dir == '4_1':
+            elif direction == '4_1':
                 self.app1.background_couleur = self.app4.background_couleur
             else:
-                print(f'ERROR: {dir} is not a valid DIR')
+                print(f'ERROR: {direction} is not a valid DIR')
         if layer == 'image' or layer == 'all':
-            if dir == '1_4':
+            if direction == '1_4':
                 self.app4.imported_image_path = self.app1.imported_image_path
                 self.app4.original_image = self.app1.original_image
                 self.app4.display_imported_image_size = self.app1.display_imported_image_size
                 self.app4.display_imported_image = self.app1.display_imported_image
-                self.app4.image_imported_image =self.app1.image_imported_image
+                self.app4.image_imported_image = self.app1.image_imported_image
                 self.app4.image_imported_image_size = self.app1.image_imported_image_size
                 self.app4.img_display_position = self.app1.img_display_position
-            elif dir == '4_1':
+            elif direction == '4_1':
                 self.app1.imported_image_path = self.app4.imported_image_path
                 self.app1.original_image = self.app4.original_image
                 self.app1.display_imported_image_size = self.app4.display_imported_image_size
                 self.app1.display_imported_image = self.app4.display_imported_image
-                self.app1.image_imported_image =self.app4.image_imported_image
+                self.app1.image_imported_image = self.app4.image_imported_image
                 self.app1.image_imported_image_size = self.app4.image_imported_image_size
                 self.app1.img_display_position = self.app4.img_display_position
             else:
-                print(f'ERROR: {dir} is not a valid DIR')
+                print(f'ERROR: {direction} is not a valid DIR')
         if layer == 'text' or layer == 'all':
-            if dir == '1_4':
+            if direction == '1_4':
                 self.app4.text.set(self.app1.text.get())
                 self.app4.sel_font = self.app1.sel_font
                 self.app4.font_color = self.app1.font_color
                 self.app4.font_name = self.app1.font_name
                 self.app4.text_display_position = self.app1.text_display_position
-            elif dir == '4_1':
+            elif direction == '4_1':
                 self.app1.text.set(self.app4.text.get())
                 self.app1.sel_font = self.app4.sel_font
                 self.app1.font_color = self.app4.font_color
                 self.app1.font_name = self.app4.font_name
                 self.app1.text_display_position = self.app4.text_display_position
             else:
-                print(f'ERROR: {dir} is not a valid DIR')
+                print(f'ERROR: {direction} is not a valid DIR')
 
         self.app1.update_canvas()
         self.app4.update_canvas()
+
 
 if __name__ == "__main__":
 
