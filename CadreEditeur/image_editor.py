@@ -161,7 +161,7 @@ class ImageEditor:
         # Événements de souris pour déplacer/redimensionner
         self.canvas.bind("<Button-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_drop)
-        self.canvas.bind("<MouseWheel>", self.resize_image)
+        self.canvas.bind("<MouseWheel>", self.resize)
 
         # Lier une fonction à la modification de la valeur de l'Entry
         self.texte_background_value.trace_add("write",
@@ -290,7 +290,7 @@ class ImageEditor:
             self.txt_start_drag_pos = (event.x, event.y)
             self.update_canvas()
 
-    def resize_image(self, event):
+    def resize(self, event):
         """
         redimensionne l'image importée en fonction de la molette souris
 
@@ -314,8 +314,10 @@ class ImageEditor:
                                               new_height*self.RATIO)
             self.display_imported_image = self.original_image.resize(self.display_imported_image_size)
             self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
-
-            self.update_canvas()
+        elif self.selection.get() == 'C_Texte':
+            delta = 2 if event.delta > 0 else -2
+            self.sel_font['size'] = self.sel_font['size'] + delta
+        self.update_canvas()
 
     def choisir_couleur(self, event):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
