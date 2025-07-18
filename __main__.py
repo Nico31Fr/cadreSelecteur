@@ -1,5 +1,5 @@
-from CadreSelecteur import CadreSelecteur, template_path, destination_path
-from CadreSelecteur import TEMPLATE_NAME_STD
+from cadreselecteur import CadreSelecteur, template_path, destination_path
+from cadreselecteur import TEMPLATE_NAME_STD
 from tkinter import Tk, messagebox
 from os import path
 

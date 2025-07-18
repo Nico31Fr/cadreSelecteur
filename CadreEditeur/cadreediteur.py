@@ -3,7 +3,7 @@
 
 import tkinter as tk
 
-from image_editor import ImageEditorApp
+from imageeditorapp import ImageEditorApp
 
 if __name__ == "__main__":
     # Définir des zones d'exclusion
