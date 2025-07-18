@@ -6,6 +6,7 @@ from tkinter import filedialog, messagebox
 from PIL import Image
 from os import path
 from json import dump, load
+import xml.etree.ElementTree as ET
 
 from imageeditor import ImageEditor
 
@@ -19,7 +20,7 @@ class ImageEditorApp:
     def __init__(self, root, exclusion_zones):
 
         # Dimension de la fenêtre
-        self.WINDOWS = "1400x600"
+        self.WINDOWS = "1400x650"
         self.prj_name = 'cadre_xxx'
         self.tk_root = root
 
@@ -36,41 +37,59 @@ class ImageEditorApp:
         # configure la grille pour les boutons 4 lignes x 3 colonnes
         self.main_frame.rowconfigure(0, weight=2)
         self.main_frame.rowconfigure(1, weight=1)
+        self.main_frame.rowconfigure(2, weight=1)
         self.main_frame.columnconfigure(0, weight=2)
         self.main_frame.columnconfigure(1, weight=2)
         self.main_frame.columnconfigure(2, weight=1)
 
+        # Liste des options pour le menu déroulant
+        options = ["template_std.xml", "cadre-mariage1.xml"]
+
+        # Variable pour stocker l'option sélectionnée
+        self.selected_template = tk.StringVar()
+        self.selected_template.set(options[0])  # Définir la valeur par défaut
+
+        # Étiquette pour afficher l'option sélectionnée
+        label = tk.Label(self.main_frame, text="template : ")
+        label.grid(column=0, row=0, sticky=tk.E, padx=5, pady=5)
+
+        # Créer le menu déroulant
+        dropdown = tk.OptionMenu(self.main_frame, self.selected_template, *options)
+        dropdown.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5, columnspan=2)
+        # Ajouter un traceur pour appeler la fonction lors du changement d'état
+        self.selected_template.trace_add("write", self.on_template_change)
+
         # App1 frame
         self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-        self.app1_frame.grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.app1_frame.grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
         self.app1 = ImageEditor(self.app1_frame, exclusion_zones[0])
 
         # bouton synchronisation droite gauche
         button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
         button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
-        button_load.grid(column=1, row=0, sticky=tk.SE, padx=5, pady=10)
-        button_save.grid(column=1, row=0, sticky=tk.SW, padx=5, pady=10)
+        button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=10)
+        button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=10)
         button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('image', '1_4'))
         button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('image', '4_1'))
-        button_load.grid(column=1, row=0, sticky=tk.SE, padx=5, pady=40)
-        button_save.grid(column=1, row=0, sticky=tk.SW, padx=5, pady=40)
+        button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=40)
+        button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=40)
         button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('text', '1_4'))
         button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('text', '4_1'))
-        button_load.grid(column=1, row=0, sticky=tk.SE, padx=5, pady=70)
-        button_save.grid(column=1, row=0, sticky=tk.SW, padx=5, pady=70)
+        button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=70)
+        button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=70)
         button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
         button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
-        button_load.grid(column=1, row=0, sticky=tk.E, padx=5, pady=5)
-        button_save.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
+        button_load.grid(column=1, row=1, sticky=tk.E, padx=5, pady=5)
+        button_save.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
 
         # App4 frame
         self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-        self.app4_frame.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
         self.app4 = ImageEditor(self.app4_frame, exclusion_zones[1])
 
         # frame load save and export
         self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-        self.export_frame.grid(column=0, row=1, columnspan=3, padx=5, pady=5)
+        self.export_frame.grid(column=0, row=2, columnspan=3, padx=5, pady=5)
 
         # configure la grille pour les boutons 4 lignes x 3 colonnes
         self.export_frame.rowconfigure(0, weight=2)
@@ -258,6 +277,50 @@ class ImageEditorApp:
             else:
                 print(f'ERROR: {direction} is not a valid DIR')
 
+        self.app1.update_canvas()
+        self.app4.update_canvas()
+
+    # gestion des templates
+    def on_template_change(self, *args):
+        """
+        appelé lors du changement de template
+        charge le xml et met à jour les zones d'exclusion
+        """
+        # Charger et analyser le fichier XML
+        path_to_xml = path.join("../Templates/", self.selected_template.get())
+        tree = ET.parse(path_to_xml)
+        root_xml = tree.getroot()
+        new_exc_zone1 = []
+        new_exc_zone4 = []
+
+        # Trouver l'élément mxGeometry
+        for elem in root_xml.iter():
+            if 'diagram' in elem.tag:
+                for diag in elem.iter():
+                    if diag.get('name') == 'Page-5':
+                        for item in diag.iter():
+                            if 'mxGeometry' in item.tag:
+                                x = float(item.get('x'))
+                                y = float(item.get('y'))
+                                width = float(item.get('width'))
+                                height = float(item.get('height'))
+                                new_exc_zone1 = [(x,y,width,height)]
+                                break
+                    if diag.get('name') == 'Page-8':
+                        number_of_coord = 1
+                        for item in diag.iter():
+                            if 'mxGeometry' in item.tag:
+                                x = float(item.get('x'))
+                                y = float(item.get('y'))
+                                width = float(item.get('width'))
+                                height = float(item.get('height'))
+                                new_exc_zone4.append((x, y, width, height))
+                                number_of_coord += 1
+                                if number_of_coord >=5:
+                                    break
+
+        self.app1.exclusion_zone = new_exc_zone1
+        self.app4.exclusion_zone = new_exc_zone4
         self.app1.update_canvas()
         self.app4.update_canvas()
 

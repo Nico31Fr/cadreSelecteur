@@ -19,13 +19,13 @@ class ImageEditor:
     et d'enregistrer la composition finale.
     """
 
-    def __init__(self, root, exclusion_zones):
+    def __init__(self, root, exclusion_zone):
         """
         Initialise l'application ImageEditor avec une fenêtre tkinter racine.
 
         Paramètres :
             root (tk.Tk) : La fenêtre tkinter racine.
-            Exclusion_zones : liste contenant les zone à garder en transparent
+            Exclusion_zone : liste contenant les zone à garder en transparent
         """
 
         # Dimension de l'interface, doit être de ratio 1.5
@@ -35,7 +35,7 @@ class ImageEditor:
         self.IMAGE_W = 3600
         self.IMAGE_H = 2400
         self.RATIO = int(self.IMAGE_W / self.CANVA_W)
-
+        self. exclusion_zone = exclusion_zone
         self.imported_image_path = None
         self.display_imported_image = None
         self.image_imported_image = None
@@ -58,8 +58,6 @@ class ImageEditor:
                                    self.img_display_position[1] * self.RATIO)
         self.display_imported_image_size = (0, 0)
         self.image_imported_image_size = (0, 0)
-
-        self.exclusion_zones = exclusion_zones
 
         # creation dun canva qui va afficher l'image
         # Créer un cadre (Frame)
@@ -353,7 +351,7 @@ class ImageEditor:
         Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
         """
         self.update_canvas()
-        extension = str('_' + str(len(self.exclusion_zones)) + '.png')
+        extension = str('_' + str(len(self.exclusion_zone)) + '.png')
         out_path = out_path + extension
         self.image_export.save(out_path)
 
@@ -412,7 +410,7 @@ class ImageEditor:
                     font=pil_font_i)
 
         # insère les zones transparentes (Display et Image)
-        for zone in self.exclusion_zones:
+        for zone in self.exclusion_zone:
             d_x, d_y, d_w, d_h = zone
             i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
             draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
