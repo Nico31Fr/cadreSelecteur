@@ -130,6 +130,9 @@ class ImageEditor:
                   command=self.import_image).grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
         self.label_image = tk.Label(self.controls_frame, text='')
         self.label_image.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
+        tk.Button(self.controls_frame,
+                  text='Effacer',
+                  command=self.remove_image).grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
 
         # bouton et saisie pour la couleur de fond
         # Créer un bouton pour ouvrir le sélecteur de couleur
@@ -238,9 +241,14 @@ class ImageEditor:
                                               desired_height*self.RATIO)
             self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
 
-            self.label_image.config(text=Path(self.imported_image_path).name)
-
             self.update_canvas()
+
+    def remove_image(self):
+        """
+        efface l'image importé lorsqu'on clique sur le bouton
+        """
+        self.display_imported_image = None
+        self.update_canvas()
 
     def start_drag(self, event):
         """
@@ -382,6 +390,9 @@ class ImageEditor:
             self.image_export.paste(self.image_imported_image,
                                     self.img_image_position,
                                     self.image_imported_image)
+            self.label_image.config(text=Path(self.imported_image_path).name)
+        else:
+            self.label_image.config(text='')
 
         # insère le texte
         # Crée un objet ImageDraw pour dessiner sur l'image
@@ -609,7 +620,6 @@ class ImageEditorApp:
             editor.image_imported_image_size = (editor.display_imported_image_size[0] * editor.RATIO,
                                                 editor.display_imported_image_size[1] * editor.RATIO)
             editor.image_imported_image = editor.original_image.resize(editor.image_imported_image_size)
-            editor.label_image.config(text=Path(editor.imported_image_path).name)
 
         editor.img_display_position = data["display_position"]
         editor.text_display_position = data["text_display_position"]
