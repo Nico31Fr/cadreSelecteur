@@ -6,10 +6,11 @@ from tkinter import filedialog, messagebox
 from PIL import Image
 from os import path
 from json import dump, load
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as Et
 from shutil import copy
 
 from imageeditor import ImageEditor
+
 
 class ImageEditorApp:
     """
@@ -124,7 +125,7 @@ class ImageEditorApp:
 
         path_im = self.select_directory()
         if path_im is not None:
-            # exporte les iages
+            # exporte les images
             app_1.save_image(path_im)
             app_4.save_image(path_im)
             # copie et renomme le XML de template
@@ -295,36 +296,37 @@ class ImageEditorApp:
         """
         # Charger et analyser le fichier XML
         path_to_xml = path.join("../Templates/", self.selected_template.get())
-        tree = ET.parse(path_to_xml)
+        tree = Et.parse(path_to_xml)
         root_xml = tree.getroot()
         new_exc_zone1 = []
         new_exc_zone4 = []
 
         # Trouver l'élément mxGeometry
         for elem in root_xml.iter():
-            if 'diagram' in elem.tag:
-                for diag in elem.iter():
-                    if diag.get('name') == 'Page-5':
-                        for item in diag.iter():
-                            if 'mxGeometry' in item.tag:
-                                x = float(item.get('x'))
-                                y = float(item.get('y'))
-                                width = float(item.get('width'))
-                                height = float(item.get('height'))
-                                new_exc_zone1 = [(x,y,width,height)]
+            if 'diagram' not in elem.tag:
+                continue
+            for diagram in elem.iter():
+                if diagram.get('name') == 'Page-5':
+                    for item in diagram.iter():
+                        if 'mxGeometry' in item.tag:
+                            x = float(item.get('x'))
+                            y = float(item.get('y'))
+                            width = float(item.get('width'))
+                            height = float(item.get('height'))
+                            new_exc_zone1 = [(x, y, width, height)]
+                            break
+                if diagram.get('name') == 'Page-8':
+                    number_of_coord = 1
+                    for item in diagram.iter():
+                        if 'mxGeometry' in item.tag:
+                            x = float(item.get('x'))
+                            y = float(item.get('y'))
+                            width = float(item.get('width'))
+                            height = float(item.get('height'))
+                            new_exc_zone4.append((x, y, width, height))
+                            number_of_coord += 1
+                            if number_of_coord >= 5:
                                 break
-                    if diag.get('name') == 'Page-8':
-                        number_of_coord = 1
-                        for item in diag.iter():
-                            if 'mxGeometry' in item.tag:
-                                x = float(item.get('x'))
-                                y = float(item.get('y'))
-                                width = float(item.get('width'))
-                                height = float(item.get('height'))
-                                new_exc_zone4.append((x, y, width, height))
-                                number_of_coord += 1
-                                if number_of_coord >=5:
-                                    break
 
         self.app1.exclusion_zone = new_exc_zone1
         self.app4.exclusion_zone = new_exc_zone4
