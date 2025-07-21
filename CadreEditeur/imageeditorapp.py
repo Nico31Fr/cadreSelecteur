@@ -7,6 +7,7 @@ from PIL import Image
 from os import path
 from json import dump, load
 import xml.etree.ElementTree as ET
+from shutil import copy
 
 from imageeditor import ImageEditor
 
@@ -123,8 +124,14 @@ class ImageEditorApp:
 
         path_im = self.select_directory()
         if path_im is not None:
+            # exporte les iages
             app_1.save_image(path_im)
             app_4.save_image(path_im)
+            # copie et renomme le XML de template
+            path_to_xml = path.join("../Templates/", self.selected_template.get())
+            dest_xml = path_im + '.xml'
+            copy(path_to_xml, dest_xml)
+            messagebox.showinfo("export réussie", "Les fichiers on été générés avec succès.")
 
     def select_directory(self):
         """
