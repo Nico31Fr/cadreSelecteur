@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-""" Module d'édition de cadre pour PiBooth """
+""" Module d'édition de cadre pour PiBooth
+    |-> fenêtre d'édition d'un cadre  """
 
 import tkinter as tk
 from tkinter import filedialog, colorchooser
@@ -170,6 +171,7 @@ class ImageEditor:
         self.txt_start_drag_pos = None
         self.update_canvas()
 
+    # Gestion du Texte
     @staticmethod
     def find_font_path(font_name_to_find):
         """
@@ -214,6 +216,7 @@ class ImageEditor:
             # mise à jour de l'IHM
             self.on_text_change('from selector')
 
+    # Gestion de l'image
     def import_image(self):
         """
         Ouvre une boîte de dialogue pour importer une image et
@@ -246,6 +249,7 @@ class ImageEditor:
         self.display_imported_image = None
         self.update_canvas()
 
+    # gestion souri drag and drop / zoom molette
     def start_drag(self, event):
         """
         Initialise l'opération de glissement-déposé en enregistrant la position du curseur.
@@ -323,6 +327,7 @@ class ImageEditor:
             self.sel_font['size'] = self.sel_font['size'] + delta
         self.update_canvas()
 
+    # gestion background
     def choisir_couleur(self, event):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         couleur = colorchooser.askcolor(title="Choisissez une couleur")
@@ -346,30 +351,19 @@ class ImageEditor:
                 self.background_couleur = color_code
                 self.update_canvas()
 
+    # export de l'image
     def save_image(self, out_path: str):
         """
         Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
         """
-        self.update_canvas()
-        extension = str('_' + str(len(self.exclusion_zone)) + '.png')
-        out_path = out_path + extension
-        self.image_export.save(out_path)
 
-    def update_canvas(self):
-        """
-        Met à jour le canvas pour refléter l'état actuel de l'image.
-        """
-
-        self.label_couleur.config(bg=self.background_couleur)
-        self.texte_background.delete(0, tk.END)  # Efface le champ existant
-        self.texte_background.insert(0, self.background_couleur)
+        # couleur du fond
+        # génère une image avec la couleur de fond sélectionnée
         self.image_de_font = Image.new('RGBA',
                                        (self.IMAGE_W, self.IMAGE_H),
                                        self.background_couleur)
-        display_image = self.image_de_font.resize((self.CANVA_W,
-                                                   self.CANVA_H))
 
-        temp_image = display_image.copy()
+        # évite l'effacement par le garbage collector
         self.image_export = self.image_de_font.copy()
 
         # mise à jour des positions texte et image dans l'image exporté
@@ -380,12 +374,53 @@ class ImageEditor:
 
         # insère l'image importée
         if self.display_imported_image:
-            temp_image.paste(self.display_imported_image,
-                             self.img_display_position,
-                             self.display_imported_image)
             self.image_export.paste(self.image_imported_image,
                                     self.img_image_position,
                                     self.image_imported_image)
+
+        # insère le texte
+        draw_i = ImageDraw.Draw(self.image_export)
+        pil_font_i = ImageFont.truetype(font=self.font_name,
+                                        size=(self.sel_font['size'] * self.RATIO))
+        draw_i.text(self.text_image_position,
+                    self.text.get(),
+                    fill=self.font_color,
+                    font=pil_font_i)
+
+        # insère les zones transparentes (Display et Image)
+        for d_x, d_y, d_w, d_h in self.exclusion_zone:
+            i_x, i_y, i_w, i_h = (d_x * self.RATIO, d_y * self.RATIO, d_w * self.RATIO, d_h * self.RATIO)
+            draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
+
+        # Enregistre le fichier image.
+        extension = str('_' + str(len(self.exclusion_zone)) + '.png')
+        out_path = out_path + extension
+        self.image_export.save(out_path)
+
+    # mise à jour de la prévisualisation IHM
+    def update_canvas(self):
+        """
+        Met à jour le canvas pour refléter l'état actuel de l'image.
+        """
+
+        # couleur du fond
+        # met à jour le label (couleur et texte)
+        self.label_couleur.config(bg=self.background_couleur)
+        self.texte_background.delete(0, tk.END)  # Efface le champ existant
+        self.texte_background.insert(0, self.background_couleur)
+        # génère une image avec la couleur sélectionnée
+        display_image = Image.new('RGBA',
+                                  (self.CANVA_W, self.CANVA_H),
+                                  self.background_couleur)
+
+        # évite l'effacement par le garbage collector
+        temp_image = display_image.copy()
+
+        # insère l'image importée
+        if self.display_imported_image:
+            temp_image.paste(self.display_imported_image,
+                             self.img_display_position,
+                             self.display_imported_image)
             self.label_image.config(text=Path(self.imported_image_path).name)
         else:
             self.label_image.config(text='')
@@ -393,29 +428,17 @@ class ImageEditor:
         # insère le texte
         # Crée un objet ImageDraw pour dessiner sur l'image
         draw_d = ImageDraw.Draw(temp_image)
-        draw_i = ImageDraw.Draw(self.image_export)
-
         self.pil_font = ImageFont.truetype(font=self.font_name,
                                            size=self.sel_font['size'])
-        pil_font_i = ImageFont.truetype(font=self.font_name,
-                                        size=(self.sel_font['size'] * self.RATIO))
-
         draw_d.text(self.text_display_position,
                     self.text.get(),
                     fill=self.font_color,
                     font=self.pil_font)
-        draw_i.text(self.text_image_position,
-                    self.text.get(),
-                    fill=self.font_color,
-                    font=pil_font_i)
 
         # insère les zones transparentes (Display et Image)
         for zone in self.exclusion_zone:
             d_x, d_y, d_w, d_h = zone
-            i_x, i_y, i_w, i_h = d_x*self.RATIO, d_y*self.RATIO, d_w*self.RATIO, d_h*self.RATIO
             draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
-                             fill=(255, 255, 255, 0))
-            draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h),
                              fill=(255, 255, 255, 0))
 
         # met a jour l'IHM

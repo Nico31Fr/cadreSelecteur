@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-""" Module d'édition de cadre pour PiBooth """
+""" Module d'édition de cadre pour PiBooth
+    |-> point d'entrée de l'appli autonome """
 
 import tkinter as tk
 

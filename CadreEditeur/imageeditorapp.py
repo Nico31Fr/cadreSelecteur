@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-""" Module d'édition de cadre pour PiBooth """
+""" Module d'édition de cadre pour PiBooth
+    |-> fenêtre principale de l'IHM  """
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -118,6 +119,7 @@ class ImageEditorApp:
                                   command=lambda: self.gen_images(self.app1, self.app4))
         button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
 
+    # export du set de cadre (2 .png + XML)
     def gen_images(self, app_1, app_4):
         """
         lance l'enregistrement des deux fichiers
@@ -158,8 +160,7 @@ class ImageEditorApp:
                                  message="selectionner un repertoire de sortie")
             return None
 
-    # section pour la sauvegarde recharge d'un projet - à debugger
-
+    # section pour la sauvegarde recharge d'un projet
     def save_project(self):
         """Sauvegarde l'état actuel du projet dans un fichier JSON."""
         project_data = {
@@ -234,7 +235,6 @@ class ImageEditorApp:
         editor.text_display_position = data["text_display_position"]
 
     # gestion de la synchro droite gauche
-
     def copy_conf(self, layer, direction):
         """
         copie la configuration d'une layer vers l'autre
