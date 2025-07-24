@@ -84,7 +84,7 @@ class ImageEditor:
             # affichage de l'image des layers
             try:
                 # Charger l'image à l'aide de PIL
-                img_layer = Image.open("./layers.png")
+                img_layer = Image.open("resources/layers.png")
                 img_layer = img_layer.resize((75, 75))
                 self.img_layer_tk = ImageTk.PhotoImage(img_layer)
                 # Créer un Canvas
@@ -490,4 +490,4 @@ class ImageEditor:
             self.tk_image = ImageTk.PhotoImage(temp_image)
             self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
         except Exception as e:
-            messagebox.showerror("Erreur de mise à jour", f"Exception inattendue : {str(e)}")
+            messagebox.showerror("Erreur e mise à jour", f"Exception inattendue : {str(e)}")
