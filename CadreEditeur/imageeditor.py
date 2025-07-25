@@ -7,11 +7,11 @@ from tkinter import filedialog, colorchooser, messagebox
 from PIL import Image, ImageDraw, ImageFont, ImageTk, UnidentifiedImageError
 from re import fullmatch
 from pathlib import Path
+from os import path
 
 import matplotlib.font_manager as fm
 
-from text import askfont
-
+from .text import askfont
 
 class ImageEditor:
     """
@@ -20,7 +20,7 @@ class ImageEditor:
     et d'enregistrer la composition finale.
     """
 
-    def __init__(self, root, exclusion_zone):
+    def __init__(self, root, exclusion_zone, resources_path):
         """
         Initialise l'application ImageEditor avec une fenêtre tkinter racine.
 
@@ -84,7 +84,8 @@ class ImageEditor:
             # affichage de l'image des layers
             try:
                 # Charger l'image à l'aide de PIL
-                img_layer = Image.open("resources/layers.png")
+                path_to_img = path.join(resources_path, "layers.png")
+                img_layer = Image.open(path_to_img)
                 img_layer = img_layer.resize((75, 75))
                 self.img_layer_tk = ImageTk.PhotoImage(img_layer)
                 # Créer un Canvas

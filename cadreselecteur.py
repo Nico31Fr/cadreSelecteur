@@ -7,6 +7,8 @@ from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from shutil import copy
 
+from CadreEditeur.imageeditorapp import ImageEditorApp
+
 # taille de la fenêtre
 WINDOWS_SIZE = "800x600"
 # taille des vignettes
@@ -14,9 +16,11 @@ THUMBNAIL_H = 128
 THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
 
 # repertoire avec tous les cadres / templates disponibles
-template_path = "./Templates/"
+template_path = "./Templates"
 # repertoire avec le cadre / template selectionne
 destination_path = "./Cadres/"
+# repertoire avec les resources scripts
+resources_path = "./resources"
 
 # nom du template définie dans piBooth
 TEMPLATE_NAME = 'template.xml'
@@ -236,6 +240,10 @@ class CadreSelecteur:
         button_frame = Frame(self.master)
         button_frame.pack(side="bottom", fill="x", pady=10)
 
+        add_new_border = Button(button_frame,
+                                text="nouveau cadre",
+                                command=self.new_border)
+        add_new_border.pack(side='left', padx=10)
         quit_button = Button(button_frame,
                              text="Quitter",
                              command=self.master.quit)
@@ -322,6 +330,17 @@ class CadreSelecteur:
         except Exception as e:
             print(f"Error displaying full image: {e}")
 
+    @staticmethod
+    def new_border():
+        """
+        lance l'éditeur de cadre sur clic du bouton
+        """
+        tk_root = Toplevel()
+        ImageEditorApp(tk_root,
+                       template = template_path,
+                       destination = destination_path,
+                       resources = resources_path)
+        tk_root.mainloop()
 
 if __name__ == "__main__":
 

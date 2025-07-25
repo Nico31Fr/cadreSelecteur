@@ -10,7 +10,7 @@ from json import dump, load, JSONDecodeError
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
 
-from imageeditor import ImageEditor
+from .imageeditor import ImageEditor
 
 
 class ImageEditorApp:
@@ -20,9 +20,18 @@ class ImageEditorApp:
         + sauvegarde restore
         + export
     """
-    def __init__(self, root, exclusion_zones):
+    def __init__(self,
+                 root,
+                 template="../Templates/",
+                 destination='../Cadres/',
+                 resources='../resources/'):
 
         try:
+            #recuperation des paramètres
+            self.template = template
+            self.destination = destination
+            self.resources = resources
+
             # Dimension de la fenêtre
             self.WINDOWS = "1400x650"
             self.prj_name = 'cadre_xxx'
@@ -63,10 +72,12 @@ class ImageEditorApp:
             # Ajouter un traceur pour appeler la fonction lors du changement d'état
             self.selected_template.trace_add("write", self.on_template_change)
 
+            self.exclusion_zones = self.load_default_template()
+
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app1_frame.grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
-            self.app1 = ImageEditor(self.app1_frame, exclusion_zones[0])
+            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], self.resources)
 
             # bouton synchronisation droite gauche
             button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
@@ -89,7 +100,7 @@ class ImageEditorApp:
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
-            self.app4 = ImageEditor(self.app4_frame, exclusion_zones[1])
+            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], self.resources)
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
@@ -134,7 +145,7 @@ class ImageEditorApp:
                 app_1.save_image(path_im)
                 app_4.save_image(path_im)
                 # copie et renomme le XML de template
-                path_to_xml = path.join("../Templates/", self.selected_template.get())
+                path_to_xml = path.join(self.template, self.selected_template.get())
                 dest_xml = path_im + '.xml'
                 copy(path_to_xml, dest_xml)
                 messagebox.showinfo("export réussie", "Les fichiers on été générés avec succès.")
@@ -320,6 +331,55 @@ class ImageEditorApp:
             messagebox.showerror("Erreur de direction", f"Une erreur s'est produite lors de la copie des couches : {str(e)}")
 
     # gestion des templates
+    def load_default_template(self):
+        """
+        appelé à l'initialisation pour charger le template par défaut
+        charge le xml et met à jour les zones d'exclusion
+        """
+        try:
+            # Charger et analyser le fichier XML
+            path_to_xml = path.join(self.template, self.selected_template.get())
+            tree = Et.parse(path_to_xml)
+            root_xml = tree.getroot()
+            new_exc_zone1 = []
+            new_exc_zone4 = []
+
+            # Trouver l'élément mxGeometry
+            for elem in root_xml.iter():
+                if 'diagram' not in elem.tag:
+                    continue
+                for diagram in elem.iter():
+                    if diagram.get('name') == 'Page-5':
+                        for item in diagram.iter():
+                            if 'mxGeometry' in item.tag:
+                                x = float(item.get('x'))
+                                y = float(item.get('y'))
+                                width = float(item.get('width'))
+                                height = float(item.get('height'))
+                                new_exc_zone1 = [(x, y, width, height)]
+                                break
+                    if diagram.get('name') == 'Page-8':
+                        number_of_coord = 1
+                        for item in diagram.iter():
+                            if 'mxGeometry' in item.tag:
+                                x = float(item.get('x'))
+                                y = float(item.get('y'))
+                                width = float(item.get('width'))
+                                height = float(item.get('height'))
+                                new_exc_zone4.append((x, y, width, height))
+                                number_of_coord += 1
+                                if number_of_coord >= 5:
+                                    break
+            return [new_exc_zone1, new_exc_zone4]
+
+        except (FileNotFoundError, IsADirectoryError):
+            messagebox.showerror("Erreur de fichier", "Le fichier XML spécifié est introuvable.")
+        except Et.ParseError:
+            messagebox.showerror("Erreur de XML", "Le fichier XML est corrompu ou non valide.")
+        except Exception as e:
+            messagebox.showerror("Erreur de template", f"Une erreur inattendue s'est produite : {str(e)}")
+
+    # gestion des templates
     def on_template_change(self, *args):
         """
         appelé lors du changement de template
@@ -327,7 +387,7 @@ class ImageEditorApp:
         """
         try:
             # Charger et analyser le fichier XML
-            path_to_xml = path.join("../Templates/", self.selected_template.get())
+            path_to_xml = path.join(self.template, self.selected_template.get())
             tree = Et.parse(path_to_xml)
             root_xml = tree.getroot()
             new_exc_zone1 = []
@@ -374,12 +434,6 @@ class ImageEditorApp:
 
 if __name__ == "__main__":
 
-    # <mxGeometry x="50" y="20" width="330" height="470" as="geometry" />
-    # Y X H W
-    exclusion_zones_1 = [
-        (50, 20, 470, 330),
-    ]
-
     tk_root = tk.Tk()
-    ImageEditorApp(tk_root, (exclusion_zones_1, exclusion_zones_1))
+    ImageEditorApp(tk_root)
     tk_root.mainloop()

@@ -46,7 +46,7 @@ python3 cadreselecteur.py
 
 ### Interface Utilisateur
 
-3. ![IHM](CadreEditeur/resources/IHM_selecteur.png)
+3. ![IHM](resources/IHM_selecteur.png)
 
 - **Cadres disponibles** : Liste et prévisualisation des cadres disponibles dans `Templates`.
 - **Cadre installé** : Prévisualisation du cadre actuellement utilisé dans `Cadres`.
@@ -66,7 +66,7 @@ Pour modifier le cadre que pibooth va utiliser :
 # Cadre éditeur
 
 ## Interface utilisateur
-![IHM](CadreEditeur/resources/IHM_editeur.png)
+![IHM](resources/IHM_editeur.png)
 ### Sections principales
 
 - **1 - Sélection de templates** : Choisissez parmi les templates disponibles pour définir les zones de cadre.
