@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-""" selecteur de cadre pour pibooth """
+""" sélecteur de cadre pour pibooth """
 
 from os import path, listdir
 from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from shutil import copy
+
+from PIL.ImageTk import PhotoImage
 
 from CadreEditeur.imageeditorapp import ImageEditorApp
 
@@ -17,7 +19,7 @@ THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
 
 # repertoire avec tous les cadres / templates disponibles
 template_path = "./Templates"
-# repertoire avec le cadre / template selectionne
+# repertoire avec le cadre / template sélectionné
 destination_path = "./Cadres/"
 # repertoire avec les resources scripts
 resources_path = "./resources"
@@ -191,7 +193,7 @@ class CadreSelecteur:
                                     filename.replace('_1.png', '_4.png'))
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_1 = ImageTk.PhotoImage(img)
+                thumbnail_img_1: PhotoImage = ImageTk.PhotoImage(img)
 
             with Image.open(file_path_4) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
@@ -208,9 +210,11 @@ class CadreSelecteur:
                                            value=filename)
                 radio_button.pack(side="left", padx=5)
 
+                # noinspection PyTypeChecker
                 thumbnail_label_1 = Label(item_frame, image=thumbnail_img_1)
                 # Keep a reference to prevent garbage collection
                 thumbnail_label_1.image = thumbnail_img_1
+                # noinspection PyTypeChecker
                 thumbnail_label_4 = Label(item_frame, image=thumbnail_img_4)
                 # Keep a reference to prevent garbage collection
                 thumbnail_label_4.image = thumbnail_img_4
@@ -321,7 +325,8 @@ class CadreSelecteur:
 
             with Image.open(file_path) as img:
                 img_resized = img.resize((width, height))
-                img_full = ImageTk.PhotoImage(img_resized)
+                img_full: PhotoImage = ImageTk.PhotoImage(img_resized)
+                # noinspection PyTypeChecker
                 label = Label(window, image=img_full)
                 label.image = img_full  # Keep a reference
                 label.pack()
@@ -330,17 +335,27 @@ class CadreSelecteur:
         except Exception as e:
             print(f"Error displaying full image: {e}")
 
-    @staticmethod
-    def new_border():
+    def new_border(self):
         """
         lance l'éditeur de cadre sur clic du bouton
         """
-        tk_root = Toplevel()
-        ImageEditorApp(tk_root,
+        self.master.iconify()
+
+        self.tk_root = Toplevel(self.master)
+
+        # Lier la fonction on_closing à l'événement de fermeture de la fenêtre
+        self.tk_root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        ImageEditorApp(self.tk_root,
                        template = template_path,
                        destination = destination_path,
                        resources = resources_path)
-        tk_root.mainloop()
+        self.tk_root.mainloop()
+
+    def on_closing(self):
+
+        self.tk_root.destroy()
+        self.master.deiconify()
 
 if __name__ == "__main__":
 
