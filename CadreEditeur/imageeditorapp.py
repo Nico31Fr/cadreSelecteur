@@ -24,14 +24,15 @@ class ImageEditorApp:
                  root,
                  template="../Templates/",
                  destination='../Cadres/',
-                 resources='../resources/'):
+                 resources='../resources/',
+                 standalone=True):
 
         try:
             #recuperation des paramètres
             self.template = template
             self.destination = destination
             self.resources = resources
-
+            self.standalone = standalone
             # Dimension de la fenêtre
             self.WINDOWS = "1400x650"
             self.prj_name = 'cadre_xxx'
@@ -166,8 +167,12 @@ class ImageEditorApp:
                                      message="saisir le nom du projet")
                 return None
 
-            # Ouvre la boîte de dialogue pour la sélection du répertoire
-            selected_dir = filedialog.askdirectory()
+            if self.standalone:
+                # Ouvre la boîte de dialogue pour la sélection du répertoire
+                selected_dir = filedialog.askdirectory()
+            else:
+                selected_dir = self.template
+
             path_prj_name = path.join(selected_dir, tmp_prj_name)
 
             if selected_dir:  # Vérifie si l'utilisateur à sélectionner un répertoire

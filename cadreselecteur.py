@@ -120,6 +120,11 @@ class CadreSelecteur:
         and generates thumbnails for image files.
         Configures the scroll region after adding items.
         """
+
+        # Efface tous les widgets existants dans la frame
+        for child in self.list_frameSrc.winfo_children():
+            child.destroy()
+
         self.create_dest_thumbnail()
         for filename in sorted(listdir(self.source_directory)):
             if filename.lower().endswith('_1.png'):
@@ -349,13 +354,16 @@ class CadreSelecteur:
         ImageEditorApp(self.tk_root,
                        template = template_path,
                        destination = destination_path,
-                       resources = resources_path)
+                       resources = resources_path,
+                       standalone=False)
         self.tk_root.mainloop()
 
     def on_closing(self):
 
         self.tk_root.destroy()
         self.master.deiconify()
+        # List and generate image thumbnails
+        self.list_files_and_generate_thumbnails()
 
 if __name__ == "__main__":
 
