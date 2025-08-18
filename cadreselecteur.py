@@ -352,9 +352,9 @@ class CadreSelecteur:
         self.tk_root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         ImageEditorApp(self.tk_root,
-                       template = template_path,
-                       destination = destination_path,
-                       resources = resources_path,
+                       template=template_path,
+                       destination=destination_path,
+                       resources=resources_path,
                        standalone=False)
         self.tk_root.mainloop()
 
@@ -364,6 +364,7 @@ class CadreSelecteur:
         self.master.deiconify()
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
+
 
 if __name__ == "__main__":
 

@@ -28,7 +28,7 @@ class ImageEditorApp:
                  standalone=True):
 
         try:
-            #recuperation des paramètres
+            # recuperation des paramètres
             self.template = template
             self.destination = destination
             self.resources = resources
@@ -121,7 +121,11 @@ class ImageEditorApp:
             button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
             # export / nom du projet
-            tk.Label(self.export_frame, text="Nom du set de cadre :").grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
+            tk.Label(self.export_frame, text="Nom du set de cadre :").grid(column=0,
+                                                                           row=1,
+                                                                           sticky=tk.EW,
+                                                                           padx=5,
+                                                                           pady=5)
             self.prj_name_var = tk.StringVar()
             self.texte_projet_name = tk.Entry(self.export_frame, textvariable=self.prj_name_var)
             self.texte_projet_name.insert(0, self.prj_name)
@@ -223,7 +227,8 @@ class ImageEditorApp:
         except (FileNotFoundError, IsADirectoryError):
             messagebox.showerror("Erreur de fichier", "Impossible de sauvegarder le projet.")
         except Exception as e:
-            messagebox.showerror("Erreur de sauvegarde", f"Une erreur inattendue s'est produite lors de la sauvegarde : {str(e)}")
+            messagebox.showerror("Erreur de sauvegarde",
+                                 f"Une erreur inattendue s'est produite lors de la sauvegarde : {str(e)}")
 
     def load_project(self):
         """Charge un projet depuis un fichier JSON."""
@@ -263,7 +268,8 @@ class ImageEditorApp:
                 try:
                     editor.original_image = Image.open(editor.imported_image_path).convert('RGBA')
                 except UnidentifiedImageError:
-                    messagebox.showerror("Erreur d'image", f"Le fichier image spécifié est introuvable ou corrompu.")
+                    messagebox.showerror("Erreur d'image",
+                                         "Le fichier image spécifié est introuvable ou corrompu.")
                     return
 
                 editor.display_imported_image_size = data['image_size']
@@ -276,7 +282,8 @@ class ImageEditorApp:
             editor.img_display_position = data["display_position"]
             editor.text_display_position = data["text_display_position"]
         except KeyError as e:
-            messagebox.showerror("Erreur de données", f"La clé {str(e)} est manquante dans les données du projet.")
+            messagebox.showerror("Erreur de données",
+                                 f"La clé {str(e)} est manquante dans les données du projet.")
 
     # gestion de la synchro droite gauche
     def copy_conf(self, layer, direction):
@@ -333,7 +340,8 @@ class ImageEditorApp:
             self.app1.update_canvas()
             self.app4.update_canvas()
         except ValueError as e:
-            messagebox.showerror("Erreur de direction", f"Une erreur s'est produite lors de la copie des couches : {str(e)}")
+            messagebox.showerror("Erreur de direction",
+                                 f"Une erreur s'est produite lors de la copie des couches : {str(e)}")
 
     # gestion des templates
     def load_default_template(self):

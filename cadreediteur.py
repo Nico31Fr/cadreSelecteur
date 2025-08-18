@@ -5,6 +5,7 @@
 import tkinter as tk
 from CadreEditeur.imageeditorapp import ImageEditorApp
 
+
 def start_cadre_editeur():
     """
     initialise une IHM et démarre l'éditeur de cadre
@@ -12,6 +13,7 @@ def start_cadre_editeur():
     tk_root = tk.Tk()
     ImageEditorApp(tk_root)
     tk_root.mainloop()
+
 
 if __name__ == "__main__":
 

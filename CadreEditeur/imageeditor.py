@@ -13,6 +13,7 @@ import matplotlib.font_manager as fm
 
 from .text import askfont
 
+
 class ImageEditor:
     """
     Une application d'édition d'image simple permettant aux utilisateurs
@@ -246,7 +247,7 @@ class ImageEditor:
                 try:
                     self.original_image = Image.open(self.imported_image_path).convert('RGBA')
                 except UnidentifiedImageError:
-                    messagebox.showerror("Erreur d'image", f"Le fichier image spécifié est introuvable ou corrompu.")
+                    messagebox.showerror("Erreur d'image", "Le fichier image spécifié est introuvable ou corrompu.")
                     return
 
                 # Calculer la nouvelle taille en conservant le ratio
