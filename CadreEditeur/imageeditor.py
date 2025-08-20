@@ -9,6 +9,7 @@ from re import fullmatch
 
 from .layerimage import LayerImage
 from .layertext import LayerText
+from .layerexcluzone import LayerExcluZone
 
 
 class ImageEditor:
@@ -78,6 +79,8 @@ class ImageEditor:
         self.canvas.bind("<MouseWheel>", self.resize)
         self.start_drag_pos = None
 
+        self.add_zone_exclu_layer()
+
         self.update_canvas()
 
     def add_image_layer(self):
@@ -108,6 +111,34 @@ class ImageEditor:
         self.layers.append(layer)
         self.active_layer_idx = len(self.layers)-1
         self.refresh_listbox()
+        self.update_canvas()
+
+    def add_zone_exclu_layer(self):
+        """
+        met a jourles zone d'exclusions
+        """
+        name = "Zones insertion photos"
+        layer = LayerExcluZone(self.frame,
+                          (self.CANVA_W,self.CANVA_H),
+                          (self.IMAGE_W,self.IMAGE_H),
+                          self.RATIO,
+                          name=name)
+        layer.set_exclusion_zone(self.exclusion_zone)
+        self.layers.append(layer)
+        self.active_layer_idx = len(self.layers)-1
+        self.refresh_listbox()
+        self.update_canvas()
+
+    def update_zone_exclu_layer(self, exclusion_zone):
+        """
+        Ajoute un nouveau calque zone d'exclusions
+        """
+        name = "Zones insertion photos"
+
+        for layer in self.layers:
+            if layer.layer_type == 'ZoneEx':
+                layer.set_exclusion_zone(exclusion_zone)
+
         self.update_canvas()
 
     def delete_layer(self):
@@ -269,15 +300,6 @@ class ImageEditor:
 
         for l in self.layers:
             l.draw_on_image(temp_image, export=False)
-
-        # Crée un objet ImageDraw pour dessiner sur l'image
-        draw_d = ImageDraw.Draw(temp_image)
-
-        # insère les zones transparentes (Display et Image)
-        for zone in self.exclusion_zone:
-            d_x, d_y, d_w, d_h = zone
-            draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
-                             fill=(255, 255, 255, 0))
 
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)

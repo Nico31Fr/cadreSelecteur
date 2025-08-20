@@ -434,7 +434,9 @@ class ImageEditorApp:
                                     break
 
             self.app1.exclusion_zone = new_exc_zone1
+            self.app1.update_zone_exclu_layer(new_exc_zone1)
             self.app4.exclusion_zone = new_exc_zone4
+            self.app4.update_zone_exclu_layer(new_exc_zone4)
             self.app1.update_canvas()
             self.app4.update_canvas()
         except (FileNotFoundError, IsADirectoryError):
