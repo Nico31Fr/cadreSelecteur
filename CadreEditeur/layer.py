@@ -58,7 +58,18 @@ class Layer:
             image (PIL.Image): Image PIL sur laquelle dessiner.
             export (bool): True si l'on dessine pour export (haute rés.), False pour affichage.
 
-        Returns:
+        Returns :
+            None
+        """
+        pass # À spécialiser dans les sous-classes.
+
+    def update_param_zone(self, frame):
+        """
+        Méthode à spécialiser. Met à jour la zone de paramétrage du calque
+
+        Args:
+            frame (PIL.Frame): frame à mettre à jour
+        Returns :
             None
         """
         pass # À spécialiser dans les sous-classes.

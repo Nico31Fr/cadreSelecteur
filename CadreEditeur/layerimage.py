@@ -12,7 +12,7 @@ class LayerImage(Layer):
     Calque image importée, redimensionnable et positionnable.
     """
 
-    def __init__(self, parent, canva_size, image_size, ratio, name="Image"):
+    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name="Image"):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
@@ -22,6 +22,7 @@ class LayerImage(Layer):
             name (str): Nom du calque.
         """
         super().__init__(name, canva_size, image_size, ratio)
+        self.tkparent = tkparent
         self.parent = parent
         self.layer_type = "image"
         self.imported_image_path = None
@@ -40,16 +41,16 @@ class LayerImage(Layer):
         Returns:
             bool: True si import OK, False sinon.
         """
-        self.imported_image_path = filedialog.askopenfilename(parent=self.parent)
+        self.imported_image_path = filedialog.askopenfilename(parent=self.tkparent)
         if not self.imported_image_path:
             return False
         try:
             self.original_image = Image.open(self.imported_image_path).convert('RGBA')
         except UnidentifiedImageError:
-            messagebox.showerror("Erreur d'image", "Image corrompue ou illisible.", parent=self.parent)
+            messagebox.showerror("Erreur d'image", "Image corrompue ou illisible.", parent=self.tkparent)
             return False
         except Exception as e:
-            messagebox.showerror("Erreur d'image", str(e), parent=self.parent)
+            messagebox.showerror("Erreur d'image", str(e), parent=self.tkparent)
             return False
         w0, h0 = self.original_image.size
         aspect = w0 / h0
@@ -94,3 +95,7 @@ class LayerImage(Layer):
         to_paste = self.image_imported_image if export else self.display_imported_image
         pos = self.image_position if export else self.display_position
         image.paste(to_paste, (int(pos[0]), int(pos[1])), to_paste)
+
+    def update_param_zone(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()

@@ -12,7 +12,7 @@ class LayerExcluZone(Layer):
     Calque contenant les zone d'exclusion.
     """
 
-    def __init__(self, parent, canva_size, image_size, ratio, name="ZoneEx"):
+    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name="ZoneEx"):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
@@ -20,6 +20,7 @@ class LayerExcluZone(Layer):
         """
         super().__init__(name, canva_size, image_size, ratio)
         self.parent = parent
+        self.tkparent = tkparent
         self.name = name
         self.layer_type = "ZoneEx"
         self.exclusion_zone = [(0,0,0,0)]
@@ -52,3 +53,7 @@ class LayerExcluZone(Layer):
                                   d_w * local_ratio,
                                   d_h * local_ratio)
             draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
+
+    def update_param_zone(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()

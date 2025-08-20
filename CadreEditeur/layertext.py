@@ -3,15 +3,19 @@
     |-> classe de gestion des calques texte  """
 
 from PIL import ImageFont, ImageDraw
-from .layer import Layer
+import tkinter as tk
+from tkinter import messagebox, colorchooser
+import matplotlib.font_manager as fm
 
+from .layer import Layer
+from .text import askfont
 
 class LayerText(Layer):
     """
     Calque texte éditable, positionnable, redimensionnable.
     """
 
-    def __init__(self, parent, canva_size, image_size, ratio, name="Text"):
+    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name="Text"):
         """
         Args:
             parent (object): widget parent Tkinter.
@@ -19,9 +23,11 @@ class LayerText(Layer):
             name (str): nom du calque.
         """
         super().__init__(name, canva_size, image_size, ratio)
+        self.tkparent = tkparent
         self.parent = parent
         self.layer_type = "text"
-        self.text = "Texte"
+        # variables texte
+        self.text = tk.StringVar(value='Texte')
         self.font_color = "#000000"
         self.sel_font = {'family': "arial", 'size': 32}
         self.font_name = "arial.ttf"
@@ -62,4 +68,72 @@ class LayerText(Layer):
         size = self.sel_font['size'] * self.RATIO if export else self.sel_font['size']
         font = ImageFont.truetype(self.font_name, size)
         draw = ImageDraw.Draw(image)
-        draw.text(pos, self.text, fill=self.font_color, font=font)
+        draw.text(pos, self.text.get(), fill=self.font_color, font=font)
+
+    def update_param_zone(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+        # bouton et saisie pour le texte
+        tk.Entry(frame,
+                 textvariable=self.text).pack(padx=10, pady=10)
+        tk.Button(frame,
+                  text='Couleur',
+                  command=lambda: self.choisir_couleur()).pack(padx=10, pady=10, side='top')
+        tk.Button(frame,
+                  text='Police',
+                  command=self.callback_font).pack(padx=10, pady=10, side='top')
+
+    def callback_font(self):
+        """
+        lorsque le bouton font est cliqué lance l'interface
+         de selection de police d'écriture
+        """
+        try:
+            font_selected = askfont(self.tkparent,
+                                    text=self.text.get(),
+                                    title="Police",
+                                    family=self.sel_font['family'],
+                                    size=self.sel_font['size'],)
+
+            # met à jour la police sélectionné
+            if font_selected:
+                self.sel_font = font_selected
+                font_name_found = self.find_font_path(self.sel_font['family'])
+                if font_name_found is not None:
+                    self.font_name = font_name_found
+
+            self.parent.update_canvas()
+
+        except Exception as e:
+            messagebox.showerror("Erreur de font", f"Exception inattendue : {str(e)}")
+
+    @staticmethod
+    def find_font_path(font_name_to_find):
+        """
+        trouve le chemin de la police
+        """
+        try:
+            # Obtenir la liste de toutes les polices système
+            font_paths = fm.findSystemFonts(fontpaths=None, fontext='ttf')
+
+            for font_path in font_paths:
+                # Vérifier si le nom de la police correspond
+                prop = fm.FontProperties(fname=font_path)
+                if prop.get_name().lower() == font_name_to_find.replace('@', '').lower():
+                    return font_path
+            return None
+        except Exception as e:
+            messagebox.showerror("Erreur de police", f"Exception inattendue: {str(e)}")
+            return None
+
+    # gestion couleur
+    def choisir_couleur(self):
+        """ Ouvrir une boîte de dialogue de sélection de couleur """
+        try:
+            couleur = colorchooser.askcolor(title="Choisissez une couleur")
+            self.font_color = couleur[1]
+            self.parent.update_canvas()
+
+        except Exception as e:
+            messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")

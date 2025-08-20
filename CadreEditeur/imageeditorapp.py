@@ -34,7 +34,7 @@ class ImageEditorApp:
             self.resources = resources
             self.standalone = standalone
             # Dimension de la fenêtre
-            self.WINDOWS = "1400x650"
+            self.WINDOWS = "1400x750"
             self.prj_name = 'cadre_xxx'
             self.tk_root = root
 
@@ -100,12 +100,12 @@ class ImageEditorApp:
 
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-            self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
+            self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=10, pady=10)
             self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], self.resources)
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-            self.export_frame.grid(column=0, row=2, columnspan=3, padx=5, pady=5)
+            self.export_frame.grid(column=0, row=2, columnspan=3, padx=10, pady=10)
 
             # configure la grille pour les boutons 4 lignes x 3 colonnes
             self.export_frame.rowconfigure(0, weight=2)

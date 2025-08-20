@@ -4,7 +4,7 @@
 
 import tkinter as tk
 from tkinter import colorchooser,messagebox
-from PIL import Image, ImageTk, ImageDraw
+from PIL import Image, ImageTk
 from re import fullmatch
 
 from .layerimage import LayerImage
@@ -37,7 +37,7 @@ class ImageEditor:
         self.image_imported_image = None
         self.original_image = None
         self.background_couleur = "#FFFFFF"
-
+        self.root = root
         self.texte_background_value = tk.StringVar(value=self.background_couleur)
 
         # -- Pile dynamique de calques --
@@ -45,23 +45,30 @@ class ImageEditor:
         self.active_layer_idx = -1
 
         # -- Canvas/IHM --
-        self.frame = tk.Frame(root); self.frame.pack()
-        self.canvas = tk.Canvas(self.frame, width=self.CANVA_W, height=self.CANVA_H); self.canvas.pack()
+        self.canvas = tk.Canvas(self.root, width=self.CANVA_W, height=self.CANVA_H)
+        self.canvas.pack()
         self.tk_image = None
-        self.listbox = tk.Listbox(self.frame, height=5)
+
+        self.layers_frame = tk.Frame(self.root)
+        self.layers_frame.pack(side='left',
+                                    padx=10,
+                                    pady=10,
+                                    ipadx=10,
+                                    ipady=10)
+        self.listbox = tk.Listbox(self.layers_frame, height=5)
         self.listbox.pack(fill='x')
         self.listbox.bind("<<ListboxSelect>>", self.on_layer_select)
 
         # -- Boutons de gestion pile --
-        btnf = tk.Frame(self.frame); btnf.pack()
+        btnf = tk.Frame(self.layers_frame); btnf.pack()
         tk.Button(btnf, text="Ajouter Image", command=self.add_image_layer).grid(row=0,column=0)
         tk.Button(btnf, text="Ajouter Texte", command=self.add_text_layer).grid(row=0,column=1)
         tk.Button(btnf, text="Supprimer", command=self.delete_layer).grid(row=0,column=2)
-        tk.Button(btnf, text="Monter", command=lambda:self.move_layer(-1)).grid(row=0,column=3)
-        tk.Button(btnf, text="Descendre", command=lambda:self.move_layer(1)).grid(row=0,column=4)
+        tk.Button(btnf, text="  ˄  ", command=lambda:self.move_layer(-1)).grid(row=0,column=3)
+        tk.Button(btnf, text="  ˅  ", command=lambda:self.move_layer(1)).grid(row=0,column=4)
 
         # -- Boutons de gestion couleur de fond --
-        fondf = tk.Frame(self.frame)
+        fondf = tk.Frame(self.layers_frame)
         fondf.pack(pady=(10, 0))
         tk.Label(fondf, text="Couleur du fond :").pack(side="left")
         self.texte_background = tk.Entry(fondf, textvariable=self.texte_background_value, width=8)
@@ -69,10 +76,22 @@ class ImageEditor:
         self.label_couleur = tk.Label(fondf, text="     ", bg=self.background_couleur, cursor="hand2")
         self.label_couleur.pack(side="left", padx=5)
         # Ouvre le colorchooser sur clic
-        self.label_couleur.bind("<Button-1>", lambda e: self.choisir_couleur_background())
+        self.label_couleur.bind("<Button-1>", lambda e: self.select_background_color())
         # Lier une fonction à la modification de la valeur de l'Entry
         self.texte_background_value.trace_add("write",
                                               self.on_color_entry_change)
+
+        # Frame bouton de config du calque
+        self.param_frame = tk.Frame(self.root,
+                                    borderwidth=2,
+                                    relief="groove",
+                                    width=300,
+                                    height=200,
+                                    padx=10,
+                                    pady=10)
+        self.param_frame.pack(side='right')
+        self.param_frame.pack_propagate(False)
+
         # -- Drag & Resize --
         self.canvas.bind("<Button-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_drop)
@@ -88,7 +107,8 @@ class ImageEditor:
         Ajoute un nouveau calque image et le sélectionne.
         """
         n = len([l for l in self.layers if l.layer_type=='image'])+1
-        layer = LayerImage(self.frame,
+        layer = LayerImage(self.root,
+                           self,
                            (self.CANVA_W,self.CANVA_H),
                            (self.IMAGE_W,self.IMAGE_H),
                            self.RATIO,
@@ -97,6 +117,7 @@ class ImageEditor:
             self.layers.append(layer)
             self.active_layer_idx = len(self.layers)-1
             self.refresh_listbox()
+            self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
             self.update_canvas()
         else:
             del layer
@@ -107,18 +128,25 @@ class ImageEditor:
         """
         n = len([l for l in self.layers if l.layer_type=='text'])+1
         name = f"Texte {n}"
-        layer = LayerText(self.frame, (self.CANVA_W,self.CANVA_H), (self.IMAGE_W,self.IMAGE_H), self.RATIO, name=name)
+        layer = LayerText(self.root,
+                          self,
+                          (self.CANVA_W,self.CANVA_H),
+                          (self.IMAGE_W,self.IMAGE_H),
+                          self.RATIO,
+                          name=name)
         self.layers.append(layer)
         self.active_layer_idx = len(self.layers)-1
         self.refresh_listbox()
+        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
         self.update_canvas()
 
     def add_zone_exclu_layer(self):
         """
-        met a jourles zone d'exclusions
+        met à jour les zone d'exclusions
         """
         name = "Zones insertion photos"
-        layer = LayerExcluZone(self.frame,
+        layer = LayerExcluZone(self.root,
+                               self,
                           (self.CANVA_W,self.CANVA_H),
                           (self.IMAGE_W,self.IMAGE_H),
                           self.RATIO,
@@ -127,13 +155,13 @@ class ImageEditor:
         self.layers.append(layer)
         self.active_layer_idx = len(self.layers)-1
         self.refresh_listbox()
+        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
         self.update_canvas()
 
     def update_zone_exclu_layer(self, exclusion_zone):
         """
         Ajoute un nouveau calque zone d'exclusions
         """
-        name = "Zones insertion photos"
 
         for layer in self.layers:
             if layer.layer_type == 'ZoneEx':
@@ -190,6 +218,7 @@ class ImageEditor:
         if idxs:
             self.active_layer_idx = idxs[0]
             self.refresh_listbox()
+            self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
             self.update_canvas()
 
     def start_drag(self, event):
@@ -224,7 +253,7 @@ class ImageEditor:
                 l.resize_font(delta)
             self.update_canvas()
 
-    def choisir_couleur_background(self):
+    def select_background_color(self):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         try:
             couleur = colorchooser.askcolor(title="Choisissez une couleur")
@@ -248,7 +277,6 @@ class ImageEditor:
         except Exception as e:
             messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
 
-
     # export de l'image
     def save_image(self, out_path: str):
         """
@@ -257,26 +285,22 @@ class ImageEditor:
         try:
             # couleur du fond
             # génère une image avec la couleur de fond sélectionnée
-            self.image_de_font = Image.new('RGBA',
+            image_de_font = Image.new('RGBA',
                                            (self.IMAGE_W, self.IMAGE_H),
                                            self.background_couleur)
 
             # évite l'effacement par le garbage collector
-            self.image_export = self.image_de_font.copy()
+            image_export = image_de_font.copy()
 
+            # superpose les calques dans l'image
             for l in self.layers:
-                l.draw_on_image(self.image_export, export=False)
-
-            # insère les zones transparentes (Display et Image)
-            draw_i = ImageDraw.Draw(self.image_export)
-            for d_x, d_y, d_w, d_h in self.exclusion_zone:
-                i_x, i_y, i_w, i_h = (d_x * self.RATIO, d_y * self.RATIO, d_w * self.RATIO, d_h * self.RATIO)
-                draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
+                l.draw_on_image(image_export, export=True)
 
             # Enregistre le fichier image.
             extension = str('_' + str(len(self.exclusion_zone)) + '.png')
             out_path = out_path + extension
-            self.image_export.save(out_path)
+            image_export.save(out_path)
+
         except Exception as e:
             messagebox.showerror("Erreur d'enregistrement", f"Exception inattendue : {str(e)}")
 
@@ -298,6 +322,7 @@ class ImageEditor:
         # évite l'effacement par le garbage collector
         temp_image = display_image.copy()
 
+        # superpose les calques dans l'image
         for l in self.layers:
             l.draw_on_image(temp_image, export=False)
 
@@ -307,6 +332,6 @@ class ImageEditor:
 
 # --- Pour tester/demo ---
 if __name__=="__main__":
-    root = tk.Tk()
-    editor = ImageEditor(root)
-    root.mainloop()
+    main_root = tk.Tk()
+    editor = ImageEditor(main_root, (0,0,0,0), '')
+    main_root.mainloop()
