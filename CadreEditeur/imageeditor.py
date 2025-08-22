@@ -70,7 +70,7 @@ class ImageEditor:
         # -- Boutons de gestion couleur de fond --
         fondf = tk.Frame(self.layers_frame)
         fondf.pack(pady=(10, 0))
-        tk.Label(fondf, text="Couleur du fond :").pack(side="left")
+        tk.Label(fondf, text="Couleur du fond :").pack(side="left", anchor='s', padx=5, pady=10)
         self.texte_background = tk.Entry(fondf, textvariable=self.texte_background_value, width=8)
         self.texte_background.pack(side="left", padx=5)
         self.label_couleur = tk.Label(fondf, text="                  ",
