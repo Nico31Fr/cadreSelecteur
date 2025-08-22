@@ -4,7 +4,7 @@
 
 
 from PIL import Image, UnidentifiedImageError, ImageDraw
-from tkinter import filedialog, messagebox
+import tkinter as tk
 from .layer import Layer
 
 class LayerExcluZone(Layer):
@@ -12,7 +12,7 @@ class LayerExcluZone(Layer):
     Calque contenant les zone d'exclusion.
     """
 
-    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name="ZoneEx"):
+    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name='ZoneEx'):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
@@ -22,7 +22,7 @@ class LayerExcluZone(Layer):
         self.parent = parent
         self.tkparent = tkparent
         self.name = name
-        self.layer_type = "ZoneEx"
+        self.layer_type = 'ZoneEx'
         self.exclusion_zone = [(0,0,0,0)]
 
     def set_exclusion_zone(self, value):
@@ -57,3 +57,5 @@ class LayerExcluZone(Layer):
     def update_param_zone(self, frame):
         for widget in frame.winfo_children():
             widget.destroy()
+
+        tk.Label(frame, text="calque zone d'exclusion").pack(anchor='nw')

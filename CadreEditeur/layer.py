@@ -48,7 +48,7 @@ class Layer:
         new_disp_y = self.display_position[1] + dy
         self.display_position = (new_disp_x, new_disp_y)
         self.image_position = (new_disp_x * self.RATIO, new_disp_y * self.RATIO)
-        return (event.x, event.y)
+        return event.x, event.y
 
     def draw_on_image(self, image, export=False):
         """

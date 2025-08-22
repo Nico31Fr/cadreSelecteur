@@ -74,15 +74,17 @@ class LayerText(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
+        tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
         # bouton et saisie pour le texte
         tk.Entry(frame,
-                 textvariable=self.text).pack(padx=10, pady=10)
+                 textvariable=self.text, width=40).pack(padx=10, pady=10, anchor='nw')
         tk.Button(frame,
                   text='Couleur',
-                  command=lambda: self.choisir_couleur()).pack(padx=10, pady=10, side='top')
+                  command=lambda: self.choisir_couleur()).pack(padx=10, pady=10, side='top', anchor='nw')
         tk.Button(frame,
                   text='Police',
-                  command=self.callback_font).pack(padx=10, pady=10, side='top')
+                  command=self.callback_font).pack(padx=10, pady=10, side='top', anchor='nw')
+        self.text.trace_add("write", self.on_text_change)
 
     def callback_font(self):
         """
@@ -137,3 +139,14 @@ class LayerText(Layer):
 
         except Exception as e:
             messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
+
+    def on_text_change(self, *args):
+        """
+        Ajoute du texte provenant du champ de texte
+        à l'image à une position prédéfinie.
+        """
+        try:
+            if args:
+                self.parent.update_canvas()
+        except Exception as e:
+            messagebox.showerror("Erreur de texte", f"Exception inattendue : {str(e)}")

@@ -73,7 +73,9 @@ class ImageEditor:
         tk.Label(fondf, text="Couleur du fond :").pack(side="left")
         self.texte_background = tk.Entry(fondf, textvariable=self.texte_background_value, width=8)
         self.texte_background.pack(side="left", padx=5)
-        self.label_couleur = tk.Label(fondf, text="     ", bg=self.background_couleur, cursor="hand2")
+        self.label_couleur = tk.Label(fondf, text="                  ",
+                                      bg=self.background_couleur,
+                                      cursor="hand2")
         self.label_couleur.pack(side="left", padx=5)
         # Ouvre le colorchooser sur clic
         self.label_couleur.bind("<Button-1>", lambda e: self.select_background_color())
@@ -117,7 +119,6 @@ class ImageEditor:
             self.layers.append(layer)
             self.active_layer_idx = len(self.layers)-1
             self.refresh_listbox()
-            self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
             self.update_canvas()
         else:
             del layer
@@ -135,9 +136,8 @@ class ImageEditor:
                           self.RATIO,
                           name=name)
         self.layers.append(layer)
-        self.active_layer_idx = len(self.layers)-1
+        self.active_layer_idx = len(self.layers) - 1
         self.refresh_listbox()
-        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
         self.update_canvas()
 
     def add_zone_exclu_layer(self):
@@ -155,7 +155,6 @@ class ImageEditor:
         self.layers.append(layer)
         self.active_layer_idx = len(self.layers)-1
         self.refresh_listbox()
-        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
         self.update_canvas()
 
     def update_zone_exclu_layer(self, exclusion_zone):
@@ -173,7 +172,8 @@ class ImageEditor:
         """
         Supprime le calque sélectionné.
         """
-        if 0 <= self.active_layer_idx < len(self.layers):
+        if 0 <= self.active_layer_idx < len(self.layers)\
+                and  self.layers[self.active_layer_idx].layer_type != 'ZoneEx' :
             del self.layers[self.active_layer_idx]
             if self.layers:
                 self.active_layer_idx = max(0, self.active_layer_idx-1)
@@ -209,6 +209,7 @@ class ImageEditor:
         self.listbox.selection_clear(0,"end")
         if self.active_layer_idx >=0:
             self.listbox.selection_set(self.active_layer_idx)
+        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
 
     def on_layer_select(self, event):
         """
@@ -218,7 +219,6 @@ class ImageEditor:
         if idxs:
             self.active_layer_idx = idxs[0]
             self.refresh_listbox()
-            self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
             self.update_canvas()
 
     def start_drag(self, event):
@@ -293,7 +293,7 @@ class ImageEditor:
             image_export = image_de_font.copy()
 
             # superpose les calques dans l'image
-            for l in self.layers:
+            for l in reversed(self.layers):
                 l.draw_on_image(image_export, export=True)
 
             # Enregistre le fichier image.
@@ -323,7 +323,7 @@ class ImageEditor:
         temp_image = display_image.copy()
 
         # superpose les calques dans l'image
-        for l in self.layers:
+        for l in reversed(self.layers):
             l.draw_on_image(temp_image, export=False)
 
         self.tk_image = ImageTk.PhotoImage(temp_image)

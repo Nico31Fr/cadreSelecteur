@@ -4,6 +4,7 @@
 
 
 from PIL import Image, UnidentifiedImageError
+import tkinter as tk
 from tkinter import filedialog, messagebox
 from .layer import Layer
 
@@ -99,3 +100,5 @@ class LayerImage(Layer):
     def update_param_zone(self, frame):
         for widget in frame.winfo_children():
             widget.destroy()
+
+        tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
