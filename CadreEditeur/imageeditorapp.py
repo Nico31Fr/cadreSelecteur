@@ -81,18 +81,10 @@ class ImageEditorApp:
             self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], self.resources)
 
             # bouton synchronisation droite gauche
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
+            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('layer', '1_4'))
+            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
             button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=10)
             button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=10)
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('image', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('image', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=40)
-            button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=40)
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('text', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('text', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=70)
-            button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=70)
             button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
             button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
             button_load.grid(column=1, row=1, sticky=tk.E, padx=5, pady=5)
@@ -295,48 +287,54 @@ class ImageEditorApp:
         dir : copie de 1 vers 4 ou 4 vers 1 '1_4' or '4_1'
         """
         try:
-            if layer == 'background' or layer == 'all':
+            if layer == 'layer':
                 if direction == '1_4':
-                    self.app4.background_couleur = self.app1.background_couleur
+                    new_layer = self.app1.layers[self.app1.active_layer_idx].clone(self.app4_frame, self.app4)
+                    n = len([l for l in self.app4.layers if l.layer_type == new_layer.layer_type]) + 1
+                    new_layer.name = f"{new_layer.layer_type} {n}"
+                    self.app4.layers.append(new_layer)
                 elif direction == '4_1':
-                    self.app1.background_couleur = self.app4.background_couleur
+                    new_layer = self.app4.layers[self.app4.active_layer_idx].clone(self.app1_frame, self.app1)
+                    n = len([l for l in self.app1.layers if l.layer_type == new_layer.layer_type]) + 1
+                    new_layer.name = f"{new_layer.layer_type} {n}"
+                    self.app1.layers.append(new_layer)
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
-            if layer == 'image' or layer == 'all':
+            if layer == 'all':
                 if direction == '1_4':
-                    self.app4.imported_image_path = self.app1.imported_image_path
-                    self.app4.original_image = self.app1.original_image
-                    self.app4.display_imported_image_size = self.app1.display_imported_image_size
-                    self.app4.display_imported_image = self.app1.display_imported_image
-                    self.app4.image_imported_image = self.app1.image_imported_image
-                    self.app4.image_imported_image_size = self.app1.image_imported_image_size
-                    self.app4.img_display_position = self.app1.img_display_position
+                    #efface tous les calques
+                    for i in reversed(range(len(self.app4.layers))):
+                        l = self.app4.layers[i]
+                        if l.layer_type != 'ZoneEx':
+                            self.app4.active_layer_idx = i
+                            self.app4.delete_layer()
+                    # copie tou les calques
+                    for l in self.app1.layers:
+                        if l.layer_type != 'ZoneEx':
+                            new_layer = l.clone(self.app4_frame, self.app4)
+                            n = len([l for l in self.app4.layers if l.layer_type == new_layer.layer_type]) + 1
+                            new_layer.name = l.name
+                            self.app4.layers.append(new_layer)
+
                 elif direction == '4_1':
-                    self.app1.imported_image_path = self.app4.imported_image_path
-                    self.app1.original_image = self.app4.original_image
-                    self.app1.display_imported_image_size = self.app4.display_imported_image_size
-                    self.app1.display_imported_image = self.app4.display_imported_image
-                    self.app1.image_imported_image = self.app4.image_imported_image
-                    self.app1.image_imported_image_size = self.app4.image_imported_image_size
-                    self.app1.img_display_position = self.app4.img_display_position
-                else:
-                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
-            if layer == 'text' or layer == 'all':
-                if direction == '1_4':
-                    self.app4.text.set(self.app1.text.get())
-                    self.app4.sel_font = self.app1.sel_font
-                    self.app4.font_color = self.app1.font_color
-                    self.app4.font_name = self.app1.font_name
-                    self.app4.text_display_position = self.app1.text_display_position
-                elif direction == '4_1':
-                    self.app1.text.set(self.app4.text.get())
-                    self.app1.sel_font = self.app4.sel_font
-                    self.app1.font_color = self.app4.font_color
-                    self.app1.font_name = self.app4.font_name
-                    self.app1.text_display_position = self.app4.text_display_position
+                    #efface tous les calques
+                    for i in reversed(range(len(self.app1.layers))):
+                        l = self.app1.layers[i]
+                        if l.layer_type != 'ZoneEx':
+                            self.app1.active_layer_idx = i
+                            self.app1.delete_layer()
+                    # copie tou les calques
+                    for l in self.app4.layers:
+                        if l.layer_type != 'ZoneEx':
+                            new_layer = l.clone(self.app1_frame, self.app1)
+                            n = len([l for l in self.app1.layers if l.layer_type == new_layer.layer_type]) + 1
+                            new_layer.name = l.name
+                            self.app1.layers.append(new_layer)
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
 
+            self.app1.refresh_listbox()
+            self.app4.refresh_listbox()
             self.app1.update_canvas()
             self.app4.update_canvas()
         except ValueError as e:

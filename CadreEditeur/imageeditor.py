@@ -108,7 +108,7 @@ class ImageEditor:
         """
         Ajoute un nouveau calque image et le sélectionne.
         """
-        n = len([l for l in self.layers if l.layer_type=='image'])+1
+        n = len([l for l in self.layers if l.layer_type=='Image'])+1
         layer = LayerImage(self.root,
                            self,
                            (self.CANVA_W,self.CANVA_H),
@@ -127,7 +127,7 @@ class ImageEditor:
         """
         Ajoute un nouveau calque texte et le sélectionne.
         """
-        n = len([l for l in self.layers if l.layer_type=='text'])+1
+        n = len([l for l in self.layers if l.layer_type=='Texte'])+1
         name = f"Texte {n}"
         layer = LayerText(self.root,
                           self,
@@ -245,10 +245,10 @@ class ImageEditor:
         """
         if 0 <= self.active_layer_idx < len(self.layers):
             l = self.layers[self.active_layer_idx]
-            if l.layer_type == "image":
+            if l.layer_type == 'Image':
                 delta = 10 if event.delta > 0 else -10
                 l.resize(delta)
-            elif l.layer_type == "text":
+            elif l.layer_type == 'Texte':
                 delta = 2 if event.delta > 0 else -2
                 l.resize_font(delta)
             self.update_canvas()

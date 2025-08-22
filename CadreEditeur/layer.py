@@ -73,3 +73,10 @@ class Layer:
             None
         """
         pass # À spécialiser dans les sous-classes.
+
+    def clone(self, tkparent, parent):
+        """
+        Retourne une nouvelle instance du même type, avec les mêmes paramètres de base.
+        À spécialiser dans chaque sous-classe !
+        """
+        raise NotImplementedError("clone doit être implémenté dans les classes dérivées.")

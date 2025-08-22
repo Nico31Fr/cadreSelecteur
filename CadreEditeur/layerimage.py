@@ -13,7 +13,7 @@ class LayerImage(Layer):
     Calque image importée, redimensionnable et positionnable.
     """
 
-    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name="Image"):
+    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name='Image'):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
@@ -25,7 +25,7 @@ class LayerImage(Layer):
         super().__init__(name, canva_size, image_size, ratio)
         self.tkparent = tkparent
         self.parent = parent
-        self.layer_type = "image"
+        self.layer_type = 'Image'
         self.imported_image_path = None
         self.original_image = None
         self.display_imported_image = None
@@ -102,3 +102,34 @@ class LayerImage(Layer):
             widget.destroy()
 
         tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
+
+    def clone(self, tkparent, parent):
+        """
+        Crée une copie indépendante de ce LayerImage (mêmes réglages, nouvelle instance)
+        """
+        new_layer = LayerImage(
+            tkparent,
+            parent,
+            (self.CANVA_W, self.CANVA_H),
+            (self.IMAGE_W, self.IMAGE_H),
+            self.RATIO,
+            name=self.name + "_copie"
+        )
+        new_layer.display_position         = tuple(self.display_position)
+        new_layer.image_position           = tuple(self.image_position)
+        new_layer.visible                  = self.visible
+        new_layer.locked                   = self.locked
+
+        new_layer.imported_image_path      = self.imported_image_path
+        # Pour les images PIL : il faut vraiment cloner la donnée ! (sans 'link')
+        if self.original_image is not None:
+            new_layer.original_image           = self.original_image.copy()
+        if self.display_imported_image is not None:
+            new_layer.display_imported_image   = self.display_imported_image.copy()
+        new_layer.display_imported_image_size  = tuple(self.display_imported_image_size)
+        if self.image_imported_image is not None:
+            new_layer.image_imported_image     = self.image_imported_image.copy()
+        new_layer.image_imported_image_size    = tuple(self.image_imported_image_size)
+
+        # Si tu utilises self.img_start_drag_pos (temporaire), à ne pas copier
+        return new_layer

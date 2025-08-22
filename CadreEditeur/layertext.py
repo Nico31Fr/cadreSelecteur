@@ -25,12 +25,12 @@ class LayerText(Layer):
         super().__init__(name, canva_size, image_size, ratio)
         self.tkparent = tkparent
         self.parent = parent
-        self.layer_type = "text"
+        self.layer_type = 'Texte'
         # variables texte
         self.text = tk.StringVar(value='Texte')
-        self.font_color = "#000000"
+        self.font_color = '#000000'
         self.sel_font = {'family': "arial", 'size': 32}
-        self.font_name = "arial.ttf"
+        self.font_name = 'arial.ttf'
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
         self.txt_start_drag_pos = None
 
@@ -150,3 +150,34 @@ class LayerText(Layer):
                 self.parent.update_canvas()
         except Exception as e:
             messagebox.showerror("Erreur de texte", f"Exception inattendue : {str(e)}")
+
+    def clone(self, tkparent, parent):
+        """
+        Crée une copie indépendante de ce LayerText (même réglages, nouvelle instance)
+        """
+        # Nouvelle instance avec mêmes paramètres de base
+        new_layer = LayerText(
+            tkparent,
+            parent,
+            (self.CANVA_W, self.CANVA_H),
+            (self.IMAGE_W, self.IMAGE_H),
+            self.RATIO,
+            name=self.name + "_copie"
+        )
+
+        # Copie des champs simples
+        new_layer.display_position  = tuple(self.display_position)
+        new_layer.image_position    = tuple(self.image_position)
+        new_layer.visible           = self.visible
+        new_layer.locked            = self.locked
+
+        # Copie du texte (tk.StringVar!)
+        new_layer.text.set(self.text.get())
+
+        # Copie police/couleur
+        new_layer.font_color        = self.font_color
+        new_layer.sel_font          = self.sel_font.copy()
+        new_layer.font_name         = self.font_name
+        new_layer.pil_font          = ImageFont.truetype(self.font_name, self.sel_font['size'])
+
+        return new_layer
