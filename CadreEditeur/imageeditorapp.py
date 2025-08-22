@@ -81,14 +81,18 @@ class ImageEditorApp:
             self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], self.resources)
 
             # bouton synchronisation droite gauche
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('layer', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=10)
-            button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=10)
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.E, padx=5, pady=5)
-            button_save.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
+            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('layer', '1_4'))
+            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
+            button_l.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=150)
+            button_r.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=150)
+            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
+            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
+            button_l.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=30)
+            button_r.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=30)
+            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
+            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
+            button_l.grid(column=1, row=1, sticky=tk.NE, padx=5, pady=200)
+            button_r.grid(column=1, row=1, sticky=tk.NW, padx=5, pady=200)
 
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
@@ -315,7 +319,6 @@ class ImageEditorApp:
                             n = len([l for l in self.app4.layers if l.layer_type == new_layer.layer_type]) + 1
                             new_layer.name = l.name
                             self.app4.layers.append(new_layer)
-
                 elif direction == '4_1':
                     #efface tous les calques
                     for i in reversed(range(len(self.app1.layers))):
@@ -330,6 +333,13 @@ class ImageEditorApp:
                             n = len([l for l in self.app1.layers if l.layer_type == new_layer.layer_type]) + 1
                             new_layer.name = l.name
                             self.app1.layers.append(new_layer)
+                else:
+                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
+            if layer == 'background' or layer == 'all':
+                if direction == '1_4':
+                    self.app4.background_couleur = self.app1.background_couleur
+                elif direction == '4_1':
+                    self.app1.background_couleur = self.app4.background_couleur
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
 
