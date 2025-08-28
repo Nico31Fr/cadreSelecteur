@@ -133,3 +133,16 @@ class LayerImage(Layer):
 
         # Si tu utilises self.img_start_drag_pos (temporaire), à ne pas copier
         return new_layer
+
+    def to_dict(self):
+        """Retourne un dict serializable décrivant l’état du calque."""
+        return {
+            "class": "LayerImage",
+            "layer_type": self.layer_type,
+            "name": self.name,
+            "display_position": self.display_position,
+            "image_position": self.image_position,
+            "visible": self.visible,
+            "locked": self.locked,
+            "imported_image_path": self.imported_image_path,
+        }

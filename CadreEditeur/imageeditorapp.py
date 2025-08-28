@@ -4,13 +4,23 @@
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from PIL import Image, UnidentifiedImageError
 from os import path
 from json import dump, load, JSONDecodeError
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
 
 from .imageeditor import ImageEditor
+from .layertext import LayerText
+from .layerimage import LayerImage
+
+
+def clean_all_layer(app):
+    """ efface tous les calques """
+    for i in reversed(range(len(app.layers))):
+        l = app.layers[i]
+        if l.layer_type != 'ZoneEx':
+            app.active_layer_idx = i
+            app.delete_layer()
 
 
 class ImageEditorApp:
@@ -189,97 +199,64 @@ class ImageEditorApp:
     def save_project(self):
         """Sauvegarde l'état actuel du projet dans un fichier JSON."""
         try:
+            file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+            if not file_path:
+                return
+            app1_layer_tmp = []
+            app4_layer_tmp = []
+
+            for layer in self.app1.layers:
+                if layer.layer_type != 'ZoneEx':
+                    app1_layer_tmp.append(layer)
+            for layer in self.app4.layers:
+                if layer.layer_type != 'ZoneEx':
+                    app4_layer_tmp.append(layer)
+
+
             project_data = {
-                "project_name": self.prj_name_var.get(),
                 "app1": {
-                    "text": self.app1.text.get(),
-                    "font": self.app1.sel_font,
-                    "font_color": self.app1.font_color,
-                    "font_name": self.app1.font_name,
-                    "background_color": self.app1.background_couleur,
-                    "image_path": self.app1.imported_image_path,
-                    "image_size": self.app1.display_imported_image_size,
-                    "display_position": self.app1.img_display_position,
-                    "text_display_position": self.app1.text_display_position,
+                    "layers": [layer.to_dict() for layer in app1_layer_tmp],
+                    "background_couleur": self.app1.background_couleur,
                 },
                 "app4": {
-                    "text": self.app4.text.get(),
-                    "font": self.app4.sel_font,
-                    "font_color": self.app4.font_color,
-                    "font_name": self.app4.font_name,
-                    "background_color": self.app4.background_couleur,
-                    "image_path": self.app4.imported_image_path,
-                    "image_size": self.app4.display_imported_image_size,
-                    "display_position": self.app4.img_display_position,
-                    "text_display_position": self.app4.text_display_position,
-                }
+                    "layers": [layer.to_dict() for layer in app4_layer_tmp],
+                    "background_couleur": self.app4.background_couleur,
+                },
             }
 
-            file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
-            if file_path:
-                with open(file_path, 'w') as file:
-                    dump(project_data, file)
-                messagebox.showinfo("Sauvegarde réussie", "Le projet a été sauvegardé avec succès.")
-        except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Impossible de sauvegarder le projet.")
+            with open(file_path, 'w', encoding='utf-8') as file:
+                dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
+            messagebox.showinfo("Sauvegarde réussie", "Le projet a été sauvegardé avec succès.")
+
         except Exception as e:
-            messagebox.showerror("Erreur de sauvegarde",
-                                 f"Une erreur inattendue s'est produite lors de la sauvegarde : {str(e)}")
+            messagebox.showerror("Erreur de sauvegarde", f"Une erreur inattendue s'est produite : {str(e)}")
 
     def load_project(self):
         """Charge un projet depuis un fichier JSON."""
         try:
             file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
-            if file_path:
-                with open(file_path, 'r') as file:
-                    project_data = load(file)
+            if not file_path:
+                return
 
-                self.prj_name_var.set(project_data["project_name"])
-                self._load_editor_state(self.app1, project_data["app1"])
-                self._load_editor_state(self.app4, project_data["app4"])
+            with open(file_path, 'r', encoding='utf-8') as file:
+                project_data = load(file)
 
-                self.app1.on_text_change('from load')
-                self.app4.on_text_change('from load')
-        except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Impossible de charger le projet.")
-        except JSONDecodeError:
-            messagebox.showerror("Erreur de JSON", "Le fichier est corrompu ou non valide.")
+            #clean all layer
+            clean_all_layer(self.app1)
+            clean_all_layer(self.app4)
+
+            print(project_data)
+
+            # refresh
+            self.app1.refresh_listbox()
+            self.app1.update_canvas()
+            self.app4.refresh_listbox()
+            self.app4.update_canvas()
+
+            messagebox.showinfo("Chargement réussi", "Le projet a été chargé avec succès.")
+
         except Exception as e:
             messagebox.showerror("Erreur de chargement", f"Une erreur inattendue s'est produite : {str(e)}")
-
-    @staticmethod
-    def _load_editor_state(editor, data):
-        """Charge l'état d'un éditeur spécifique."""
-        try:
-            editor.text.set(data["text"])
-            editor.sel_font = data["font"]
-            editor.font_color = data["font_color"]
-            editor.font_name = data["font_name"]
-            editor.background_couleur = data["background_color"]
-            editor.texte_background_value.set(data["background_color"])
-            editor.label_couleur.config(bg=data["background_color"])
-
-            if data["image_path"]:
-                editor.imported_image_path = data["image_path"]
-                try:
-                    editor.original_image = Image.open(editor.imported_image_path).convert('RGBA')
-                except UnidentifiedImageError:
-                    messagebox.showerror("Erreur d'image",
-                                         "Le fichier image spécifié est introuvable ou corrompu.")
-                    return
-
-                editor.display_imported_image_size = data['image_size']
-                editor.display_imported_image = editor.original_image.resize(editor.display_imported_image_size)
-                editor.image_imported_image = editor.original_image.copy()
-                editor.image_imported_image_size = (editor.display_imported_image_size[0] * editor.RATIO,
-                                                    editor.display_imported_image_size[1] * editor.RATIO)
-                editor.image_imported_image = editor.original_image.resize(editor.image_imported_image_size)
-
-            editor.img_display_position = data["display_position"]
-            editor.text_display_position = data["text_display_position"]
-        except KeyError as e:
-            messagebox.showerror("Erreur de données",
-                                 f"La clé {str(e)} est manquante dans les données du projet.")
 
     # gestion de la synchro droite gauche
     def copy_conf(self, layer, direction):
@@ -306,12 +283,7 @@ class ImageEditorApp:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
             if layer == 'all':
                 if direction == '1_4':
-                    #efface tous les calques
-                    for i in reversed(range(len(self.app4.layers))):
-                        l = self.app4.layers[i]
-                        if l.layer_type != 'ZoneEx':
-                            self.app4.active_layer_idx = i
-                            self.app4.delete_layer()
+                    clean_all_layer(self.app4)
                     # copie tou les calques
                     for l in self.app1.layers:
                         if l.layer_type != 'ZoneEx':
@@ -321,11 +293,7 @@ class ImageEditorApp:
                             self.app4.layers.append(new_layer)
                 elif direction == '4_1':
                     #efface tous les calques
-                    for i in reversed(range(len(self.app1.layers))):
-                        l = self.app1.layers[i]
-                        if l.layer_type != 'ZoneEx':
-                            self.app1.active_layer_idx = i
-                            self.app1.delete_layer()
+                    clean_all_layer(self.app1)
                     # copie tou les calques
                     for l in self.app4.layers:
                         if l.layer_type != 'ZoneEx':

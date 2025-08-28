@@ -59,3 +59,6 @@ class LayerExcluZone(Layer):
             widget.destroy()
 
         tk.Label(frame, text="calque zone d'exclusion").pack(anchor='nw')
+
+    def clone(self, tkparent, parent):
+        pass

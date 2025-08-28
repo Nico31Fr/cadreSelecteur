@@ -181,3 +181,20 @@ class LayerText(Layer):
         new_layer.pil_font          = ImageFont.truetype(self.font_name, self.sel_font['size'])
 
         return new_layer
+
+    def to_dict(self):
+        """Retourne un dict serializable décrivant l’état du calque."""
+
+        return {
+            "class": "LayerText",
+            "layer_type": self.layer_type,
+            "name": self.name,
+            "display_position": self.display_position,
+            "image_position": self.image_position,
+            "visible": self.visible,
+            "locked": self.locked,
+            "text": self.text.get(),  # pour tk.StringVar
+            "font_color": self.font_color,
+            "sel_font": self.sel_font,
+            "font_name": self.font_name,
+        }
