@@ -5,13 +5,11 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from os import path
-from json import dump, load, JSONDecodeError
+from json import dump, load
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
 
 from .imageeditor import ImageEditor
-from .layertext import LayerText
-from .layerimage import LayerImage
 
 
 def clean_all_layer(app):
@@ -241,22 +239,44 @@ class ImageEditorApp:
             with open(file_path, 'r', encoding='utf-8') as file:
                 project_data = load(file)
 
-            #clean all layer
+            # Clean tous les layers (hors ZoneEx !)
             clean_all_layer(self.app1)
             clean_all_layer(self.app4)
 
-            print(project_data)
+            # Grammaire des Layer : type => class
+            type2class = {
+                'Image': self.app1.LayerImage,
+                'Texte': self.app1.LayerText,
+            }
+            app_list = [(self.app1, self.app1_frame, 'app1'), (self.app4, self.app4_frame, 'app4')]
 
-            # refresh
-            self.app1.refresh_listbox()
-            self.app1.update_canvas()
-            self.app4.refresh_listbox()
-            self.app4.update_canvas()
+            for app, parent, key in app_list:
+                layers_data = project_data[key]['layers']
+                for layer_dict in layers_data:
+                    layer_type = layer_dict['layer_type']
+                    cls = type2class.get(layer_type)
+                    if cls:
+                        layer = cls.from_dict(layer_dict, parent, app,
+                                              (app.CANVA_W, app.CANVA_H),
+                                              (app.IMAGE_W, app.IMAGE_H),
+                                              app.RATIO)
+                        app.layers.append(layer)
+                    else:
+                        print(f"ERREUR : type {layer_type} = non reconnu")
+
+                # Restaure couleur de fond
+                app.background_couleur = project_data[key].get("background_couleur", "#FFFFFF")
+
+                app.refresh_listbox()
+                app.update_canvas()
 
             messagebox.showinfo("Chargement réussi", "Le projet a été chargé avec succès.")
 
         except Exception as e:
-            messagebox.showerror("Erreur de chargement", f"Une erreur inattendue s'est produite : {str(e)}")
+            messagebox.showerror(
+                "Erreur de chargement",
+                f"Une erreur inattendue s'est produite : {str(e)}"
+            )
 
     # gestion de la synchro droite gauche
     def copy_conf(self, layer, direction):
@@ -288,7 +308,6 @@ class ImageEditorApp:
                     for l in self.app1.layers:
                         if l.layer_type != 'ZoneEx':
                             new_layer = l.clone(self.app4_frame, self.app4)
-                            n = len([l for l in self.app4.layers if l.layer_type == new_layer.layer_type]) + 1
                             new_layer.name = l.name
                             self.app4.layers.append(new_layer)
                 elif direction == '4_1':
@@ -298,7 +317,6 @@ class ImageEditorApp:
                     for l in self.app4.layers:
                         if l.layer_type != 'ZoneEx':
                             new_layer = l.clone(self.app1_frame, self.app1)
-                            n = len([l for l in self.app1.layers if l.layer_type == new_layer.layer_type]) + 1
                             new_layer.name = l.name
                             self.app1.layers.append(new_layer)
                 else:

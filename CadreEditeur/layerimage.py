@@ -146,3 +146,47 @@ class LayerImage(Layer):
             "locked": self.locked,
             "imported_image_path": self.imported_image_path,
         }
+    @staticmethod
+    def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
+        """
+        Recrée un LayerImage à partir d'un dictionnaire sérialisé.
+
+        Args:
+            dct (dict): dictionnaire provenant du to_dict().
+            tkparent (tk.Widget): parent pour le widget (frame).
+            parent : instance appelante
+            canva_size (tuple): (largeur, hauteur) du canvas affichage.
+            image_size (tuple): (largeur, hauteur) pour export.
+            ratio (int): rapport export/canvas.
+            name (str, optionnel): nom du calque.
+
+        Returns:
+            LayerImage: un nouveau calque image restauré.
+        """
+        obj = LayerImage(tkparent,
+                         parent,
+                         canva_size,
+                         image_size,
+                         ratio,
+                         name=dct.get("name", name or "Image"))
+        obj.display_position = tuple(dct.get("display_position", (0, 0)))
+        obj.image_position = tuple(dct.get("image_position", (0, 0)))
+        obj.visible = dct.get("visible", True)
+        obj.locked = dct.get("locked", False)
+        obj.imported_image_path = dct.get("imported_image_path")
+
+        # Recharge l’image si chemin présent
+        if obj.imported_image_path:
+            try:
+                obj.original_image = Image.open(obj.imported_image_path).convert('RGBA')
+                w0, h0 = obj.original_image.size
+                aspect = w0 / h0
+                desired_w = obj.CANVA_W
+                desired_h = int(desired_w / aspect)
+                obj.display_imported_image_size = (desired_w, desired_h)
+                obj.image_imported_image_size = (desired_w * obj.RATIO, desired_h * obj.RATIO)
+                obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)
+                obj.image_imported_image = obj.original_image.resize(obj.image_imported_image_size)
+            except Exception as e:
+                obj.original_image = None  # image absente/non trouvée
+        return obj

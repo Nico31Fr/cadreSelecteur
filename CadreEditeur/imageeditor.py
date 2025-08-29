@@ -43,6 +43,8 @@ class ImageEditor:
         # -- Pile dynamique de calques --
         self.layers = []
         self.active_layer_idx = -1
+        self.LayerImage = LayerImage
+        self.LayerText = LayerText
 
         # -- Canvas/IHM --
         self.canvas = tk.Canvas(self.root, width=self.CANVA_W, height=self.CANVA_H)

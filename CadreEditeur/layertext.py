@@ -198,3 +198,40 @@ class LayerText(Layer):
             "sel_font": self.sel_font,
             "font_name": self.font_name,
         }
+
+    from PIL import ImageFont
+
+    @staticmethod
+    def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
+        """
+        Recrée un LayerText à partir d'un dictionnaire sérialisé.
+
+        Args:
+            dct (dict): dictionnaire provenant du to_dict().
+            parent (tk.Widget): parent pour le widget (frame).
+            canva_size (tuple): (largeur, hauteur) du canvas affichage.
+            image_size (tuple): (largeur, hauteur) pour export.
+            ratio (int): rapport export/canvas.
+            name (str, optionnel): nom du calque.
+
+        Returns:
+            LayerText: un nouveau calque texte restauré.
+        """
+        obj = LayerText(
+            tkparent,
+            parent,
+            canva_size,
+            image_size,
+            ratio,
+            name=dct.get("name", name or "Texte")
+        )
+        obj.display_position = tuple(dct.get("display_position", (0, 0)))
+        obj.image_position = tuple(dct.get("image_position", (0, 0)))
+        obj.visible = dct.get("visible", True)
+        obj.locked = dct.get("locked", False)
+        obj.text.set(dct.get("text", "Texte"))
+        obj.font_color = dct.get("font_color", "#000000")
+        obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
+        obj.font_name = dct.get("font_name", "arial.ttf")
+        obj.pil_font = ImageFont.truetype(obj.font_name, obj.sel_font['size'])
+        return obj
