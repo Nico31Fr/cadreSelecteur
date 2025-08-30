@@ -145,6 +145,8 @@ class LayerImage(Layer):
             "visible": self.visible,
             "locked": self.locked,
             "imported_image_path": self.imported_image_path,
+            'display_imported_image_size': self.display_imported_image_size,
+            'image_imported_image_size': self.image_imported_image_size,
         }
     @staticmethod
     def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
@@ -174,19 +176,15 @@ class LayerImage(Layer):
         obj.visible = dct.get("visible", True)
         obj.locked = dct.get("locked", False)
         obj.imported_image_path = dct.get("imported_image_path")
+        obj.display_imported_image_size = tuple(dct.get("display_imported_image_size", (obj.CANVA_W, obj.CANVA_H)))
+        obj.image_imported_image_size = tuple(dct.get("image_imported_image_size", (obj.IMAGE_W, obj.IMAGE_H)))
 
         # Recharge l’image si chemin présent
         if obj.imported_image_path:
             try:
                 obj.original_image = Image.open(obj.imported_image_path).convert('RGBA')
-                w0, h0 = obj.original_image.size
-                aspect = w0 / h0
-                desired_w = obj.CANVA_W
-                desired_h = int(desired_w / aspect)
-                obj.display_imported_image_size = (desired_w, desired_h)
-                obj.image_imported_image_size = (desired_w * obj.RATIO, desired_h * obj.RATIO)
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)
                 obj.image_imported_image = obj.original_image.resize(obj.image_imported_image_size)
             except Exception as e:
-                obj.original_image = None  # image absente/non trouvée
+                obj.original_image = None
         return obj

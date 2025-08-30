@@ -10,16 +10,22 @@ import xml.etree.ElementTree as Et
 from shutil import copy, Error
 
 from .imageeditor import ImageEditor
-
+from .layerexcluzone import LayerExcluZone
+from .layertext import LayerText
+from .layerimage import LayerImage
 
 def clean_all_layer(app):
+    """ efface tous les calques """
+    app.active_layer_idx = 0
+    app.layers = []
+
+def clean_editable_layer(app):
     """ efface tous les calques """
     for i in reversed(range(len(app.layers))):
         l = app.layers[i]
         if l.layer_type != 'ZoneEx':
             app.active_layer_idx = i
             app.delete_layer()
-
 
 class ImageEditorApp:
     """
@@ -204,12 +210,9 @@ class ImageEditorApp:
             app4_layer_tmp = []
 
             for layer in self.app1.layers:
-                if layer.layer_type != 'ZoneEx':
-                    app1_layer_tmp.append(layer)
+                app1_layer_tmp.append(layer)
             for layer in self.app4.layers:
-                if layer.layer_type != 'ZoneEx':
-                    app4_layer_tmp.append(layer)
-
+                app4_layer_tmp.append(layer)
 
             project_data = {
                 "app1": {
@@ -231,6 +234,7 @@ class ImageEditorApp:
 
     def load_project(self):
         """Charge un projet depuis un fichier JSON."""
+
         try:
             file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
             if not file_path:
@@ -245,25 +249,20 @@ class ImageEditorApp:
 
             # Grammaire des Layer : type => class
             type2class = {
-                'Image': self.app1.LayerImage,
-                'Texte': self.app1.LayerText,
+                'Image': LayerImage,
+                'Texte': LayerText,
+                'ZoneEx': LayerExcluZone
             }
             app_list = [(self.app1, self.app1_frame, 'app1'), (self.app4, self.app4_frame, 'app4')]
 
             for app, parent, key in app_list:
-                layers_data = project_data[key]['layers']
-                for layer_dict in layers_data:
-                    layer_type = layer_dict['layer_type']
-                    cls = type2class.get(layer_type)
-                    if cls:
-                        layer = cls.from_dict(layer_dict, parent, app,
-                                              (app.CANVA_W, app.CANVA_H),
-                                              (app.IMAGE_W, app.IMAGE_H),
-                                              app.RATIO)
-                        app.layers.append(layer)
-                    else:
-                        print(f"ERREUR : type {layer_type} = non reconnu")
-
+                for layer_dict in project_data[key]["layers"]:
+                    cls = type2class[layer_dict["layer_type"]]
+                    layer = cls.from_dict(layer_dict, parent, app,
+                                          (app.CANVA_W, app.CANVA_H),
+                                          (app.IMAGE_W, app.IMAGE_H),
+                                          app.RATIO)
+                    app.layers.append(layer)
                 # Restaure couleur de fond
                 app.background_couleur = project_data[key].get("background_couleur", "#FFFFFF")
 
@@ -303,16 +302,16 @@ class ImageEditorApp:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
             if layer == 'all':
                 if direction == '1_4':
-                    clean_all_layer(self.app4)
-                    # copie tou les calques
+                    clean_editable_layer(self.app4)
+                    # copie tou les calques editable
                     for l in self.app1.layers:
                         if l.layer_type != 'ZoneEx':
                             new_layer = l.clone(self.app4_frame, self.app4)
                             new_layer.name = l.name
                             self.app4.layers.append(new_layer)
                 elif direction == '4_1':
-                    #efface tous les calques
-                    clean_all_layer(self.app1)
+                    #efface tous les calques editable
+                    clean_editable_layer(self.app1)
                     # copie tou les calques
                     for l in self.app4.layers:
                         if l.layer_type != 'ZoneEx':

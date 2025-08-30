@@ -3,7 +3,7 @@
     |-> classe de gestion des calques image  """
 
 
-from PIL import Image, UnidentifiedImageError, ImageDraw
+from PIL import ImageDraw
 import tkinter as tk
 from .layer import Layer
 
@@ -15,8 +15,12 @@ class LayerExcluZone(Layer):
     def __init__(self, tkparent, parent, canva_size, image_size, ratio, name='ZoneEx'):
         """
         Args:
-            parent (object): Widget parent pour les boîtes de dialogue.
-            name (str): Nom du calque.
+            tkparent (tk.Widget): parent pour le widget (frame).
+            parent : instance appelante
+            canva_size (tuple): (largeur, hauteur) du canvas affichage.
+            image_size (tuple): (largeur, hauteur) pour export.
+            ratio (int): rapport export/canvas.
+            name (str, optionnel): nom du calque.
         """
         super().__init__(name, canva_size, image_size, ratio)
         self.parent = parent
@@ -58,7 +62,49 @@ class LayerExcluZone(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        tk.Label(frame, text="calque zone d'exclusion").pack(anchor='nw')
+        tk.Label(frame, text='calque zone d\'exclusion').pack(anchor='nw')
 
     def clone(self, tkparent, parent):
         pass
+
+    def to_dict(self):
+        """Retourne un dict serializable décrivant l’état du calque."""
+
+        return {
+            'class': 'LayerExcluZone',
+            'layer_type': 'ZoneEx',
+            'name': self.name,
+            'display_position': self.display_position,
+            'image_position': self.image_position,
+            'visible': self.visible,
+            'locked': self.locked,
+            'exclusion_zone': self.exclusion_zone
+        }
+
+    def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
+        """
+        Recrée un LayerExcluZone à partir d'un dictionnaire sérialisé.
+
+        Args:
+            dct (dict): dictionnaire provenant du to_dict().
+            parent (tk.Widget): parent pour le widget (frame).
+            canva_size (tuple): (largeur, hauteur) du canvas affichage.
+            image_size (tuple): (largeur, hauteur) pour export.
+            ratio (int): rapport export/canvas.
+            name (str, optionnel): nom du calque.
+
+        Returns:
+            LayerExcluZone: un nouveau calque texte restauré.
+        """
+        obj = LayerExcluZone(tkparent,
+                             parent,
+                             canva_size,
+                             image_size,
+                             ratio,
+                             name=dct.get('name', name or 'ZoneEx'))
+        obj.display_position = tuple(dct.get('display_position', (0, 0)))
+        obj.image_position = tuple(dct.get('image_position', (0, 0)))
+        obj.visible = dct.get('visible', True)
+        obj.locked = dct.get('locked', False)
+        obj.exclusion_zone = dct.get('exclusion_zone', False)
+        return obj
