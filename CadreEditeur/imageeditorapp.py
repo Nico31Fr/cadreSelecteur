@@ -82,8 +82,8 @@ class ImageEditorApp:
             label.grid(column=0, row=0, sticky=tk.E, padx=5, pady=5)
 
             # Créer le menu déroulant
-            dropdown = tk.OptionMenu(self.main_frame, self.selected_template, *options)
-            dropdown.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5, columnspan=2)
+            self.dropdown = tk.OptionMenu(self.main_frame, self.selected_template, *options)
+            self.dropdown.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5, columnspan=2)
             # Ajouter un traceur pour appeler la fonction lors du changement d'état
             self.selected_template.trace_add("write", self.on_template_change)
 
@@ -223,6 +223,7 @@ class ImageEditorApp:
                     "layers": [layer.to_dict() for layer in app4_layer_tmp],
                     "background_couleur": self.app4.background_couleur,
                 },
+                "template": self.selected_template.get()
             }
 
             with open(file_path, 'w', encoding='utf-8') as file:
@@ -268,6 +269,10 @@ class ImageEditorApp:
 
                 app.refresh_listbox()
                 app.update_canvas()
+
+            # Mise à jour du template sélectionné dans le menu déroulant
+            template_name = project_data["template"]
+            self.selected_template.set(template_name)
 
             messagebox.showinfo("Chargement réussi", "Le projet a été chargé avec succès.")
 
