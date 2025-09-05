@@ -4,13 +4,30 @@
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from PIL import Image, UnidentifiedImageError
 from os import path
-from json import dump, load, JSONDecodeError
+from json import dump, load
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
 
 from .imageeditor import ImageEditor
+from .layerexcluzone import LayerExcluZone
+from .layertext import LayerText
+from .layerimage import LayerImage
+
+
+def clean_all_layer(app):
+    """ efface tous les calques """
+    app.active_layer_idx = 0
+    app.layers = []
+
+
+def clean_editable_layer(app):
+    """ efface tous les calques """
+    for i in reversed(range(len(app.layers))):
+        layer = app.layers[i]
+        if layer.layer_type != 'ZoneEx':
+            app.active_layer_idx = i
+            app.delete_layer()
 
 
 class ImageEditorApp:
@@ -34,7 +51,7 @@ class ImageEditorApp:
             self.resources = resources
             self.standalone = standalone
             # Dimension de la fenêtre
-            self.WINDOWS = "1400x650"
+            self.WINDOWS = "1400x750"
             self.prj_name = 'cadre_xxx'
             self.tk_root = root
 
@@ -68,8 +85,8 @@ class ImageEditorApp:
             label.grid(column=0, row=0, sticky=tk.E, padx=5, pady=5)
 
             # Créer le menu déroulant
-            dropdown = tk.OptionMenu(self.main_frame, self.selected_template, *options)
-            dropdown.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5, columnspan=2)
+            self.dropdown = tk.OptionMenu(self.main_frame, self.selected_template, *options)
+            self.dropdown.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5, columnspan=2)
             # Ajouter un traceur pour appeler la fonction lors du changement d'état
             self.selected_template.trace_add("write", self.on_template_change)
 
@@ -81,31 +98,27 @@ class ImageEditorApp:
             self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], self.resources)
 
             # bouton synchronisation droite gauche
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=10)
-            button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=10)
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('image', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('image', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=40)
-            button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=40)
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('text', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('text', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=70)
-            button_save.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=70)
-            button_load = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
-            button_save = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
-            button_load.grid(column=1, row=1, sticky=tk.E, padx=5, pady=5)
-            button_save.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
+            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('layer', '1_4'))
+            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
+            button_l.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=150)
+            button_r.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=150)
+            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
+            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
+            button_l.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=40)
+            button_r.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=40)
+            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
+            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
+            button_l.grid(column=1, row=1, sticky=tk.NE, padx=5, pady=200)
+            button_r.grid(column=1, row=1, sticky=tk.NW, padx=5, pady=200)
 
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-            self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
+            self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=10, pady=10)
             self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], self.resources)
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-            self.export_frame.grid(column=0, row=2, columnspan=3, padx=5, pady=5)
+            self.export_frame.grid(column=0, row=2, columnspan=3, padx=10, pady=10)
 
             # configure la grille pour les boutons 4 lignes x 3 colonnes
             self.export_frame.rowconfigure(0, weight=2)
@@ -193,97 +206,84 @@ class ImageEditorApp:
     def save_project(self):
         """Sauvegarde l'état actuel du projet dans un fichier JSON."""
         try:
+            file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+            if not file_path:
+                return
+            app1_layer_tmp = []
+            app4_layer_tmp = []
+
+            for layer in self.app1.layers:
+                app1_layer_tmp.append(layer)
+            for layer in self.app4.layers:
+                app4_layer_tmp.append(layer)
+
             project_data = {
-                "project_name": self.prj_name_var.get(),
                 "app1": {
-                    "text": self.app1.text.get(),
-                    "font": self.app1.sel_font,
-                    "font_color": self.app1.font_color,
-                    "font_name": self.app1.font_name,
-                    "background_color": self.app1.background_couleur,
-                    "image_path": self.app1.imported_image_path,
-                    "image_size": self.app1.display_imported_image_size,
-                    "display_position": self.app1.img_display_position,
-                    "text_display_position": self.app1.text_display_position,
+                    "layers": [layer.to_dict() for layer in app1_layer_tmp],
+                    "background_couleur": self.app1.background_couleur,
                 },
                 "app4": {
-                    "text": self.app4.text.get(),
-                    "font": self.app4.sel_font,
-                    "font_color": self.app4.font_color,
-                    "font_name": self.app4.font_name,
-                    "background_color": self.app4.background_couleur,
-                    "image_path": self.app4.imported_image_path,
-                    "image_size": self.app4.display_imported_image_size,
-                    "display_position": self.app4.img_display_position,
-                    "text_display_position": self.app4.text_display_position,
-                }
+                    "layers": [layer.to_dict() for layer in app4_layer_tmp],
+                    "background_couleur": self.app4.background_couleur,
+                },
+                "template": self.selected_template.get()
             }
 
-            file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
-            if file_path:
-                with open(file_path, 'w') as file:
-                    dump(project_data, file)
-                messagebox.showinfo("Sauvegarde réussie", "Le projet a été sauvegardé avec succès.")
-        except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Impossible de sauvegarder le projet.")
+            with open(file_path, 'w', encoding='utf-8') as file:
+                dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
+            messagebox.showinfo("Sauvegarde réussie", "Le projet a été sauvegardé avec succès.")
+
         except Exception as e:
-            messagebox.showerror("Erreur de sauvegarde",
-                                 f"Une erreur inattendue s'est produite lors de la sauvegarde : {str(e)}")
+            messagebox.showerror("Erreur de sauvegarde", f"Une erreur inattendue s'est produite : {str(e)}")
 
     def load_project(self):
         """Charge un projet depuis un fichier JSON."""
+
         try:
             file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
-            if file_path:
-                with open(file_path, 'r') as file:
-                    project_data = load(file)
+            if not file_path:
+                return
 
-                self.prj_name_var.set(project_data["project_name"])
-                self._load_editor_state(self.app1, project_data["app1"])
-                self._load_editor_state(self.app4, project_data["app4"])
+            with open(file_path, 'r', encoding='utf-8') as file:
+                project_data = load(file)
 
-                self.app1.on_text_change('from load')
-                self.app4.on_text_change('from load')
-        except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Impossible de charger le projet.")
-        except JSONDecodeError:
-            messagebox.showerror("Erreur de JSON", "Le fichier est corrompu ou non valide.")
+            # Clean tous les layers (hors ZoneEx !)
+            clean_all_layer(self.app1)
+            clean_all_layer(self.app4)
+
+            # Grammaire des Layer : type => class
+            type2class = {
+                'Image': LayerImage,
+                'Texte': LayerText,
+                'ZoneEx': LayerExcluZone
+            }
+            app_list = [(self.app1, self.app1_frame, 'app1'), (self.app4, self.app4_frame, 'app4')]
+
+            for app, parent, key in app_list:
+                for layer_dict in project_data[key]["layers"]:
+                    cls = type2class[layer_dict["layer_type"]]
+                    layer = cls.from_dict(layer_dict, parent, app,
+                                          (app.CANVA_W, app.CANVA_H),
+                                          (app.IMAGE_W, app.IMAGE_H),
+                                          app.RATIO)
+                    app.layers.append(layer)
+                # Restaure couleur de fond
+                app.background_couleur = project_data[key].get("background_couleur", "#FFFFFF")
+
+                app.refresh_listbox()
+                app.update_canvas()
+
+            # Mise à jour du template sélectionné dans le menu déroulant
+            template_name = project_data["template"]
+            self.selected_template.set(template_name)
+
+            messagebox.showinfo("Chargement réussi", "Le projet a été chargé avec succès.")
+
         except Exception as e:
-            messagebox.showerror("Erreur de chargement", f"Une erreur inattendue s'est produite : {str(e)}")
-
-    @staticmethod
-    def _load_editor_state(editor, data):
-        """Charge l'état d'un éditeur spécifique."""
-        try:
-            editor.text.set(data["text"])
-            editor.sel_font = data["font"]
-            editor.font_color = data["font_color"]
-            editor.font_name = data["font_name"]
-            editor.background_couleur = data["background_color"]
-            editor.texte_background_value.set(data["background_color"])
-            editor.label_couleur.config(bg=data["background_color"])
-
-            if data["image_path"]:
-                editor.imported_image_path = data["image_path"]
-                try:
-                    editor.original_image = Image.open(editor.imported_image_path).convert('RGBA')
-                except UnidentifiedImageError:
-                    messagebox.showerror("Erreur d'image",
-                                         "Le fichier image spécifié est introuvable ou corrompu.")
-                    return
-
-                editor.display_imported_image_size = data['image_size']
-                editor.display_imported_image = editor.original_image.resize(editor.display_imported_image_size)
-                editor.image_imported_image = editor.original_image.copy()
-                editor.image_imported_image_size = (editor.display_imported_image_size[0] * editor.RATIO,
-                                                    editor.display_imported_image_size[1] * editor.RATIO)
-                editor.image_imported_image = editor.original_image.resize(editor.image_imported_image_size)
-
-            editor.img_display_position = data["display_position"]
-            editor.text_display_position = data["text_display_position"]
-        except KeyError as e:
-            messagebox.showerror("Erreur de données",
-                                 f"La clé {str(e)} est manquante dans les données du projet.")
+            messagebox.showerror(
+                "Erreur de chargement",
+                f"Une erreur inattendue s'est produite : {str(e)}"
+            )
 
     # gestion de la synchro droite gauche
     def copy_conf(self, layer, direction):
@@ -295,6 +295,39 @@ class ImageEditorApp:
         dir : copie de 1 vers 4 ou 4 vers 1 '1_4' or '4_1'
         """
         try:
+            if layer == 'layer':
+                if direction == '1_4':
+                    new_layer = self.app1.layers[self.app1.active_layer_idx].clone(self.app4_frame, self.app4)
+                    n = len([layer for layer in self.app4.layers if layer.layer_type == new_layer.layer_type]) + 1
+                    new_layer.name = f"{new_layer.layer_type} {n}"
+                    self.app4.layers.append(new_layer)
+                elif direction == '4_1':
+                    new_layer = self.app4.layers[self.app4.active_layer_idx].clone(self.app1_frame, self.app1)
+                    n = len([layer for layer in self.app1.layers if layer.layer_type == new_layer.layer_type]) + 1
+                    new_layer.name = f"{new_layer.layer_type} {n}"
+                    self.app1.layers.append(new_layer)
+                else:
+                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
+            if layer == 'all':
+                if direction == '1_4':
+                    clean_editable_layer(self.app4)
+                    # copie tou les calques editable
+                    for layer in self.app1.layers:
+                        if layer.layer_type != 'ZoneEx':
+                            new_layer = layer.clone(self.app4_frame, self.app4)
+                            new_layer.name = layer.name
+                            self.app4.layers.append(new_layer)
+                elif direction == '4_1':
+                    # efface tous les calques editable
+                    clean_editable_layer(self.app1)
+                    # copie tou les calques
+                    for layer in self.app4.layers:
+                        if layer.layer_type != 'ZoneEx':
+                            new_layer = layer.clone(self.app1_frame, self.app1)
+                            new_layer.name = layer.name
+                            self.app1.layers.append(new_layer)
+                else:
+                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
             if layer == 'background' or layer == 'all':
                 if direction == '1_4':
                     self.app4.background_couleur = self.app1.background_couleur
@@ -302,41 +335,9 @@ class ImageEditorApp:
                     self.app1.background_couleur = self.app4.background_couleur
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
-            if layer == 'image' or layer == 'all':
-                if direction == '1_4':
-                    self.app4.imported_image_path = self.app1.imported_image_path
-                    self.app4.original_image = self.app1.original_image
-                    self.app4.display_imported_image_size = self.app1.display_imported_image_size
-                    self.app4.display_imported_image = self.app1.display_imported_image
-                    self.app4.image_imported_image = self.app1.image_imported_image
-                    self.app4.image_imported_image_size = self.app1.image_imported_image_size
-                    self.app4.img_display_position = self.app1.img_display_position
-                elif direction == '4_1':
-                    self.app1.imported_image_path = self.app4.imported_image_path
-                    self.app1.original_image = self.app4.original_image
-                    self.app1.display_imported_image_size = self.app4.display_imported_image_size
-                    self.app1.display_imported_image = self.app4.display_imported_image
-                    self.app1.image_imported_image = self.app4.image_imported_image
-                    self.app1.image_imported_image_size = self.app4.image_imported_image_size
-                    self.app1.img_display_position = self.app4.img_display_position
-                else:
-                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
-            if layer == 'text' or layer == 'all':
-                if direction == '1_4':
-                    self.app4.text.set(self.app1.text.get())
-                    self.app4.sel_font = self.app1.sel_font
-                    self.app4.font_color = self.app1.font_color
-                    self.app4.font_name = self.app1.font_name
-                    self.app4.text_display_position = self.app1.text_display_position
-                elif direction == '4_1':
-                    self.app1.text.set(self.app4.text.get())
-                    self.app1.sel_font = self.app4.sel_font
-                    self.app1.font_color = self.app4.font_color
-                    self.app1.font_name = self.app4.font_name
-                    self.app1.text_display_position = self.app4.text_display_position
-                else:
-                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
 
+            self.app1.refresh_listbox()
+            self.app4.refresh_listbox()
             self.app1.update_canvas()
             self.app4.update_canvas()
         except ValueError as e:
@@ -434,7 +435,9 @@ class ImageEditorApp:
                                     break
 
             self.app1.exclusion_zone = new_exc_zone1
+            self.app1.update_zone_exclu_layer(new_exc_zone1)
             self.app4.exclusion_zone = new_exc_zone4
+            self.app4.update_zone_exclu_layer(new_exc_zone4)
             self.app1.update_canvas()
             self.app4.update_canvas()
         except (FileNotFoundError, IsADirectoryError):

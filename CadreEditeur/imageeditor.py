@@ -3,15 +3,13 @@
     |-> fenêtre d'édition d'un cadre  """
 
 import tkinter as tk
-from tkinter import filedialog, colorchooser, messagebox
-from PIL import Image, ImageDraw, ImageFont, ImageTk, UnidentifiedImageError
+from tkinter import colorchooser, messagebox
+from PIL import Image, ImageTk
 from re import fullmatch
-from pathlib import Path
-from os import path
 
-import matplotlib.font_manager as fm
-
-from .text import askfont
+from .layerimage import LayerImage
+from .layertext import LayerText
+from .layerexcluzone import LayerExcluZone
 
 
 class ImageEditor:
@@ -29,355 +27,241 @@ class ImageEditor:
             root (tk.Tk) : La fenêtre tkinter racine.
             Exclusion_zone : liste contenant les zone à garder en transparent
         """
-        try:
-            # Dimension de l'interface, doit être de ratio 1.5
-            self.CANVA_W = 600
-            self.CANVA_H = 400
-            # Dimension de l'image générée
-            self.IMAGE_W = 3600
-            self.IMAGE_H = 2400
-            self.RATIO = int(self.IMAGE_W / self.CANVA_W)
-            self.exclusion_zone = exclusion_zone
-            self.imported_image_path = None
-            self.display_imported_image = None
-            self.image_imported_image = None
-            self.original_image = None
-            self.background_couleur = '#FFFFFF'
+        self.CANVA_W, self.CANVA_H = 600, 400
+        # Dimension de l'image générée
+        self.IMAGE_W, self.IMAGE_H = 1800, 1200
+        self.RATIO = int(self.IMAGE_W // self.CANVA_W)
+        self.exclusion_zone = exclusion_zone
+        self.imported_image_path = None
+        self.display_imported_image = None
+        self.image_imported_image = None
+        self.original_image = None
+        self.background_couleur = "#FFFFFF"
+        self.root = root
+        self.texte_background_value = tk.StringVar(value=self.background_couleur)
 
-            # variable pour la gestion du texte
-            self.sel_font = {'family': "arial", 'size': 12}
-            self.font_name: str = "msgothic.ttc"
-            self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
-            self.font_color = '#000000'
-            # Variables pour déplacer le texte
-            self.text_display_position = (0, 0)
-            self.text_image_position = (self.text_display_position[0] * self.RATIO,
-                                        self.text_display_position[1] * self.RATIO)
+        # -- Pile dynamique de calques --
+        self.layers = []
+        self.active_layer_idx = -1
+        self.LayerImage = LayerImage
+        self.LayerText = LayerText
 
-            # Variables pour déplacer l'image importée
-            self.img_display_position = (150, 150)
-            self.img_image_position = (self.img_display_position[0] * self.RATIO,
-                                       self.img_display_position[1] * self.RATIO)
-            self.display_imported_image_size = (0, 0)
-            self.image_imported_image_size = (0, 0)
+        # -- Canvas/IHM --
+        self.canvas = tk.Canvas(self.root, width=self.CANVA_W, height=self.CANVA_H)
+        self.canvas.pack()
+        self.tk_image = None
 
-            # creation dun canva qui va afficher l'image
-            # Créer un cadre (Frame)
-            self.frame = tk.Frame(root, borderwidth=2, relief="solid")
-            self.frame.pack(side='top')
-            self.canvas = tk.Canvas(self.frame,
-                                    width=self.CANVA_W,
-                                    height=self.CANVA_H)
-            self.canvas.pack()
-            # Fond blanc
-            self.image_de_font = Image.new('RGBA',
-                                           (self.IMAGE_W, self.IMAGE_H),
-                                           (255, 255, 255, 255))
-            self.draw = ImageDraw.Draw(self.image_de_font)
+        self.layers_frame = tk.Frame(self.root)
+        self.layers_frame.pack(side='left',
+                                    padx=10,
+                                    pady=10,
+                                    ipadx=10,
+                                    ipady=10)
+        self.listbox = tk.Listbox(self.layers_frame, height=5)
+        self.listbox.pack(fill='x')
+        self.listbox.bind("<<ListboxSelect>>", self.on_layer_select)
 
-            # Redimensionnement pour affichage
-            self.image_export = self.image_de_font.copy()
-            self.display_image = self.image_export.resize((self.CANVA_W,
-                                                           self.CANVA_H))
-            self.tk_image = ImageTk.PhotoImage(self.display_image)
-            self.canvas_image_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
+        # -- Boutons de gestion pile --
+        btnf = tk.Frame(self.layers_frame)
+        btnf.pack()
+        tk.Button(btnf, text="Ajouter Image", command=self.add_image_layer).grid(row=0, column=0)
+        tk.Button(btnf, text="Ajouter Texte", command=self.add_text_layer).grid(row=0, column=1)
+        tk.Button(btnf, text="Supprimer", command=self.delete_layer).grid(row=0, column=2)
+        tk.Button(btnf, text="  ˄  ", command=lambda: self.move_layer(-1)).grid(row=0, column=3)
+        tk.Button(btnf, text="  ˅  ", command=lambda: self.move_layer(1)).grid(row=0, column=4)
 
-            # affichage de l'image des layers
-            try:
-                # Charger l'image à l'aide de PIL
-                path_to_img = path.join(resources_path, "layers.png")
-                img_layer = Image.open(path_to_img)
-                img_layer = img_layer.resize((75, 75))
-                self.img_layer_tk = ImageTk.PhotoImage(img_layer)
-                # Créer un Canvas
-                canvas_img_layer = tk.Canvas(root, width=80, height=80)
-                canvas_img_layer.pack(side='right', fill='x')
-                # Ajoute l'image au Canvas
-                canvas_img_layer.create_image(5, 5, anchor='nw', image=self.img_layer_tk)
-            except FileNotFoundError:
-                messagebox.showerror("Erreur", "Le fichier layers.png est introuvable.")
-            except UnidentifiedImageError:
-                messagebox.showerror("Erreur", "Le fichier layers.png n'est pas une image valide.")
+        # -- Boutons de gestion couleur de fond --
+        fondf = tk.Frame(self.layers_frame)
+        fondf.pack(pady=(10, 0))
+        tk.Label(fondf, text="Couleur du fond :").pack(side="left", anchor='s', padx=5, pady=10)
+        self.texte_background = tk.Entry(fondf, textvariable=self.texte_background_value, width=8)
+        self.texte_background.pack(side="left", padx=5)
+        self.label_couleur = tk.Label(fondf, text="                  ",
+                                      bg=self.background_couleur,
+                                      cursor="hand2")
+        self.label_couleur.pack(side="left", padx=5)
+        # Ouvre le colorchooser sur clic
+        self.label_couleur.bind("<Button-1>", lambda e: self.select_background_color())
+        # Lier une fonction à la modification de la valeur de l'Entry
+        self.texte_background_value.trace_add("write",
+                                              self.on_color_entry_change)
 
-            # creation de la 'control frame'
-            self.controls_frame = tk.Frame(root)
-            self.controls_frame.pack(fill='x')
+        # Frame bouton de config du calque
+        self.param_frame = tk.Frame(self.root,
+                                    borderwidth=2,
+                                    relief="groove",
+                                    width=300,
+                                    height=200,
+                                    padx=10,
+                                    pady=10)
+        self.param_frame.pack(side='right')
+        self.param_frame.pack_propagate(False)
 
-            # variables texte
-            self.text = tk.StringVar()
-            # variable pour afficher le code couleur
-            self.texte_background_value = tk.StringVar()
+        # -- Drag & Resize --
+        self.canvas.bind("<Button-1>", self.start_drag)
+        self.canvas.bind("<B1-Motion>", self.drag_drop)
+        self.canvas.bind("<MouseWheel>", self.resize)
+        self.start_drag_pos = None
 
-            # configure la grille pour les boutons 4 lignes x 3 colonnes
-            self.controls_frame.rowconfigure(0, weight=2)
-            self.controls_frame.rowconfigure(1, weight=1)
-            self.controls_frame.rowconfigure(2, weight=1)
-            self.controls_frame.rowconfigure(3, weight=1)
-            self.controls_frame.columnconfigure(0, weight=1)
-            self.controls_frame.columnconfigure(1, weight=2)
-            self.controls_frame.columnconfigure(2, weight=1)
-            self.controls_frame.columnconfigure(3, weight=1)
+        self.add_zone_exclu_layer()
 
-            # bouton et saisie pour le texte
-            tk.Button(self.controls_frame,
-                      text='Police',
-                      command=self.callback_font).grid(column=0, row=0, sticky=tk.EW, padx=5, pady=5)
-            tk.Entry(self.controls_frame,
-                     textvariable=self.text).grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
-            tk.Button(self.controls_frame,
-                      text='Couleur',
-                      command=lambda: self.choisir_couleur('font')).grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
+        self.update_canvas()
 
-            # bouton pour import image
-            tk.Button(self.controls_frame,
-                      text='Image',
-                      command=self.import_image).grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
-            self.label_image = tk.Label(self.controls_frame, text='')
-            self.label_image.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
-            tk.Button(self.controls_frame,
-                      text='Effacer',
-                      command=self.remove_image).grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
-
-            # bouton et saisie pour la couleur de fond
-            # Créer un bouton pour ouvrir le sélecteur de couleur
-            tk.Label(self.controls_frame, text="couleur du fond :").grid(column=0, row=2, sticky=tk.EW, padx=5, pady=5)
-            self.texte_background = tk.Entry(self.controls_frame, textvariable=self.texte_background_value, width=8)
-            self.texte_background.insert(0, self.background_couleur)
-            self.texte_background.grid(column=2, row=2, sticky=tk.EW, padx=5, pady=5)
-            # Créer un label pour afficher la couleur sélectionnée
-            self.label_couleur = tk.Label(self.controls_frame, text=" ")
-            self.label_couleur.grid(column=1, row=2, sticky=tk.EW, padx=5, pady=5)
-            self.label_couleur.bind("<Button-1>", lambda event: self.choisir_couleur('background'))
-            # Mettre à jour la couleur du label_couleur
-            self.label_couleur.config(bg=self.background_couleur)
-
-            # bouton radio pour selection calque actif
-            # Variable pour stocker la sélection
-            self.selection = tk.StringVar(value='C_Image')
-            self.radio_image = tk.Radiobutton(self.controls_frame,
-                                              variable=self.selection,
-                                              text='Calque Image',
-                                              value='C_Image')
-            self.radio_image.grid(column=3, row=1, sticky=tk.EW, padx=5, pady=5)
-            self.radio_texte = tk.Radiobutton(self.controls_frame,
-                                              variable=self.selection,
-                                              text='Calque Texte',
-                                              value='C_Texte')
-            self.radio_texte.grid(column=3, row=0, sticky=tk.EW, padx=5, pady=5)
-
-            # Événements de souris pour déplacer/redimensionner
-            self.canvas.bind("<Button-1>", self.start_drag)
-            self.canvas.bind("<B1-Motion>", self.drag_drop)
-            self.canvas.bind("<MouseWheel>", self.resize)
-
-            # Lier une fonction à la modification de la valeur de l'Entry
-            self.texte_background_value.trace_add("write",
-                                                  self.on_color_entry_change)
-            self.text.trace_add("write", self.on_text_change)
-            self.img_start_drag_pos = None
-            self.txt_start_drag_pos = None
+    def add_image_layer(self):
+        """
+        Ajoute un nouveau calque image et le sélectionne.
+        """
+        n = len([layer for layer in self.layers if layer.layer_type == 'Image']) + 1
+        layer = LayerImage(self.root,
+                           self,
+                           (self.CANVA_W, self.CANVA_H),
+                           (self.IMAGE_W, self.IMAGE_H),
+                           self.RATIO,
+                           name=f"Image {n}")
+        if layer.import_image():
+            self.layers.append(layer)
+            self.active_layer_idx = len(self.layers)-1
+            self.refresh_listbox()
             self.update_canvas()
-        except Exception as e:
-            messagebox.showerror("Erreur Initialization", f"Une erreur inattendue s'est produite : {str(e)}")
+        else:
+            del layer
 
-    # Gestion du Texte
-    @staticmethod
-    def find_font_path(font_name_to_find):
+    def add_text_layer(self):
         """
-        trouve le chemin de la police
+        Ajoute un nouveau calque texte et le sélectionne.
         """
-        try:
-            # Obtenir la liste de toutes les polices système
-            font_paths = fm.findSystemFonts(fontpaths=None, fontext='ttf')
+        n = len([layer for layer in self.layers if layer.layer_type == 'Texte']) + 1
+        name = f"Texte {n}"
+        layer = LayerText(self.root,
+                          self,
+                          (self.CANVA_W, self.CANVA_H),
+                          (self.IMAGE_W, self.IMAGE_H),
+                          self.RATIO,
+                          name=name)
+        self.layers.append(layer)
+        self.active_layer_idx = len(self.layers) - 1
+        self.refresh_listbox()
+        self.update_canvas()
 
-            for font_path in font_paths:
-                # Vérifier si le nom de la police correspond
-                prop = fm.FontProperties(fname=font_path)
-                if prop.get_name().lower() == font_name_to_find.replace('@', '').lower():
-                    return font_path
-            return None
-        except Exception as e:
-            messagebox.showerror("Erreur de police", f"Exception inattendue: {str(e)}")
-            return None
-
-    def on_text_change(self, *args):
+    def add_zone_exclu_layer(self):
         """
-        Ajoute du texte provenant du champ de texte
-        à l'image à une position prédéfinie.
+        met à jour les zone d'exclusions
         """
-        try:
-            if args:
-                self.update_canvas()
-        except Exception as e:
-            messagebox.showerror("Erreur de texte", f"Exception inattendue : {str(e)}")
+        name = "Zones insertion photos"
+        layer = LayerExcluZone(self.root,
+                               self,
+                               (self.CANVA_W, self.CANVA_H),
+                               (self.IMAGE_W, self.IMAGE_H),
+                               self.RATIO,
+                               name=name)
+        layer.set_exclusion_zone(self.exclusion_zone)
+        self.layers.append(layer)
+        self.active_layer_idx = len(self.layers)-1
+        self.refresh_listbox()
+        self.update_canvas()
 
-    def callback_font(self):
+    def update_zone_exclu_layer(self, exclusion_zone):
         """
-        lorsque le bouton font est cliqué lance l'interface
-         de selection de police d'écriture
+        Ajoute un nouveau calque zone d'exclusions
         """
-        try:
-            font_selected = askfont(self.controls_frame,
-                                    text=self.text.get(),
-                                    title="Police",
-                                    family=self.sel_font['family'],
-                                    size=self.sel_font['size'],)
 
-            # met à jour la police sélectionné
-            if font_selected:
-                self.sel_font = font_selected
-                font_name_found = self.find_font_path(self.sel_font['family'])
-                if font_name_found is not None:
-                    self.font_name = font_name_found
-                # mise à jour de l'IHM
-                self.on_text_change('from selector')
-        except Exception as e:
-            messagebox.showerror("Erreur de font", f"Exception inattendue : {str(e)}")
+        for layer in self.layers:
+            if layer.layer_type == 'ZoneEx':
+                layer.set_exclusion_zone(exclusion_zone)
 
-    # Gestion de l'image
-    def import_image(self):
+        self.update_canvas()
+
+    def delete_layer(self):
         """
-        Ouvre une boîte de dialogue pour importer une image et
-        met à jour le canvas avec l'image importée,
-        en conservant le ratio original.
+        Supprime le calque sélectionné.
         """
-        try:
-            self.imported_image_path = filedialog.askopenfilename()
-            if self.imported_image_path:
-                try:
-                    self.original_image = Image.open(self.imported_image_path).convert('RGBA')
-                except UnidentifiedImageError:
-                    messagebox.showerror("Erreur d'image", "Le fichier image spécifié est introuvable ou corrompu.")
-                    return
-
-                # Calculer la nouvelle taille en conservant le ratio
-                original_width, original_height = self.original_image.size
-                aspect_ratio = original_width / original_height
-
-                desired_width = self.CANVA_W
-                desired_height = int(desired_width / aspect_ratio)
-
-                self.display_imported_image_size = (desired_width, desired_height)
-                self.display_imported_image = self.original_image.resize(self.display_imported_image_size)
-                self.image_imported_image = self.original_image.copy()
-                self.image_imported_image_size = (desired_width*self.RATIO,
-                                                  desired_height*self.RATIO)
-                self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
-
-                self.update_canvas()
-        except FileNotFoundError:
-            messagebox.showerror("Erreur de fichier", "Le fichier image spécifié est introuvable.")
-        except Exception as e:
-            messagebox.showerror("Erreur d'importation", f"Exception inattendue : {str(e)}")
-
-    def remove_image(self):
-        """
-        efface l'image importé lorsqu'on clique sur le bouton
-        """
-        try:
-            self.display_imported_image = None
+        if 0 <= self.active_layer_idx < len(self.layers)\
+                and self.layers[self.active_layer_idx].layer_type != 'ZoneEx':
+            del self.layers[self.active_layer_idx]
+            if self.layers:
+                self.active_layer_idx = max(0, self.active_layer_idx-1)
+            else:
+                self.active_layer_idx = -1
+            self.refresh_listbox()
             self.update_canvas()
-        except Exception as e:
-            messagebox.showerror("Erreur de suppression", f"Exception inattendue : {str(e)}")
 
-    # gestion souri drag and drop / zoom molette
+    def move_layer(self, direction):
+        """
+        Fait monter/descendre le calque actif dans la pile.
+
+        Args:
+            direction (int): -1=monter, 1=descendre
+        """
+        idx = self.active_layer_idx
+        if 0 <= idx < len(self.layers):
+            new_idx = idx+direction
+            if 0 <= new_idx < len(self.layers):
+                self.layers[idx], self.layers[new_idx] = self.layers[new_idx], self.layers[idx]
+                self.active_layer_idx = new_idx
+                self.refresh_listbox()
+                self.update_canvas()
+
+    def refresh_listbox(self):
+        """
+        Met à jour la liste visuelle des calques.
+        """
+        self.listbox.delete(0, "end")
+        for i, l in enumerate(self.layers):
+            name = l.name + (" [actif]" if i == self.active_layer_idx else "")
+            self.listbox.insert("end", name)
+        self.listbox.selection_clear(0, "end")
+        if self.active_layer_idx >= 0:
+            self.listbox.selection_set(self.active_layer_idx)
+        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
+
+    def on_layer_select(self, event):
+        """
+        Sélectionne le calque actif dans la liste.
+        """
+        idxs = self.listbox.curselection()
+        if idxs:
+            self.active_layer_idx = idxs[0]
+            self.refresh_listbox()
+            self.update_canvas()
+
     def start_drag(self, event):
         """
-        Initialise l'opération de glissement-déposé en enregistrant la position du curseur.
-
-        Paramètres :
-            event (tk.Event) : L'événement de clic de la souris.
+        Démarre le déplacement du calque actif.
         """
-        try:
-            if self.selection.get() == 'C_Image':
-                self.img_start_drag_pos = (event.x, event.y)
-            else:
-                self.txt_start_drag_pos = (event.x, event.y)
-        except Exception as e:
-            messagebox.showerror("Erreur de démarrage", f"Exception inattendue : {str(e)}")
+        if 0 <= self.active_layer_idx < len(self.layers):
+            layer = self.layers[self.active_layer_idx]
+            layer._drag_pos = (event.x, event.y)
 
     def drag_drop(self, event):
         """
-        gestion du drag and drop
-
-        Paramètres :
-            event (tk.Event) : L'événement de mouvement de la souris.
+        Effectue le déplacement drag&drop du calque actif.
         """
-        try:
-            if self.img_start_drag_pos and self.selection.get() == 'C_Image':
-                dx = event.x - self.img_start_drag_pos[0]
-                dy = event.y - self.img_start_drag_pos[1]
-
-                new_disp_x = self.img_display_position[0] + dx
-                new_disp_y = self.img_display_position[1] + dy
-
-                # met à jour la position de l'image importé dans le canva
-                self.img_display_position = (new_disp_x,
-                                             new_disp_y)
-
-                self.img_start_drag_pos = (event.x, event.y)
+        if 0 <= self.active_layer_idx < len(self.layers):
+            layer = self.layers[self.active_layer_idx]
+            if hasattr(layer, '_drag_pos') and layer._drag_pos:
+                layer._drag_pos = layer.drag(event, layer._drag_pos)
                 self.update_canvas()
-
-            if self.txt_start_drag_pos and self.selection.get() == 'C_Texte':
-
-                dx = event.x - self.txt_start_drag_pos[0]
-                dy = event.y - self.txt_start_drag_pos[1]
-
-                new_disp_x = self.text_display_position[0] + dx
-                new_disp_y = self.text_display_position[1] + dy
-
-                # met à jour la position du texte dans le canva
-                self.text_display_position = (new_disp_x,
-                                              new_disp_y)
-
-                self.txt_start_drag_pos = (event.x, event.y)
-                self.update_canvas()
-        except Exception as e:
-            messagebox.showerror("Erreur de déplacement", f"Exception inattendue : {str(e)}")
 
     def resize(self, event):
         """
-        redimensionne l'image importée en fonction de la molette souris
-
-        Paramètres :
-            event (tk.Event) : L'événement de mouvement de la souris.
+        Redimensionne le calque actif (image ou texte) via la molette.
         """
-        try:
-            if self.original_image and self.selection.get() == 'C_Image':
+        if 0 <= self.active_layer_idx < len(self.layers):
+            layer = self.layers[self.active_layer_idx]
+            if layer.layer_type == 'Image':
                 delta = 10 if event.delta > 0 else -10
-                # Calculer la nouvelle taille en conservant le ratio
-                original_width, original_height = self.original_image.size
-                aspect_ratio = original_width / original_height
-
-                new_width = self.display_imported_image_size[0] + delta
-                new_height = int(new_width / aspect_ratio)
-                # min imagesize is 10/15px
-                new_width = max(15, new_width)
-                new_height = max(10, new_height)
-
-                self.display_imported_image_size = (new_width, new_height)
-                self.image_imported_image_size = (new_width*self.RATIO,
-                                                  new_height*self.RATIO)
-                self.display_imported_image = self.original_image.resize(self.display_imported_image_size)
-                self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
-            elif self.selection.get() == 'C_Texte':
+                layer.resize(delta)
+            elif layer.layer_type == 'Texte':
                 delta = 2 if event.delta > 0 else -2
-                self.sel_font['size'] = max(4, self.sel_font['size'] + delta)
+                layer.resize_font(delta)
             self.update_canvas()
-        except Exception as e:
-            messagebox.showerror("Erreur de redimensionnement", f"Exception inattendue : {str(e)}")
 
-    # gestion background
-    def choisir_couleur(self, event):
+    def select_background_color(self):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         try:
             couleur = colorchooser.askcolor(title="Choisissez une couleur")
-            if couleur[1] and event == 'background':
+            if couleur[1]:
                 self.background_couleur = couleur[1]
-                self.update_canvas()
-            if couleur[1] and event == 'font':
-                self.font_color = couleur[1]
-                # Mettre à jour la couleur et le texte du label
                 self.update_canvas()
         except Exception as e:
             messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
@@ -404,92 +288,53 @@ class ImageEditor:
         try:
             # couleur du fond
             # génère une image avec la couleur de fond sélectionnée
-            self.image_de_font = Image.new('RGBA',
-                                           (self.IMAGE_W, self.IMAGE_H),
-                                           self.background_couleur)
+            image_de_font = Image.new('RGBA',
+                                      (self.IMAGE_W, self.IMAGE_H),
+                                      self.background_couleur)
 
             # évite l'effacement par le garbage collector
-            self.image_export = self.image_de_font.copy()
+            image_export = image_de_font.copy()
 
-            # mise à jour des positions texte et image dans l'image exporté
-            self.text_image_position = (self.text_display_position[0] * self.RATIO,
-                                        self.text_display_position[1] * self.RATIO)
-            self.img_image_position = (self.img_display_position[0] * self.RATIO,
-                                       self.img_display_position[1] * self.RATIO)
-
-            # insère l'image importée
-            if self.display_imported_image:
-                self.image_export.paste(self.image_imported_image,
-                                        self.img_image_position,
-                                        self.image_imported_image)
-
-            # insère le texte
-            draw_i = ImageDraw.Draw(self.image_export)
-            pil_font_i = ImageFont.truetype(font=self.font_name,
-                                            size=(self.sel_font['size'] * self.RATIO))
-            draw_i.text(self.text_image_position,
-                        self.text.get(),
-                        fill=self.font_color,
-                        font=pil_font_i)
-
-            # insère les zones transparentes (Display et Image)
-            for d_x, d_y, d_w, d_h in self.exclusion_zone:
-                i_x, i_y, i_w, i_h = (d_x * self.RATIO, d_y * self.RATIO, d_w * self.RATIO, d_h * self.RATIO)
-                draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
+            # superpose les calques dans l'image
+            for layer in reversed(self.layers):
+                layer.draw_on_image(image_export, export=True)
 
             # Enregistre le fichier image.
             extension = str('_' + str(len(self.exclusion_zone)) + '.png')
             out_path = out_path + extension
-            self.image_export.save(out_path)
+            image_export.save(out_path)
+
         except Exception as e:
             messagebox.showerror("Erreur d'enregistrement", f"Exception inattendue : {str(e)}")
 
-    # mise à jour de la prévisualisation IHM
     def update_canvas(self):
         """
-        Met à jour le canvas pour refléter l'état actuel de l'image.
+        Redessine tous les calques empilés sur le canvas d’édition.
         """
-        try:
-            # couleur du fond
-            # met à jour le label (couleur et texte)
-            self.label_couleur.config(bg=self.background_couleur)
-            self.texte_background.delete(0, tk.END)  # Efface le champ existant
-            self.texte_background.insert(0, self.background_couleur)
-            # génère une image avec la couleur sélectionnée
-            display_image = Image.new('RGBA',
-                                      (self.CANVA_W, self.CANVA_H),
-                                      self.background_couleur)
 
-            # évite l'effacement par le garbage collector
-            temp_image = display_image.copy()
+        # couleur du fond
+        # met à jour le label (couleur et texte)
+        self.label_couleur.config(bg=self.background_couleur)
+        self.texte_background.delete(0, tk.END)  # Efface le champ existant
+        self.texte_background.insert(0, self.background_couleur)
+        # génère une image avec la couleur sélectionnée
+        display_image = Image.new('RGBA',
+                                  (self.CANVA_W, self.CANVA_H),
+                                  self.background_couleur)
 
-            # insère l'image importée
-            if self.display_imported_image:
-                temp_image.paste(self.display_imported_image,
-                                 self.img_display_position,
-                                 self.display_imported_image)
-                self.label_image.config(text=Path(self.imported_image_path).name)
-            else:
-                self.label_image.config(text='')
+        # évite l'effacement par le garbage collector
+        temp_image = display_image.copy()
 
-            # insère le texte
-            # Crée un objet ImageDraw pour dessiner sur l'image
-            draw_d = ImageDraw.Draw(temp_image)
-            self.pil_font = ImageFont.truetype(font=self.font_name,
-                                               size=self.sel_font['size'])
-            draw_d.text(self.text_display_position,
-                        self.text.get(),
-                        fill=self.font_color,
-                        font=self.pil_font)
+        # superpose les calques dans l'image
+        for layer in reversed(self.layers):
+            layer.draw_on_image(temp_image, export=False)
 
-            # insère les zones transparentes (Display et Image)
-            for zone in self.exclusion_zone:
-                d_x, d_y, d_w, d_h = zone
-                draw_d.rectangle((d_x, d_y, d_x + d_w, d_y + d_h),
-                                 fill=(255, 255, 255, 0))
+        self.tk_image = ImageTk.PhotoImage(temp_image)
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
-            # met a jour l'IHM
-            self.tk_image = ImageTk.PhotoImage(temp_image)
-            self.canvas.itemconfig(self.canvas_image_id, image=self.tk_image)
-        except Exception as e:
-            messagebox.showerror("Erreur e mise à jour", f"Exception inattendue : {str(e)}")
+
+# --- Pour tester/demo ---
+if __name__ == "__main__":
+    main_root = tk.Tk()
+    editor = ImageEditor(main_root, (0, 0, 0, 0), '')
+    main_root.mainloop()
