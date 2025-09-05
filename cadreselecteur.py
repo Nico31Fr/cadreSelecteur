@@ -6,6 +6,7 @@ from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from shutil import copy
+from platform import system
 
 from PIL.ImageTk import PhotoImage
 
@@ -113,6 +114,24 @@ class CadreSelecteur:
 
         # Create action buttons
         self.create_action_buttons()
+
+        self.system = system()
+        if self.system == 'Windows' or self.system == 'Darwin':
+            self.canvasSrc.bind_all("<MouseWheel>", self._on_mousewheel)  # Windows et macOS
+        else:  # Linux
+            self.canvasSrc.bind_all("<Button-4>", self._on_mousewheel)
+            self.canvasSrc.bind_all("<Button-5>", self._on_mousewheel)
+
+    def _on_mousewheel(self, event):
+        if self.system == 'Windows':
+            self.canvasSrc.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        elif self.system == 'Darwin':
+            self.canvasSrc.yview_scroll(int(-1 * event.delta), "units")
+        else:  # Linux
+            if event.num == 4:
+                self.canvasSrc.yview_scroll(-1, "units")
+            elif event.num == 5:
+                self.canvasSrc.yview_scroll(1, "units")
 
     def list_files_and_generate_thumbnails(self):
         """

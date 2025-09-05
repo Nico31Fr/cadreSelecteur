@@ -14,18 +14,21 @@ from .layerexcluzone import LayerExcluZone
 from .layertext import LayerText
 from .layerimage import LayerImage
 
+
 def clean_all_layer(app):
     """ efface tous les calques """
     app.active_layer_idx = 0
     app.layers = []
 
+
 def clean_editable_layer(app):
     """ efface tous les calques """
     for i in reversed(range(len(app.layers))):
-        l = app.layers[i]
-        if l.layer_type != 'ZoneEx':
+        layer = app.layers[i]
+        if layer.layer_type != 'ZoneEx':
             app.active_layer_idx = i
             app.delete_layer()
+
 
 class ImageEditorApp:
     """
@@ -295,12 +298,12 @@ class ImageEditorApp:
             if layer == 'layer':
                 if direction == '1_4':
                     new_layer = self.app1.layers[self.app1.active_layer_idx].clone(self.app4_frame, self.app4)
-                    n = len([l for l in self.app4.layers if l.layer_type == new_layer.layer_type]) + 1
+                    n = len([layer for layer in self.app4.layers if layer.layer_type == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
                     self.app4.layers.append(new_layer)
                 elif direction == '4_1':
                     new_layer = self.app4.layers[self.app4.active_layer_idx].clone(self.app1_frame, self.app1)
-                    n = len([l for l in self.app1.layers if l.layer_type == new_layer.layer_type]) + 1
+                    n = len([layer for layer in self.app1.layers if layer.layer_type == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
                     self.app1.layers.append(new_layer)
                 else:
@@ -309,19 +312,19 @@ class ImageEditorApp:
                 if direction == '1_4':
                     clean_editable_layer(self.app4)
                     # copie tou les calques editable
-                    for l in self.app1.layers:
-                        if l.layer_type != 'ZoneEx':
-                            new_layer = l.clone(self.app4_frame, self.app4)
-                            new_layer.name = l.name
+                    for layer in self.app1.layers:
+                        if layer.layer_type != 'ZoneEx':
+                            new_layer = layer.clone(self.app4_frame, self.app4)
+                            new_layer.name = layer.name
                             self.app4.layers.append(new_layer)
                 elif direction == '4_1':
-                    #efface tous les calques editable
+                    # efface tous les calques editable
                     clean_editable_layer(self.app1)
                     # copie tou les calques
-                    for l in self.app4.layers:
-                        if l.layer_type != 'ZoneEx':
-                            new_layer = l.clone(self.app1_frame, self.app1)
-                            new_layer.name = l.name
+                    for layer in self.app4.layers:
+                        if layer.layer_type != 'ZoneEx':
+                            new_layer = layer.clone(self.app1_frame, self.app1)
+                            new_layer.name = layer.name
                             self.app1.layers.append(new_layer)
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')

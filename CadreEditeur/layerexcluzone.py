@@ -7,6 +7,7 @@ from PIL import ImageDraw
 import tkinter as tk
 from .layer import Layer
 
+
 class LayerExcluZone(Layer):
     """
     Calque contenant les zone d'exclusion.
@@ -27,7 +28,7 @@ class LayerExcluZone(Layer):
         self.tkparent = tkparent
         self.name = name
         self.layer_type = 'ZoneEx'
-        self.exclusion_zone = [(0,0,0,0)]
+        self.exclusion_zone = [(0, 0, 0, 0)]
 
     def set_exclusion_zone(self, value):
         """

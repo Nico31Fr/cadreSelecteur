@@ -61,7 +61,7 @@ class Layer:
         Returns :
             None
         """
-        pass # À spécialiser dans les sous-classes.
+        pass  # À spécialiser dans les sous-classes.
 
     def update_param_zone(self, frame):
         """
@@ -72,7 +72,7 @@ class Layer:
         Returns :
             None
         """
-        pass # À spécialiser dans les sous-classes.
+        pass  # À spécialiser dans les sous-classes.
 
     def clone(self, tkparent, parent):
         """

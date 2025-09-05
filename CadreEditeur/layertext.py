@@ -10,6 +10,7 @@ import matplotlib.font_manager as fm
 from .layer import Layer
 from .text import askfont
 
+
 class LayerText(Layer):
     """
     Calque texte éditable, positionnable, redimensionnable.
@@ -166,19 +167,19 @@ class LayerText(Layer):
         )
 
         # Copie des champs simples
-        new_layer.display_position  = tuple(self.display_position)
-        new_layer.image_position    = tuple(self.image_position)
-        new_layer.visible           = self.visible
-        new_layer.locked            = self.locked
+        new_layer.display_position = tuple(self.display_position)
+        new_layer.image_position = tuple(self.image_position)
+        new_layer.visible = self.visible
+        new_layer.locked = self.locked
 
         # Copie du texte (tk.StringVar!)
         new_layer.text.set(self.text.get())
 
         # Copie police/couleur
-        new_layer.font_color        = self.font_color
-        new_layer.sel_font          = self.sel_font.copy()
-        new_layer.font_name         = self.font_name
-        new_layer.pil_font          = ImageFont.truetype(self.font_name, self.sel_font['size'])
+        new_layer.font_color = self.font_color
+        new_layer.sel_font = self.sel_font.copy()
+        new_layer.font_name = self.font_name
+        new_layer.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
 
         return new_layer
 

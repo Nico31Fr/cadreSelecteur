@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from .layer import Layer
 
+
 class LayerImage(Layer):
     """
     Calque image importée, redimensionnable et positionnable.
@@ -115,21 +116,21 @@ class LayerImage(Layer):
             self.RATIO,
             name=self.name + "_copie"
         )
-        new_layer.display_position         = tuple(self.display_position)
-        new_layer.image_position           = tuple(self.image_position)
-        new_layer.visible                  = self.visible
-        new_layer.locked                   = self.locked
+        new_layer.display_position = tuple(self.display_position)
+        new_layer.image_position = tuple(self.image_position)
+        new_layer.visible = self.visible
+        new_layer.locked = self.locked
 
-        new_layer.imported_image_path      = self.imported_image_path
-        # Pour les images PIL : il faut vraiment cloner la donnée ! (sans 'link')
+        new_layer.imported_image_path = self.imported_image_path
+        # Pour les images PIL il faut vraiment cloner la donnée! (sans 'link')
         if self.original_image is not None:
-            new_layer.original_image           = self.original_image.copy()
+            new_layer.original_image = self.original_image.copy()
         if self.display_imported_image is not None:
-            new_layer.display_imported_image   = self.display_imported_image.copy()
-        new_layer.display_imported_image_size  = tuple(self.display_imported_image_size)
+            new_layer.display_imported_image = self.display_imported_image.copy()
+        new_layer.display_imported_image_size = tuple(self.display_imported_image_size)
         if self.image_imported_image is not None:
-            new_layer.image_imported_image     = self.image_imported_image.copy()
-        new_layer.image_imported_image_size    = tuple(self.image_imported_image_size)
+            new_layer.image_imported_image = self.image_imported_image.copy()
+        new_layer.image_imported_image_size = tuple(self.image_imported_image_size)
 
         # Si tu utilises self.img_start_drag_pos (temporaire), à ne pas copier
         return new_layer
@@ -148,6 +149,7 @@ class LayerImage(Layer):
             'display_imported_image_size': self.display_imported_image_size,
             'image_imported_image_size': self.image_imported_image_size,
         }
+
     @staticmethod
     def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
         """
@@ -185,6 +187,6 @@ class LayerImage(Layer):
                 obj.original_image = Image.open(obj.imported_image_path).convert('RGBA')
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)
                 obj.image_imported_image = obj.original_image.resize(obj.image_imported_image_size)
-            except Exception as e:
+            except Exception:
                 obj.original_image = None
         return obj

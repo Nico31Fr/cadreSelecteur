@@ -3,7 +3,7 @@
     |-> fenêtre d'édition d'un cadre  """
 
 import tkinter as tk
-from tkinter import colorchooser,messagebox
+from tkinter import colorchooser, messagebox
 from PIL import Image, ImageTk
 from re import fullmatch
 
@@ -62,12 +62,13 @@ class ImageEditor:
         self.listbox.bind("<<ListboxSelect>>", self.on_layer_select)
 
         # -- Boutons de gestion pile --
-        btnf = tk.Frame(self.layers_frame); btnf.pack()
-        tk.Button(btnf, text="Ajouter Image", command=self.add_image_layer).grid(row=0,column=0)
-        tk.Button(btnf, text="Ajouter Texte", command=self.add_text_layer).grid(row=0,column=1)
-        tk.Button(btnf, text="Supprimer", command=self.delete_layer).grid(row=0,column=2)
-        tk.Button(btnf, text="  ˄  ", command=lambda:self.move_layer(-1)).grid(row=0,column=3)
-        tk.Button(btnf, text="  ˅  ", command=lambda:self.move_layer(1)).grid(row=0,column=4)
+        btnf = tk.Frame(self.layers_frame)
+        btnf.pack()
+        tk.Button(btnf, text="Ajouter Image", command=self.add_image_layer).grid(row=0, column=0)
+        tk.Button(btnf, text="Ajouter Texte", command=self.add_text_layer).grid(row=0, column=1)
+        tk.Button(btnf, text="Supprimer", command=self.delete_layer).grid(row=0, column=2)
+        tk.Button(btnf, text="  ˄  ", command=lambda: self.move_layer(-1)).grid(row=0, column=3)
+        tk.Button(btnf, text="  ˅  ", command=lambda: self.move_layer(1)).grid(row=0, column=4)
 
         # -- Boutons de gestion couleur de fond --
         fondf = tk.Frame(self.layers_frame)
@@ -110,11 +111,11 @@ class ImageEditor:
         """
         Ajoute un nouveau calque image et le sélectionne.
         """
-        n = len([l for l in self.layers if l.layer_type=='Image'])+1
+        n = len([layer for layer in self.layers if layer.layer_type == 'Image']) + 1
         layer = LayerImage(self.root,
                            self,
-                           (self.CANVA_W,self.CANVA_H),
-                           (self.IMAGE_W,self.IMAGE_H),
+                           (self.CANVA_W, self.CANVA_H),
+                           (self.IMAGE_W, self.IMAGE_H),
                            self.RATIO,
                            name=f"Image {n}")
         if layer.import_image():
@@ -129,12 +130,12 @@ class ImageEditor:
         """
         Ajoute un nouveau calque texte et le sélectionne.
         """
-        n = len([l for l in self.layers if l.layer_type=='Texte'])+1
+        n = len([layer for layer in self.layers if layer.layer_type == 'Texte']) + 1
         name = f"Texte {n}"
         layer = LayerText(self.root,
                           self,
-                          (self.CANVA_W,self.CANVA_H),
-                          (self.IMAGE_W,self.IMAGE_H),
+                          (self.CANVA_W, self.CANVA_H),
+                          (self.IMAGE_W, self.IMAGE_H),
                           self.RATIO,
                           name=name)
         self.layers.append(layer)
@@ -149,10 +150,10 @@ class ImageEditor:
         name = "Zones insertion photos"
         layer = LayerExcluZone(self.root,
                                self,
-                          (self.CANVA_W,self.CANVA_H),
-                          (self.IMAGE_W,self.IMAGE_H),
-                          self.RATIO,
-                          name=name)
+                               (self.CANVA_W, self.CANVA_H),
+                               (self.IMAGE_W, self.IMAGE_H),
+                               self.RATIO,
+                               name=name)
         layer.set_exclusion_zone(self.exclusion_zone)
         self.layers.append(layer)
         self.active_layer_idx = len(self.layers)-1
@@ -175,7 +176,7 @@ class ImageEditor:
         Supprime le calque sélectionné.
         """
         if 0 <= self.active_layer_idx < len(self.layers)\
-                and  self.layers[self.active_layer_idx].layer_type != 'ZoneEx' :
+                and self.layers[self.active_layer_idx].layer_type != 'ZoneEx':
             del self.layers[self.active_layer_idx]
             if self.layers:
                 self.active_layer_idx = max(0, self.active_layer_idx-1)
@@ -204,12 +205,12 @@ class ImageEditor:
         """
         Met à jour la liste visuelle des calques.
         """
-        self.listbox.delete(0,"end")
+        self.listbox.delete(0, "end")
         for i, l in enumerate(self.layers):
-            name = l.name + (" [actif]" if i==self.active_layer_idx else "")
+            name = l.name + (" [actif]" if i == self.active_layer_idx else "")
             self.listbox.insert("end", name)
-        self.listbox.selection_clear(0,"end")
-        if self.active_layer_idx >=0:
+        self.listbox.selection_clear(0, "end")
+        if self.active_layer_idx >= 0:
             self.listbox.selection_set(self.active_layer_idx)
         self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
 
@@ -228,17 +229,17 @@ class ImageEditor:
         Démarre le déplacement du calque actif.
         """
         if 0 <= self.active_layer_idx < len(self.layers):
-            l = self.layers[self.active_layer_idx]
-            l._drag_pos = (event.x, event.y)
+            layer = self.layers[self.active_layer_idx]
+            layer._drag_pos = (event.x, event.y)
 
     def drag_drop(self, event):
         """
         Effectue le déplacement drag&drop du calque actif.
         """
         if 0 <= self.active_layer_idx < len(self.layers):
-            l = self.layers[self.active_layer_idx]
-            if hasattr(l,'_drag_pos') and l._drag_pos:
-                l._drag_pos = l.drag(event, l._drag_pos)
+            layer = self.layers[self.active_layer_idx]
+            if hasattr(layer, '_drag_pos') and layer._drag_pos:
+                layer._drag_pos = layer.drag(event, layer._drag_pos)
                 self.update_canvas()
 
     def resize(self, event):
@@ -246,13 +247,13 @@ class ImageEditor:
         Redimensionne le calque actif (image ou texte) via la molette.
         """
         if 0 <= self.active_layer_idx < len(self.layers):
-            l = self.layers[self.active_layer_idx]
-            if l.layer_type == 'Image':
+            layer = self.layers[self.active_layer_idx]
+            if layer.layer_type == 'Image':
                 delta = 10 if event.delta > 0 else -10
-                l.resize(delta)
-            elif l.layer_type == 'Texte':
+                layer.resize(delta)
+            elif layer.layer_type == 'Texte':
                 delta = 2 if event.delta > 0 else -2
-                l.resize_font(delta)
+                layer.resize_font(delta)
             self.update_canvas()
 
     def select_background_color(self):
@@ -288,15 +289,15 @@ class ImageEditor:
             # couleur du fond
             # génère une image avec la couleur de fond sélectionnée
             image_de_font = Image.new('RGBA',
-                                           (self.IMAGE_W, self.IMAGE_H),
-                                           self.background_couleur)
+                                      (self.IMAGE_W, self.IMAGE_H),
+                                      self.background_couleur)
 
             # évite l'effacement par le garbage collector
             image_export = image_de_font.copy()
 
             # superpose les calques dans l'image
-            for l in reversed(self.layers):
-                l.draw_on_image(image_export, export=True)
+            for layer in reversed(self.layers):
+                layer.draw_on_image(image_export, export=True)
 
             # Enregistre le fichier image.
             extension = str('_' + str(len(self.exclusion_zone)) + '.png')
@@ -325,15 +326,15 @@ class ImageEditor:
         temp_image = display_image.copy()
 
         # superpose les calques dans l'image
-        for l in reversed(self.layers):
-            l.draw_on_image(temp_image, export=False)
+        for layer in reversed(self.layers):
+            layer.draw_on_image(temp_image, export=False)
 
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
 
 # --- Pour tester/demo ---
-if __name__=="__main__":
+if __name__ == "__main__":
     main_root = tk.Tk()
-    editor = ImageEditor(main_root, (0,0,0,0), '')
+    editor = ImageEditor(main_root, (0, 0, 0, 0), '')
     main_root.mainloop()
