@@ -5,10 +5,9 @@ from os import path, listdir
 from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
+from PIL.ImageTk import PhotoImage
 from shutil import copy
 from platform import system
-
-from PIL.ImageTk import PhotoImage
 
 from CadreEditeur.imageeditorapp import ImageEditorApp
 
@@ -63,6 +62,8 @@ class CadreSelecteur:
         # Create text fields
         self.text_field1 = StringVar()
         self.text_field2 = StringVar()
+
+        self.tk_root = None
 
         # Font configuration
         label_font = ("Arial", 14, "bold")
@@ -378,7 +379,9 @@ class CadreSelecteur:
         self.tk_root.mainloop()
 
     def on_closing(self):
-
+        """ détruit la fenêtre d'édition de cadre
+            ré-affiche la fenêtre de sélecteur de cadre
+            et rafraichie la liste des vignettes"""
         self.tk_root.destroy()
         self.master.deiconify()
         # List and generate image thumbnails

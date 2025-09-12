@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Module d'édition de cadre pour PiBooth
-    |-> fenêtre d'édition d'un cadre  """
+    |→ fenêtre d'édition d'un cadre  """
 
 import tkinter as tk
 from tkinter import colorchooser, messagebox
@@ -19,7 +19,7 @@ class ImageEditor:
     et d'enregistrer la composition finale.
     """
 
-    def __init__(self, root, exclusion_zone, resources_path):
+    def __init__(self, root, exclusion_zone):
         """
         Initialise l'application ImageEditor avec une fenêtre tkinter racine.
 
@@ -61,22 +61,22 @@ class ImageEditor:
         self.listbox.pack(fill='x')
         self.listbox.bind("<<ListboxSelect>>", self.on_layer_select)
 
-        # -- Boutons de gestion pile --
-        btnf = tk.Frame(self.layers_frame)
-        btnf.pack()
-        tk.Button(btnf, text="Ajouter Image", command=self.add_image_layer).grid(row=0, column=0)
-        tk.Button(btnf, text="Ajouter Texte", command=self.add_text_layer).grid(row=0, column=1)
-        tk.Button(btnf, text="Supprimer", command=self.delete_layer).grid(row=0, column=2)
-        tk.Button(btnf, text="  ˄  ", command=lambda: self.move_layer(-1)).grid(row=0, column=3)
-        tk.Button(btnf, text="  ˅  ", command=lambda: self.move_layer(1)).grid(row=0, column=4)
+        # — Boutons de gestion pile —
+        button_frame = tk.Frame(self.layers_frame)
+        button_frame.pack()
+        tk.Button(button_frame, text="Ajouter Image", command=self.add_image_layer).grid(row=0, column=0)
+        tk.Button(button_frame, text="Ajouter Texte", command=self.add_text_layer).grid(row=0, column=1)
+        tk.Button(button_frame, text="Supprimer", command=self.delete_layer).grid(row=0, column=2)
+        tk.Button(button_frame, text="  ˄  ", command=lambda: self.move_layer(-1)).grid(row=0, column=3)
+        tk.Button(button_frame, text="  ˅  ", command=lambda: self.move_layer(1)).grid(row=0, column=4)
 
-        # -- Boutons de gestion couleur de fond --
-        fondf = tk.Frame(self.layers_frame)
-        fondf.pack(pady=(10, 0))
-        tk.Label(fondf, text="Couleur du fond :").pack(side="left", anchor='s', padx=5, pady=10)
-        self.texte_background = tk.Entry(fondf, textvariable=self.texte_background_value, width=8)
+        # — Boutons de gestion couleur de fond —
+        fond_frame = tk.Frame(self.layers_frame)
+        fond_frame.pack(pady=(10, 0))
+        tk.Label(fond_frame, text="Couleur du fond :").pack(side="left", anchor='s', padx=5, pady=10)
+        self.texte_background = tk.Entry(fond_frame, textvariable=self.texte_background_value, width=8)
         self.texte_background.pack(side="left", padx=5)
-        self.label_couleur = tk.Label(fondf, text="                  ",
+        self.label_couleur = tk.Label(fond_frame, text="                  ",
                                       bg=self.background_couleur,
                                       cursor="hand2")
         self.label_couleur.pack(side="left", padx=5)
@@ -189,8 +189,8 @@ class ImageEditor:
         """
         Fait monter/descendre le calque actif dans la pile.
 
-        Args:
-            direction (int): -1=monter, 1=descendre
+        Args :
+            direction (int) : -1=monter, 1=descendre
         """
         idx = self.active_layer_idx
         if 0 <= idx < len(self.layers):
@@ -218,9 +218,9 @@ class ImageEditor:
         """
         Sélectionne le calque actif dans la liste.
         """
-        idxs = self.listbox.curselection()
-        if idxs:
-            self.active_layer_idx = idxs[0]
+        index = self.listbox.curselection()
+        if index:
+            self.active_layer_idx = index[0]
             self.refresh_listbox()
             self.update_canvas()
 
@@ -329,6 +329,7 @@ class ImageEditor:
         for layer in reversed(self.layers):
             layer.draw_on_image(temp_image, export=False)
 
+        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 
@@ -336,5 +337,5 @@ class ImageEditor:
 # --- Pour tester/demo ---
 if __name__ == "__main__":
     main_root = tk.Tk()
-    editor = ImageEditor(main_root, (0, 0, 0, 0), '')
+    editor = ImageEditor(main_root, (0, 0, 0, 0))
     main_root.mainloop()

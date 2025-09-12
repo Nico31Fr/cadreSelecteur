@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
 """ Module d'édition de cadre pour PiBooth
-    |-> classe de gestion des calques image  """
+    |→ classe de gestion des calques image  """
 
 
 from PIL import Image, UnidentifiedImageError
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from .layer import Layer
+from os.path import basename
 
 
 class LayerImage(Layer):
     """
-    Calque image importée, redimensionnable et positionnable.
+    Calque image importée, redimensionnable et positionable.
     """
 
-    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name='Image'):
+    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name='Image'):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
@@ -24,7 +25,7 @@ class LayerImage(Layer):
             name (str): Nom du calque.
         """
         super().__init__(name, canva_size, image_size, ratio)
-        self.tkparent = tkparent
+        self.tk_parent = tk_parent
         self.parent = parent
         self.layer_type = 'Image'
         self.imported_image_path = None
@@ -40,19 +41,19 @@ class LayerImage(Layer):
         Ouvre un dialogue pour importer une image locale.
         Met à jour la miniature de prévisualisation et l’image exportable.
 
-        Returns:
-            bool: True si import OK, False sinon.
+        Returns :
+            bool : True si import OK, False sinon.
         """
-        self.imported_image_path = filedialog.askopenfilename(parent=self.tkparent)
+        self.imported_image_path = filedialog.askopenfilename(parent=self.tk_parent)
         if not self.imported_image_path:
             return False
         try:
             self.original_image = Image.open(self.imported_image_path).convert('RGBA')
         except UnidentifiedImageError:
-            messagebox.showerror("Erreur d'image", "Image corrompue ou illisible.", parent=self.tkparent)
+            messagebox.showerror("Erreur d'image", "Image corrompue ou illisible.", parent=self.tk_parent)
             return False
         except Exception as e:
-            messagebox.showerror("Erreur d'image", str(e), parent=self.tkparent)
+            messagebox.showerror("Erreur d'image", str(e), parent=self.tk_parent)
             return False
         w0, h0 = self.original_image.size
         aspect = w0 / h0
@@ -68,8 +69,8 @@ class LayerImage(Layer):
         """
         Redimensionne l’image importée en conservant le ratio.
 
-        Args:
-            delta (int): Variation de la largeur du calque (en px).
+        Args :
+            delta (int) : Variation de la largeur du calque (en px).
         """
         if not self.original_image:
             return
@@ -84,7 +85,7 @@ class LayerImage(Layer):
         self.display_imported_image = self.original_image.resize(self.display_imported_image_size)
         self.image_imported_image = self.original_image.resize(self.image_imported_image_size)
 
-    def draw_on_image(self, image, export=False):
+    def draw_on_image(self, image: Image.Image, export=False):
         """
         Dessine ce calque image sur une image PIL.
 
@@ -102,14 +103,19 @@ class LayerImage(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
+        tk.Label(frame,
+                 justify="left",
+                 text=f'Calque {self.name}\n'
+                      f'Nom : {basename(self.imported_image_path)}\n'
+                      f'Position : {self.image_position}\n'
+                      f'Taille : {self.image_imported_image_size}').pack(anchor='nw')
 
-    def clone(self, tkparent, parent):
+    def clone(self, tk_parent, parent):
         """
         Crée une copie indépendante de ce LayerImage (mêmes réglages, nouvelle instance)
         """
         new_layer = LayerImage(
-            tkparent,
+            tk_parent,
             parent,
             (self.CANVA_W, self.CANVA_H),
             (self.IMAGE_W, self.IMAGE_H),
@@ -151,13 +157,13 @@ class LayerImage(Layer):
         }
 
     @staticmethod
-    def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
         """
         Recrée un LayerImage à partir d'un dictionnaire sérialisé.
 
         Args:
             dct (dict): dictionnaire provenant du to_dict().
-            tkparent (tk.Widget): parent pour le widget (frame).
+            tk_parent (tk.Widget): parent pour le widget (frame).
             parent : instance appelante
             canva_size (tuple): (largeur, hauteur) du canvas affichage.
             image_size (tuple): (largeur, hauteur) pour export.
@@ -167,7 +173,7 @@ class LayerImage(Layer):
         Returns:
             LayerImage: un nouveau calque image restauré.
         """
-        obj = LayerImage(tkparent,
+        obj = LayerImage(tk_parent,
                          parent,
                          canva_size,
                          image_size,
@@ -187,6 +193,14 @@ class LayerImage(Layer):
                 obj.original_image = Image.open(obj.imported_image_path).convert('RGBA')
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)
                 obj.image_imported_image = obj.original_image.resize(obj.image_imported_image_size)
-            except Exception:
+            except FileNotFoundError:
+                print(f"Fichier non trouvé: {obj.imported_image_path}")
                 obj.original_image = None
+            except UnidentifiedImageError:
+                print(f"Erreur d'identification de l'image: {obj.imported_image_path}")
+                obj.original_image = None
+            except IOError:
+                print(f"Erreur E/S: {obj.imported_image_path}")
+                obj.original_image = None
+
         return obj

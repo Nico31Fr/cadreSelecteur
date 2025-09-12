@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+""" Module de selection de cadre pour PiBooth
+    |→ point d'entrée de l'appli autonome """
+
 from cadreselecteur import CadreSelecteur, template_path, destination_path
 from cadreselecteur import TEMPLATE_NAME_STD
 from tkinter import Tk, messagebox

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """ Module d'édition de cadre pour PiBooth
-    |-> classe de gestion des calques image  """
+    |→ classe de gestion des calques image  """
 
 
-from PIL import ImageDraw
+from PIL import ImageDraw, Image
 import tkinter as tk
 from .layer import Layer
 
@@ -13,10 +13,10 @@ class LayerExcluZone(Layer):
     Calque contenant les zone d'exclusion.
     """
 
-    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name='ZoneEx'):
+    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name='ZoneEx'):
         """
         Args:
-            tkparent (tk.Widget): parent pour le widget (frame).
+            tk_parent (tk.Widget): parent pour le widget (frame).
             parent : instance appelante
             canva_size (tuple): (largeur, hauteur) du canvas affichage.
             image_size (tuple): (largeur, hauteur) pour export.
@@ -25,7 +25,7 @@ class LayerExcluZone(Layer):
         """
         super().__init__(name, canva_size, image_size, ratio)
         self.parent = parent
-        self.tkparent = tkparent
+        self.tk_parent = tk_parent
         self.name = name
         self.layer_type = 'ZoneEx'
         self.exclusion_zone = [(0, 0, 0, 0)]
@@ -39,7 +39,7 @@ class LayerExcluZone(Layer):
         """
         self.exclusion_zone = value
 
-    def draw_on_image(self, image, export=False):
+    def draw_on_image(self, image: Image.Image, export=False):
         """
         Dessine ce calque image sur une image PIL.
 
@@ -65,9 +65,10 @@ class LayerExcluZone(Layer):
 
         tk.Label(frame, text='calque zone d\'exclusion').pack(anchor='nw')
 
-    def clone(self, tkparent, parent):
+    def clone(self, tk_parent, parent):
         pass
 
+    @property
     def to_dict(self):
         """Retourne un dict serializable décrivant l’état du calque."""
 
@@ -82,13 +83,15 @@ class LayerExcluZone(Layer):
             'exclusion_zone': self.exclusion_zone
         }
 
-    def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
+    @staticmethod
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
         """
         Recrée un LayerExcluZone à partir d'un dictionnaire sérialisé.
 
         Args:
             dct (dict): dictionnaire provenant du to_dict().
-            parent (tk.Widget): parent pour le widget (frame).
+            tk_parent (tk.Widget): parent pour le widget (frame).
+            parent : instance appelante
             canva_size (tuple): (largeur, hauteur) du canvas affichage.
             image_size (tuple): (largeur, hauteur) pour export.
             ratio (int): rapport export/canvas.
@@ -97,7 +100,7 @@ class LayerExcluZone(Layer):
         Returns:
             LayerExcluZone: un nouveau calque texte restauré.
         """
-        obj = LayerExcluZone(tkparent,
+        obj = LayerExcluZone(tk_parent,
                              parent,
                              canva_size,
                              image_size,

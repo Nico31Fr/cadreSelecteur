@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Module d'édition de cadre pour PiBooth
-    |-> classe générique de gestion des calques """
+    |→ classe générique de gestion des calques """
 
 
 class Layer:
@@ -32,7 +32,7 @@ class Layer:
 
     def drag(self, event, start_pos):
         """
-        Déplace le calque (drag & drop).
+        Déplace le calque (drag and drop).
 
         Args :
             event (tk.Event) : Évènement souris Tkinter.
@@ -67,14 +67,14 @@ class Layer:
         """
         Méthode à spécialiser. Met à jour la zone de paramétrage du calque
 
-        Args:
-            frame (PIL.Frame): frame à mettre à jour
+        Args :
+            frame (PIL.Frame) : frame à mettre à jour
         Returns :
             None
         """
         pass  # À spécialiser dans les sous-classes.
 
-    def clone(self, tkparent, parent):
+    def clone(self, tk_parent, parent):
         """
         Retourne une nouvelle instance du même type, avec les mêmes paramètres de base.
         À spécialiser dans chaque sous-classe !

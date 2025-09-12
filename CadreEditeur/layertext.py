@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Module d'édition de cadre pour PiBooth
-    |-> classe de gestion des calques texte  """
+    |→ classe de gestion des calques texte  """
 
-from PIL import ImageFont, ImageDraw
+from PIL import ImageFont, ImageDraw, Image
 import tkinter as tk
 from tkinter import messagebox, colorchooser
 import matplotlib.font_manager as fm
@@ -13,10 +13,10 @@ from .text import askfont
 
 class LayerText(Layer):
     """
-    Calque texte éditable, positionnable, redimensionnable.
+    Calque texte éditable, positionable, redimensionnable.
     """
 
-    def __init__(self, tkparent, parent, canva_size, image_size, ratio, name="Text"):
+    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name="Text"):
         """
         Args:
             parent (object): widget parent Tkinter.
@@ -24,7 +24,7 @@ class LayerText(Layer):
             name (str): nom du calque.
         """
         super().__init__(name, canva_size, image_size, ratio)
-        self.tkparent = tkparent
+        self.tk_parent = tk_parent
         self.parent = parent
         self.layer_type = 'Texte'
         # variables texte
@@ -48,14 +48,14 @@ class LayerText(Layer):
         """
         Redimensionne la police utilisée dans le calque.
 
-        Args:
-            delta (int): Variation (en px) de la taille.
+        Args :
+            delta (int) : Variation (en px) de la taille.
         """
         new_size = max(4, self.sel_font['size'] + delta)
         self.sel_font['size'] = new_size
         self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
 
-    def draw_on_image(self, image, export=False):
+    def draw_on_image(self, image: Image.Image, export=False):
         """
         Dessine le texte sur l’image PIL, à la position courante.
 
@@ -93,11 +93,11 @@ class LayerText(Layer):
          de selection de police d'écriture
         """
         try:
-            font_selected = askfont(self.tkparent,
+            font_selected = askfont(self.tk_parent,
                                     text=self.text.get(),
                                     title="Police",
                                     family=self.sel_font['family'],
-                                    size=self.sel_font['size'],)
+                                    size=self.sel_font['size'], )
 
             # met à jour la police sélectionné
             if font_selected:
@@ -152,13 +152,13 @@ class LayerText(Layer):
         except Exception as e:
             messagebox.showerror("Erreur de texte", f"Exception inattendue : {str(e)}")
 
-    def clone(self, tkparent, parent):
+    def clone(self, tk_parent, parent):
         """
-        Crée une copie indépendante de ce LayerText (même réglages, nouvelle instance)
+        Crée une copie indépendante de ce LayerText (mêmes réglages, nouvelle instance)
         """
         # Nouvelle instance avec mêmes paramètres de base
         new_layer = LayerText(
-            tkparent,
+            tk_parent,
             parent,
             (self.CANVA_W, self.CANVA_H),
             (self.IMAGE_W, self.IMAGE_H),
@@ -200,16 +200,15 @@ class LayerText(Layer):
             "font_name": self.font_name,
         }
 
-    from PIL import ImageFont
-
     @staticmethod
-    def from_dict(dct, tkparent, parent, canva_size, image_size, ratio, name=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
         """
         Recrée un LayerText à partir d'un dictionnaire sérialisé.
 
         Args:
             dct (dict): dictionnaire provenant du to_dict().
-            parent (tk.Widget): parent pour le widget (frame).
+            tk_parent (tk.Widget): parent pour le widget (frame).
+            parent : instance appelante
             canva_size (tuple): (largeur, hauteur) du canvas affichage.
             image_size (tuple): (largeur, hauteur) pour export.
             ratio (int): rapport export/canvas.
@@ -219,7 +218,7 @@ class LayerText(Layer):
             LayerText: un nouveau calque texte restauré.
         """
         obj = LayerText(
-            tkparent,
+            tk_parent,
             parent,
             canva_size,
             image_size,

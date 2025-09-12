@@ -95,7 +95,7 @@ class ImageEditorApp:
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app1_frame.grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
-            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], self.resources)
+            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0])
 
             # bouton synchronisation droite gauche
             button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('layer', '1_4'))
@@ -114,7 +114,7 @@ class ImageEditorApp:
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=10, pady=10)
-            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], self.resources)
+            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1])
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
@@ -219,11 +219,11 @@ class ImageEditorApp:
 
             project_data = {
                 "app1": {
-                    "layers": [layer.to_dict() for layer in app1_layer_tmp],
+                    "layers": [layer.to_dict for layer in app1_layer_tmp],
                     "background_couleur": self.app1.background_couleur,
                 },
                 "app4": {
-                    "layers": [layer.to_dict() for layer in app4_layer_tmp],
+                    "layers": [layer.to_dict for layer in app4_layer_tmp],
                     "background_couleur": self.app4.background_couleur,
                 },
                 "template": self.selected_template.get()
