@@ -6,17 +6,18 @@ block_cipher = None
 
 a = Analysis(
     ['__main__.py'],
-    pathex=['.'],  # Chemin relatif vers le script principal
+    pathex=['.'],  # chemin vers ton script principal
     binaries=[],
     datas=[
         ('resources/*', 'resources'),
         ('Cadres/*', 'Cadres'),
         ('Templates/*', 'Templates'),
     ],
-    hiddenimports=collect_submodules('CadreEditeur.text') +
-                  ['PIL', 'PIL._imaging'], # Pour Pillow ; généralement inutile, mais sûr
-    # matplotlib est généralement bien détecté mais tu peux ajouter `matplotlib` :
-    # hiddenimports=['matplotlib'],
+    hiddenimports=collect_submodules('numpy') + [
+        'PIL',
+        'PIL._imaging',
+        'matplotlib',
+    ],
     hookspath=[],
     runtime_hooks=[],
     excludes=[],
@@ -25,16 +26,24 @@ a = Analysis(
     cipher=block_cipher,
 )
 
-exe = EXE(
+pyz = PYZ(
     a.pure,
     a.zipped_data,
+    cipher=block_cipher,
+)
+
+exe = EXE(
+    pyz,
     a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     [],
-    name='CadreSelecteur',   # Nom du .exe
+    name='CadreSelecteur',   # nom du .exe final
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,           # Pas de fenêtre console (GUI tkinter)
-    # icon='app.ico',        # Décommente si un jour tu ajoutes une icône
+    console=False,           # pas de console (GUI tkinter)
+    # icon='app.ico',        # décommente si tu ajoutes une icône
 )
