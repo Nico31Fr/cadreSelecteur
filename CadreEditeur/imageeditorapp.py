@@ -8,6 +8,7 @@ from os import path
 from json import dump, load
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
+from pathlib import Path
 
 from .imageeditor import ImageEditor
 from .layerexcluzone import LayerExcluZone
@@ -74,7 +75,7 @@ class ImageEditorApp:
             self.main_frame.columnconfigure(2, weight=1)
 
             # Liste des options pour le menu déroulant
-            options = ["template_std.xml", "cadre-mariage1.xml"]
+            options = [f.name for f in Path(self.template).glob('template_*.xml')]
 
             # Variable pour stocker l'option sélectionnée
             self.selected_template = tk.StringVar()
