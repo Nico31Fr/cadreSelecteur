@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Black">
-    <option name="sdkName" value="cadreSelecteur_env" />
+    <option name="sdkName" value="cadreSelecteur_3.11" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="cadreSelecteur_3.11" project-jdk-type="Python SDK" />
 </project>

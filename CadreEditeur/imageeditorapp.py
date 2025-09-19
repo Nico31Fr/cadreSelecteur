@@ -394,7 +394,7 @@ class ImageEditorApp:
             messagebox.showerror("Erreur de template", f"Une erreur inattendue s'est produite : {str(e)}")
 
     # gestion des templates
-    def on_template_change(self, *args):
+    def on_template_change(self, *_args):
         """
         appelé lors du changement de template
         charge le xml et met à jour les zones d'exclusion

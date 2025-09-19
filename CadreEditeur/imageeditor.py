@@ -214,7 +214,7 @@ class ImageEditor:
             self.listbox.selection_set(self.active_layer_idx)
         self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
 
-    def on_layer_select(self, event):
+    def on_layer_select(self, _event):
         """
         Sélectionne le calque actif dans la liste.
         """

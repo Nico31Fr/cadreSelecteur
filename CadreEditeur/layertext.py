@@ -102,7 +102,10 @@ class LayerText(Layer):
             # met à jour la police sélectionné
             if font_selected:
                 self.sel_font = font_selected
-                font_name_found = self.find_font_path(self.sel_font['family'])
+                family = self.sel_font['family']
+                if not isinstance(family, str):
+                    family = str(family)
+                font_name_found = self.find_font_path(family)
                 if font_name_found is not None:
                     self.font_name = font_name_found
 

@@ -417,10 +417,9 @@ def check_mandatory_path():
         quit()
 
 
-
 if __name__ == "__main__":
 
-    #v Vérifie les path
+    # Vérifie les path
     check_mandatory_path()
 
     # start IHM
