@@ -39,24 +39,20 @@ class CadreSelecteur:
     using radio buttons within a GUI.
     """
 
-    def __init__(self, master, source_directory, destination_directory):
+    def __init__(self):
         """
         Initializes the TemplateSelector with a window
         and directory to display images.
-
-        :param master: The Tkinter root or parent window.
-        :param source_directory: The directory containing image files.
-        :param destination_directory: The directory containing template files.
-                for pibooth
         """
-        self.master = master
+
+        self.master = Tk()
         self.master.title("Sélecteur de cadre pour piBooth V0.1")
-        self.source_directory = source_directory
-        self.destination_directory = destination_directory
+        self.source_directory = template_path
+        self.destination_directory = destination_path
         # Set the window size
         self.master.geometry(WINDOWS_SIZE)
 
-        self.top_frame = Frame(master)
+        self.top_frame = Frame(self.master)
         self.top_frame.pack(fill='x', pady=10)
 
         # Create text fields
@@ -80,7 +76,7 @@ class CadreSelecteur:
         label2.pack(side='right', padx=5)
 
         # Create a frame with specific size
-        self.frame_main = Frame(master, width=800, height=600)
+        self.frame_main = Frame(self.master, width=800, height=600)
         self.frame_main.pack(fill='both', expand=True)
         self.master.resizable(False, False)  # Prevent window resizing
 
@@ -122,6 +118,8 @@ class CadreSelecteur:
         else:  # Linux
             self.canvasSrc.bind_all("<Button-4>", self._on_mousewheel)
             self.canvasSrc.bind_all("<Button-5>", self._on_mousewheel)
+
+        self.master.mainloop()
 
     def _on_mousewheel(self, event):
         if self.system == 'Windows':
@@ -387,8 +385,10 @@ class CadreSelecteur:
         self.list_files_and_generate_thumbnails()
 
 
-if __name__ == "__main__":
-
+def check_mandatory_path():
+    """
+    Vérifie la présence des répertoires indispensable au bon fonctionnement.
+    """
     # verification de la presence des répertoire sources et dest.
     message_error = ''
     if not path.exists(template_path):
@@ -416,7 +416,12 @@ if __name__ == "__main__":
         messagebox.showerror(title='erreur fichiers', message=message_error)
         quit()
 
+
+
+if __name__ == "__main__":
+
+    #v Vérifie les path
+    check_mandatory_path()
+
     # start IHM
-    root = Tk()
-    app = CadreSelecteur(root, template_path, destination_path)
-    root.mainloop()
+    app = CadreSelecteur()

@@ -3,7 +3,7 @@
 ## Introduction
 
 L'application cadre sélecteur pour PiBooth permet, via une interface graphique, de selectionner le cadre et le layout que l'on souhaite utiliser au prochain démarrage du photomaton.
-Il offre aussi la possibilité de crée un nouveau calque originaux.
+Il offre aussi la possibilité de créer un nouveau calque original.
 
 ## Pré-requis
 
@@ -35,16 +35,16 @@ python3 cadreselecteur.py
 
 1. **Initialisation** : Lors de l'exécution, l'application vérifie la présence des répertoires et du template par défaut. Les erreurs de configuration sont signalées via un message d'erreur.
 
-- **Répertoires requis** :
-  - `Templates` : Contenant les cadres et templates disponibles.
-  - `Cadres` : Destination pour les cadres sélectionnés. (PiBooth est configuré pour venir chercher le cadre à utiliser ici)
+   - **Répertoires requis** :
+     - `Templates` : Contenant les cadres et templates disponibles.
+     - `Cadres` : Destination pour les cadres sélectionnés. (PiBooth est configuré pour venir chercher le cadre à utiliser ici)
 
-- **Fichiers nécessaires** :
-  - `template_std.xml` : Template par défaut utilisé en l'absence de fichier associé.
+   - **Fichiers nécessaires** :
+     - `template_std.xml` : Template par défaut utilisé en l'absence de fichier associé.
 
 2. **Affichage** : L'application affiche une liste de vignettes des cadres disponibles à gauche et le cadre installé à droite.
-
-### Interface Utilisateur
+    
+    ### Interface Utilisateur
 
 3. ![IHM](resources/IHM_selecteur.png)
 
@@ -55,13 +55,13 @@ python3 cadreselecteur.py
 Pour modifier le cadre que pibooth va utiliser :
 
 1. **Sélection** :
-   - Naviguez dans les miniatures affichées pour choisir un cadre. Cliquez sur le bouton radio correspondant a gauche des vignettes.
+   - Naviguez dans les miniatures affichées pour choisir un cadre. Cliquez sur le bouton radio correspondant à la gauche des vignettes.
 
 2. **Prévisualisation** :
    - Cliquez sur une vignette pour afficher l'image dans une nouvelle fenêtre.
 
 3. **Application** :
-   - Cliquez sur le bouton `Appliquer` pour copier les fichiers sélectionnés vers le répertoire de destination (./caddres/)
+   - Cliquez sur le bouton `Appliquer` pour copier les fichiers sélectionnés vers le répertoire de destination (./cadres/)
 
 # Cadre éditeur
 

@@ -8,7 +8,7 @@ from tkinter import messagebox, colorchooser
 import matplotlib.font_manager as fm
 
 from .layer import Layer
-from .text import askfont
+from .text import ask_font
 
 
 class LayerText(Layer):
@@ -93,11 +93,11 @@ class LayerText(Layer):
          de selection de police d'écriture
         """
         try:
-            font_selected = askfont(self.tk_parent,
-                                    text=self.text.get(),
-                                    title="Police",
-                                    family=self.sel_font['family'],
-                                    size=self.sel_font['size'], )
+            font_selected = ask_font(self.tk_parent,
+                                     text=self.text.get(),
+                                     title="Police",
+                                     family=self.sel_font['family'],
+                                     size=self.sel_font['size'], )
 
             # met à jour la police sélectionné
             if font_selected:
