@@ -63,7 +63,7 @@ class CadreSelecteur:
         self.text_field1 = StringVar()
         self.text_field2 = StringVar()
 
-        self.tk_root = None
+        self.tk_editor = None
 
         # Font configuration
         label_font = ("Arial", 14, "bold")
@@ -366,23 +366,22 @@ class CadreSelecteur:
         """
         self.master.iconify()
 
-        self.tk_root = Toplevel(self.master)
+        self.tk_editor = Toplevel(self.master)
 
         # Lier la fonction on_closing à l'événement de fermeture de la fenêtre
-        self.tk_root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.tk_editor.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        ImageEditorApp(self.tk_root,
+        ImageEditorApp(self.tk_editor,
                        template=template_path,
                        destination=destination_path,
                        resources=resources_path,
                        standalone=False)
-        self.tk_root.mainloop()
 
     def on_closing(self):
         """ détruit la fenêtre d'édition de cadre
             ré-affiche la fenêtre de sélecteur de cadre
             et rafraichie la liste des vignettes"""
-        self.tk_root.destroy()
+        self.tk_editor.destroy()
         self.master.deiconify()
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
