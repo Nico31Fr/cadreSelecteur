@@ -42,14 +42,12 @@ class ImageEditorApp:
                  root,
                  template="../Templates/",
                  destination='../Cadres/',
-                 resources='../resources/',
                  standalone=True):
 
         try:
             # recuperation des paramètres
             self.template = template
             self.destination = destination
-            self.resources = resources
             self.standalone = standalone
             # Dimension de la fenêtre
             self.WINDOWS = "1400x750"

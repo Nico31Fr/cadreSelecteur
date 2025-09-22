@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 """ sélecteur de cadre pour pibooth """
 
-from os import path, listdir
+from os import path, listdir, remove
 from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from PIL.ImageTk import PhotoImage
 from shutil import copy
 from platform import system
+from pathlib import Path
 
 from CadreEditeur.imageeditorapp import ImageEditorApp
 
 # taille de la fenêtre
-WINDOWS_SIZE = "800x600"
+WINDOWS_SIZE = "1000x600"
 # taille des vignettes
 THUMBNAIL_H = 128
 THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
@@ -250,12 +251,25 @@ class CadreSelecteur:
                                        lambda e4,
                                        f=file_path_4: self.show_full_image(f))
 
-                thumbnail_label_1.pack(side="left", padx=5)
-                thumbnail_label_4.pack(side="left", padx=5)
+                # Charger et redimensionner l'image de la poubelle
+                image = Image.open(Path(resources_path, "trash.png")).resize((30, 30))
+                icon_trash = ImageTk.PhotoImage(image)
+
+                # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
+                item_frame.icon_trash = icon_trash
+
+                # Créer le bouton avec l'image
+                bouton_supprimer = Button(item_frame,
+                                          command=lambda f=filename: self.del_border(f),
+                                          image=icon_trash)
+                bouton_supprimer.pack(side='right', padx=20, pady=20)
+
+                thumbnail_label_1.pack(side='left', padx=5)
+                thumbnail_label_4.pack(side='left', padx=5)
 
                 text_label = Label(item_frame,
                                    text=filename.replace('_1.png', ''))
-                text_label.pack(side="left", padx=5)
+                text_label.pack(side='left', padx=5)
 
         except Exception as e:
             print(f"Error processing file {filename}: {e}")
@@ -372,7 +386,6 @@ class CadreSelecteur:
         ImageEditorApp(self.tk_editor,
                        template=template_path,
                        destination=destination_path,
-                       resources=resources_path,
                        standalone=False)
 
     def on_closing(self):
@@ -384,6 +397,59 @@ class CadreSelecteur:
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
 
+    def del_border(self, filename):
+        """
+        Supprime le cadre (fichiers _1.png, _4.png, .xml) du dossier Templates,
+        mais refuse la suppression si c'est le dernier cadre.
+        rafraîchit la liste après suppression.
+        """
+
+        file_1 = path.join(self.source_directory, filename)
+        file_4 = path.join(
+            self.source_directory,
+            filename.replace('_1.png', '_4.png')
+        )
+        file_xml = path.join(
+            self.source_directory,
+            filename.replace('_1.png', '.xml')
+        )
+
+        files_to_remove = [file_1, file_4, file_xml]
+        errors = []
+
+        # Compte le nombre de cadres disponibles
+        nb_cadres = len([f for f in listdir(self.source_directory)
+                         if f.lower().endswith('_1.png')])
+        if nb_cadres <= 1:
+            messagebox.showwarning(
+                "Suppression impossible",
+                "Impossible de supprimer le dernier cadre disponible."
+            )
+            return
+
+        # Confirmation suppression
+        if not messagebox.askyesno(
+                "Confirmer la suppression",
+                f"Supprimer le cadre '{filename.replace('_1.png', '')}' ?"
+        ):
+            return  # abandon si non
+
+        for file in files_to_remove:
+            if path.exists(file):
+                try:
+                    remove(file)
+                except Exception as e:
+                    errors.append(str(e))
+
+        if errors:
+            messagebox.showerror("Erreur suppression",
+                                 f"Erreur lors de la suppression:\n"
+                                 f"{errors}")
+        else:
+            messagebox.showinfo("Cadre supprimé", "Cadre supprimé avec succès.")
+
+        # Rafraîchir la liste
+        self.list_files_and_generate_thumbnails()
 
 def check_mandatory_path():
     """
