@@ -329,7 +329,6 @@ class ImageEditor:
         for layer in reversed(self.layers):
             layer.draw_on_image(temp_image, export=False)
 
-        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)
 

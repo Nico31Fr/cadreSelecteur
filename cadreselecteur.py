@@ -27,7 +27,7 @@ resources_path = "./resources"
 # nom du template définie dans piBooth
 TEMPLATE_NAME = 'template.xml'
 # template par défaut
-TEMPLATE_NAME_STD = 'template_std.xml'
+TEMPLATE_NAME_STD = 'template_1.xml'
 # nom du cadre définie dans piBooth
 CADRE_NAME_1 = 'cadre_1.png'
 CADRE_NAME_4 = 'cadre_4.png'

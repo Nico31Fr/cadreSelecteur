@@ -68,7 +68,6 @@ class LayerExcluZone(Layer):
     def clone(self, tk_parent, parent):
         pass
 
-    @property
     def to_dict(self):
         """Retourne un dict serializable décrivant l’état du calque."""
 

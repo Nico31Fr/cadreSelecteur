@@ -220,11 +220,11 @@ class ImageEditorApp:
 
             project_data = {
                 "app1": {
-                    "layers": [layer.to_dict for layer in app1_layer_tmp],
+                    "layers": [layer.to_dict() for layer in app1_layer_tmp],
                     "background_couleur": self.app1.background_couleur,
                 },
                 "app4": {
-                    "layers": [layer.to_dict for layer in app4_layer_tmp],
+                    "layers": [layer.to_dict() for layer in app4_layer_tmp],
                     "background_couleur": self.app4.background_couleur,
                 },
                 "template": self.selected_template.get()
