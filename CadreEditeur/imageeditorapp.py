@@ -316,6 +316,7 @@ class ImageEditorApp:
                             new_layer = layer.clone(self.app4_frame, self.app4)
                             new_layer.name = layer.name
                             self.app4.layers.append(new_layer)
+                    self.app4.background_couleur = self.app1.background_couleur
                 elif direction == '4_1':
                     # efface tous les calques editable
                     clean_editable_layer(self.app1)
@@ -325,6 +326,7 @@ class ImageEditorApp:
                             new_layer = layer.clone(self.app1_frame, self.app1)
                             new_layer.name = layer.name
                             self.app1.layers.append(new_layer)
+                    self.app1.background_couleur = self.app4.background_couleur
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
             if layer == 'background' or layer == 'all':
