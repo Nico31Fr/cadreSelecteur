@@ -9,6 +9,7 @@ from PIL.ImageTk import PhotoImage
 from shutil import copy
 from platform import system
 from pathlib import Path
+import sys
 
 from CadreEditeur.imageeditorapp import ImageEditorApp
 
@@ -32,6 +33,12 @@ TEMPLATE_NAME_STD = 'template_1.xml'
 # nom du cadre définie dans piBooth
 CADRE_NAME_1 = 'cadre_1.png'
 CADRE_NAME_4 = 'cadre_4.png'
+
+
+def absolute_path(relative_path):
+    """ Get absolute path works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', path.dirname(path.abspath(__file__)))
+    return path.join(base_path, relative_path)
 
 
 class CadreSelecteur:
@@ -252,7 +259,8 @@ class CadreSelecteur:
                                        f=file_path_4: self.show_full_image(f))
 
                 # Charger et redimensionner l'image de la poubelle
-                image = Image.open(Path(resources_path, "trash.png")).resize((30, 30))
+                icon_path = absolute_path(Path(resources_path, "trash.png"))
+                image = Image.open(icon_path).resize((30, 30))
                 icon_trash = ImageTk.PhotoImage(image)
 
                 # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
