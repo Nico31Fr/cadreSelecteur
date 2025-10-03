@@ -1,130 +1,158 @@
-# PiBooth Cadre Sélecteur
+# cadreSelecteur
 
-## Introduction
+Sélecteur et éditeur de cadres pour piBooth  
+Version : 0.1  
+Python requis : 3.11 ou supérieur
 
-L'application cadre sélecteur pour PiBooth permet, via une interface graphique, de selectionner le cadre et le layout que l'on souhaite utiliser au prochain démarrage du photomaton.
-Il offre aussi la possibilité de créer un nouveau calque original.
+---
 
-## Pré-requis
+## Sommaire
 
-Avant de lancer l'application, assurez-vous que votre système dispose des éléments suivants :
+- [Description](#description)  
+- [Fonctionnalités](#fonctionnalités)  
+- [Arborescence des dossiers](#arborescence-des-dossiers)  
+- [Installation et dépendances](#installation-et-dépendances)  
+- [Utilisation](#utilisation)  
+  - [Lancer le Sélecteur de cadre](#lancer-le-sélecteur-de-cadre)  
+  - [Lancer l'Éditeur de cadre autonome](#lancer-léditeur-de-cadre-autonome)  
+  - [Utilisation de l’exécutable Windows](#utilisation-de-lexécutable-windows)  
+- [Structure interne et développement](#structure-interne-et-développement)  
+- [Exemple d’utilisation rapide](#exemple-dutilisation-rapide)  
+- [Licence](#licence)  
 
-- **Python** : Version 3.7 ou supérieure.
-- **Bibliothèques Python** : 
-  - `tkinter`
-  - `Pillow`
-  - `xml.etree.ElementTree`
-  - `json`
-  - `shutil`
+---
 
-Les modules nécessaires peuvent être installés via pip :
-```bash 
-pip install tkinter Pillow
-```
+## Description
 
-## Démarrage
+`cadreSelecteur` est une application Python avec interface graphique Tkinter destinée à la gestion des **cadres/templates** pour piBooth, un logiciel de photobooth.
 
-Pour lancer l'application, exécutez le script Python contenant la classe `ImageEditorApp`. La fenêtre principale de l'application s'ouvrira, vous permettant de créer et de gérer vos cadres.
+Elle permet de visualiser les cadres disponibles, de sélectionner et appliquer un cadre actif, de supprimer ou créer un nouveau cadre via un éditeur intégré. L’édition avancée est assurée par un module indépendant permettant la modification fine des calques d’image, texte et zones d’exclusion.
 
-```bash 
-python3 cadreselecteur.py
-```
+---
+
 ## Fonctionnalités
 
-### Démarrage de l'application
+- Navigation visuelle parmi les cadres disponibles avec vignettes.  
+- Sélection facile avec application instantanée du cadre actif.  
+- Suppression sécurisée des cadres (protection du dernier cadre).  
+- Prévisualisation du cadre en taille réelle.  
+- Lancement et utilisation d’un éditeur de cadre complet avec gestion de calques, texte, images, et couleur de fond.  
+- Sauvegarde, chargement et export des projets d’édition (images PNG + XML).  
+- Synchronisation entre deux variantes de cadres (formats 1 et 4).  
+- Gestion des zones d’exclusion dans la composition des cadres.  
 
-1. **Initialisation** : Lors de l'exécution, l'application vérifie la présence des répertoires et du template par défaut. Les erreurs de configuration sont signalées via un message d'erreur.
+---
 
-   - **Répertoires requis** :
-     - `Templates` : Contenant les cadres et templates disponibles.
-     - `Cadres` : Destination pour les cadres sélectionnés. (PiBooth est configuré pour venir chercher le cadre à utiliser ici)
+## Arborescence des dossiers
 
-   - **Fichiers nécessaires** :
-     - `template_std.xml` : Template par défaut utilisé en l'absence de fichier associé.
+Le projet attend la présence au minimum des dossiers suivants :
 
-2. **Affichage** : L'application affiche une liste de vignettes des cadres disponibles à gauche et le cadre installé à droite.
-    
-    ### Interface Utilisateur
+/Templates/ <-- Cadres sources (images _1.png, _4.png, fichiers .xml associés)  
+/Cadres/ <-- Cadre actif copié ici pour piBooth (cadre_1.png, cadre_4.png, template.xml)  
 
-3. ![IHM](resources/IHM_selecteur.png)
+Le dossier `CadreEditeur/` contient les modules liés à l’éditeur de cadre.
 
-- **Cadres disponibles** : Liste et prévisualisation des cadres disponibles dans `Templates`.
-- **Cadre installé** : Prévisualisation du cadre actuellement utilisé dans `Cadres`.
-- **Boutons d'action** : `Appliquer` pour exécuter la sélection et `Quitter` pour fermer l'application.
+---
 
-Pour modifier le cadre que pibooth va utiliser :
+## Installation 
 
-1. **Sélection** :
-   - Naviguez dans les miniatures affichées pour choisir un cadre. Cliquez sur le bouton radio correspondant à la gauche des vignettes.
+### utilisation executable Windows
 
-2. **Prévisualisation** :
-   - Cliquez sur une vignette pour afficher l'image dans une nouvelle fenêtre.
+1. télécharger la dernière version de l'executable disponible.
+2. double cliquer sur cadreSelecteur.exe
 
-3. **Application** :
-   - Cliquez sur le bouton `Appliquer` pour copier les fichiers sélectionnés vers le répertoire de destination (./cadres/)
+### utilisation avec interpreteur local
 
-# Cadre éditeur
+1. Assure-toi d’avoir installé Python 3.11 ou supérieur :  
+   [https://www.python.org/downloads/](https://www.python.org/downloads/)
 
-## Interface utilisateur
-![IHM](resources/IHM_editeur.png)
-### Sections principales
+2. Installer les dépendances via pip :
 
-- **1 - Sélection de templates** : Choisissez parmi les templates disponibles pour définir les zones de cadre.
-- **2 - Cadres de composition** : Deux zones d'édition (app1 et app4) pour vos compositions d'image.
-- **3 - Synchronisation** : Options pour synchroniser les configurations entre les deux cadres.
-- **4 - Sauvegarde et export** : Sauvegarder et charger des projets, ainsi que générer et exporter des fichiers de cadre.
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-#### Secteur de sélection de templates
+---
 
-Sélectionnez le template XML désiré dans le menu déroulant. Les zones d'exclusion seront automatiquement configurées en fonction du template choisi.
+## Utilisation
 
-### Cadres de composition
 
-La fenêtre principale affiche deux cadres que vous pouvez personnaliser individuellement. Chacun offre la possibilité d'importer des images, de placer du texte, et de modifier les couleurs de fond.
+### Utilisation de l’exécutable Windows
 
-### Synchronisation
+Un exécutable Windows (.exe) est disponible pour les systèmes Windows.  
+Tu peux simplement télécharger et lancer ce fichier sans installer Python ni les dépendances.
 
-Utilisez les boutons fléchés pour synchroniser les propriétés de texte, d'image, ou de fond entre les deux cadres. 
+### Lancer le Sélecteur de cadre
 
-### Sauvegarde et export
+```bash
+ python cadreselecteur.py
+```
 
-- **Charger/Sauvegarder un projet** : Utilisez les boutons dédiés pour sauvegarder le projet actuel dans un fichier JSON ou pour le charger depuis un fichier existant.
-- **Exporter les cadres** : Sélectionnez un répertoire pour sauvegarder votre projet avec le bouton `Générer les cadres`. Cela exportera deux fichiers PNG et copiera le fichier XML de template.
+- Affiche la liste des cadres disponibles, cadre actif et boutons d’action.  
+- Sélectionne un cadre puis clique sur **Appliquer** pour le définir en actif.  
+- Clique sur **Nouveau cadre** pour ouvrir l’éditeur intégré.  
+- Clique sur la poubelle à côté d’un cadre pour le supprimer.  
+- Double-clic sur une vignette affiche la prévisualisation en grand.  
 
-### Fonctionnement du Cadre de composition
+---
 
-#### Principales sections
+## Structure interne et développement
 
-- **Canvas de prévisualisation** : Affichage en temps réel de votre composition.
-- **Zone de contrôle** : Interface avec les boutons et entrées pour interagir avec votre composition.
+### Modules principaux
 
-#### Canvas de prévisualisation
+- `main.py` — Interface principale du sélecteur de cadre.  
+- `start_cadre_editeur.py` — Point d’entrée autonome pour l’éditeur.  
+- `CadreEditeur/imageeditorapp.py` — Application d’édition multi-fenêtres.  
+- `CadreEditeur/imageeditor.py` — Fenêtre d'édition simple, gestion des calques.  
+- `CadreEditeur/layerimage.py`, `layertext.py`, `layerexcluzone.py` — Types de calques gérés.  
 
-Situé dans la partie supérieure de l'application, le canvas affiche votre composition comprenant l'image, le texte, et le fond.
+### Gestion des calques
 
-#### Zone de contrôle
+Le système de calques permet de créer des compositions complexes en superposant :
 
-La zone de contrôle inclut les options suivantes :
+- **Images importées**  
+- **Texte modifiable** (police, taille, position)  
+- **Zones d’exclusion** (zones transparentes ou protégées)  
 
-1. **Texte** :
-   - **Saisie** : Entrez votre texte.
-   - **Police** : Cliquez sur `Police` pour choisir le style et la taille.
-   - **Couleur** : Bouton `Couleur` pour la couleur du texte.
+Les calques peuvent être déplacés, redimensionnés et ordonnés dans la pile.
 
-2. **Image** :
-   - **Importer** : Bouton `Image` pour sélectionner une image à importer.
-   - **Effacer** : Supprime l'image importée.
+### Synchronisation entre variantes
 
-3. **Couleur de fond** :
-   - **Sélecteur** : Cliquez sur `couleur du fond` pour ouvrir le sélecteur de couleurs.
-   - **Code couleur** : Modification directe du code hexadécimal.
+Lors de l’édition, deux variantes sont simultanément gérées (1 et 4) avec possibilité de synchroniser certains paramètres (calques, fond, tous).
 
-4. **Calque Actif** :
-   - **Image** : Sélection pour déplacer ou redimensionner l'image.
-   - **Texte** : Sélection pour déplacer ou redimensionner le texte.
+---
 
-### Manipulation de la composition
+## Exemple d’utilisation rapide
 
-- **Déplacement** : Sélectionnez le calque et glissez/déposez (drag and drop) le calque actif.
-- **Zoom** : Utilisez la molette de la souris pour agrandir ou rétrécir le calque actif.
+1. **Lancer le sélecteur ou double cliquer sur l'exécutable Windows** :
+    ```bash
+    python main.py
+    ```
+    ou 
+    ```bash
+    python cadreselecteur.py
+    ```
+   
+2. **Sélectionner un cadre** dans la liste à gauche, cliquer sur **Appliquer**.
 
+3. **Visualiser le cadre actif** à droite, cliquer sur la vignette pour un aperçu en grand.
+
+4. **Créer un nouveau cadre** en cliquant sur **Nouveau cadre**, cela ouvre l’éditeur.
+
+5. **Ajouter des calques** dans l’éditeur : images, textes, zones d’exclusion.
+
+6. **Personnaliser la couleur de fond** et ajuster les calques.
+
+7. **Sauvegarder le projet** et **exporter les images et fichier XML** générés.
+
+8. **Revenir au sélecteur**, appliquer le nouveau cadre.
+
+---
+
+## Licence
+
+Aucune déclaration spécifique — libre d’utilisation et modification.
+
+---
+
+N’hésitez pas à contribuer, rapporter des bugs ou demander de l’aide !
