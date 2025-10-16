@@ -1,399 +1,198 @@
 # -*- coding: utf-8 -*-
-""" Module gestion de la fenêtre de selection des polices d'écritures """
+"""Boîte de dialogue de sélection de police avec aperçu PIL (supporte les polices embarquées)."""
 
-from tkinter import Toplevel, Listbox, StringVar, TclError, messagebox
-from tkinter.ttk import Frame, Label, Button, Scrollbar, Style, Entry
-from tkinter.font import families, Font
-from typing import Any, Optional, Dict
+from tkinter import (
+    Toplevel, Listbox, StringVar, messagebox, Scrollbar, Entry, Button
+)
+from tkinter.ttk import Frame, Label, Style
+from PIL import Image, ImageFont, ImageDraw, ImageTk
+from os import path, listdir
+import sys
+
+
+def resource_path(relative_path):
+    """Get absolute path (compatible with PyInstaller)."""
+    base_path = getattr(sys, '_MEIPASS', path.dirname(path.abspath(__file__)))
+    return path.join(base_path, relative_path)
 
 
 class FontChooser(Toplevel):
-    """Boîte de dialogue pour choisir une police : famille et taille uniquement, en français."""
     def __init__(self, master, font_dict=None, text="Abcd", title="Choisir une police", **kwargs):
-        """
-        Crée une boîte de dialogue pour choisir une police.
-
-        Arguments :
-            master : Fenêtre parente Tk ou Toplevel
-            font_dict : dictionnaire contenant les options de police initiales (famille, taille)
-            text : texte affiché dans l'aperçu
-            title : titre de la fenêtre
-            kwargs : paramètres supplémentaires pour Toplevel
-        """
-        Toplevel.__init__(self, master, **kwargs)
-        if font_dict is None:
-            font_dict = {}
+        super().__init__(master, **kwargs)
         self.title(title)
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.quit)
-        self._validate_family = self.register(self.validate_font_family)
-        self._validate_size = self.register(self.validate_font_size)
 
-        # --- Variable stockant la police choisie
-        self.res: Optional[Dict[str, Any]] = {}
+        self.res = None
+        self.preview_image = None
 
         style = Style(self)
         style.configure("prev.TLabel", background="white")
         bg = style.lookup("TLabel", "background")
         self.configure(bg=bg)
 
-        # --- Liste des familles disponibles
-        self.fonts = list(set(families()))
-        self.fonts.append("TkDefaultFont")
+        # --- Charger les polices du dossier Fonts
+        fonts_dir = resource_path('./../../Fonts')
+        self.fonts = []
+        if path.isdir(fonts_dir):
+            for f in listdir(str(fonts_dir)):
+                if f.lower().endswith(".ttf"):
+                    font_name = path.splitext(f)[0]
+                    self.fonts.append(font_name)
+        else:
+            print(f"[AVERTISSEMENT] Dossier Fonts introuvable : {fonts_dir}")
+
+        if not self.fonts:
+            self.fonts = ["Arial"]
+
         self.fonts.sort()
-        for i in range(len(self.fonts)):
-            self.fonts[i] = self.fonts[i].replace(" ", r"\ ")
         max_length = int(2.5 * max([len(font) for font in self.fonts])) // 3
 
-        # --- Tailles de police disponibles
-        self.sizes = ["%i" % i for i in (list(range(6, 17)) + list(range(18, 82, 2)))]
+        # --- tailles
+        self.sizes = [str(i) for i in range(6, 82, 2)]
 
-        # --- Valeurs par défaut
-        font_dict["family"] = font_dict.get("family", self.fonts[0].replace(r'\ ', ' '))
-        font_dict["size"] = font_dict.get("size", 10)
+        # --- paramètres initiaux
+        font_dict = font_dict or {}
+        self.current_family = font_dict.get("family", self.fonts[0])
+        self.current_size = str(font_dict.get("size", 20))
+        self.preview_text = text[:30]
 
-        # --- Création des widgets
-        self.font_family = StringVar(self, " ".join(self.fonts))
-        self.font_size = StringVar(self, " ".join(self.sizes))
-        self.var_size = StringVar(self)
-        self.entry_family = Entry(self, width=max_length, validate="key",
-                                  validatecommand=(self._validate_family, "%d", "%S", "%i", "%s", "%V"))
-        self.entry_size = Entry(self, width=4, validate="key",
-                                textvariable=self.var_size,
-                                validatecommand=(self._validate_size, "%d", "%P", "%V"))
-        self.list_family = Listbox(self, selectmode="browse",
-                                   listvariable=self.font_family,
-                                   highlightthickness=0,
-                                   exportselection=False,
-                                   width=max_length)
-        self.list_size = Listbox(self, selectmode="browse",
-                                 listvariable=self.font_size,
-                                 highlightthickness=0,
-                                 exportselection=False,
-                                 width=4)
-        scroll_family = Scrollbar(self, orient='vertical', command=self.list_family.yview)
-        scroll_size = Scrollbar(self, orient='vertical', command=self.list_size.yview)
-        self.preview_font = Font(self, **font_dict)
-        if len(text) > 30:
-            text = text[:30]
-        self.preview = Label(self, relief="groove", style="prev.TLabel",
-                             text=text, font=self.preview_font,
-                             anchor="center")
+        # --- variables Tk
+        self.var_family = StringVar(value=self.current_family)
+        self.var_size = StringVar(value=self.current_size)
+        self.font_family_list = StringVar(value=" ".join(self.fonts))
+        self.font_size_list = StringVar(value=" ".join(self.sizes))
 
-        # --- Configuration des widgets
-        self.list_family.configure(yscrollcommand=scroll_family.set)
-        self.list_size.configure(yscrollcommand=scroll_size.set)
+        # --- widgets principaux
+        self.entry_family = Entry(self, textvariable=self.var_family, width=max_length)
+        self.entry_size = Entry(self, textvariable=self.var_size, width=4)
+        self.list_family = Listbox(self, listvariable=self.font_family_list, height=8, exportselection=False)
+        self.list_size = Listbox(self, listvariable=self.font_size_list, height=8, width=4, exportselection=False)
+        self.scroll_family = Scrollbar(self, orient='vertical', command=self.list_family.yview)
+        self.scroll_size = Scrollbar(self, orient='vertical', command=self.list_size.yview)
 
-        self.entry_family.insert(0, font_dict["family"])
-        self.entry_family.selection_clear()
-        self.entry_family.icursor("end")
-        self.entry_size.insert(0, font_dict["size"])
+        self.list_family.configure(yscrollcommand=self.scroll_family.set)
+        self.list_size.configure(yscrollcommand=self.scroll_size.set)
 
-        try:
-            i = self.fonts.index(self.entry_family.get().replace(" ", r"\ "))
-        except ValueError:
-            i = 0
-        self.list_family.selection_clear(0, "end")
-        self.list_family.selection_set(i)
-        self.list_family.see(i)
-        try:
-            i = self.sizes.index(self.entry_size.get())
-            self.list_size.selection_clear(0, "end")
-            self.list_size.selection_set(i)
-            self.list_size.see(i)
-        except ValueError:
-            pass
+        # --- aperçu via PIL
+        self.preview = Label(self, relief="groove", style="prev.TLabel", anchor="center", width=40)
 
-        self.entry_family.grid(row=0, column=0, sticky="ew",
-                               pady=(10, 1), padx=(10, 0))
-        self.entry_size.grid(row=0, column=2, sticky="ew",
-                             pady=(10, 1), padx=(10, 0))
-        self.list_family.grid(row=1, column=0, sticky="nsew",
-                              pady=(1, 10), padx=(10, 0))
-        self.list_size.grid(row=1, column=2, sticky="nsew",
-                            pady=(1, 10), padx=(10, 0))
-        scroll_family.grid(row=1, column=1, sticky='ns', pady=(1, 10))
-        scroll_size.grid(row=1, column=3, sticky='ns', pady=(1, 10))
+        # --- disposition
+        self.entry_family.grid(row=0, column=0, sticky="ew", pady=(10, 1), padx=(10, 0))
+        self.entry_size.grid(row=0, column=2, sticky="ew", pady=(10, 1), padx=(10, 0))
+        self.list_family.grid(row=1, column=0, sticky="nsew", pady=(1, 10), padx=(10, 0))
+        self.scroll_family.grid(row=1, column=1, sticky='ns', pady=(1, 10))
+        self.list_size.grid(row=1, column=2, sticky="nsew", pady=(1, 10), padx=(10, 0))
+        self.scroll_size.grid(row=1, column=3, sticky='ns', pady=(1, 10))
+        self.preview.grid(row=2, column=0, columnspan=4, sticky="eswn", padx=10, pady=(0, 10))
 
-        self.preview.grid(row=2, column=0, columnspan=5, sticky="eswn",
-                          padx=10, pady=(0, 10), ipadx=4, ipady=4)
-
+        # --- boutons
         button_frame = Frame(self)
-        button_frame.grid(row=3, column=0, columnspan=5, pady=(0, 10), padx=10)
+        button_frame.grid(row=3, column=0, columnspan=4, pady=(0, 10))
+        Button(button_frame, text="OK", command=self.ok).grid(row=0, column=0, padx=4)
+        Button(button_frame, text="Annuler", command=self.quit).grid(row=0, column=1, padx=4)
 
-        Button(button_frame, text="Ok",
-               command=self.ok).grid(row=0, column=0, padx=4, sticky='ew')
-        Button(button_frame, text='Annuler',
-               command=self.quit).grid(row=0, column=1, padx=4, sticky='ew')
+        # --- bindings
+        self.list_family.bind("<<ListboxSelect>>", self.on_family_select)
+        self.list_size.bind("<<ListboxSelect>>", self.on_size_select)
+        self.entry_family.bind("<Return>", self.update_preview)
+        self.entry_size.bind("<Return>", self.update_preview)
 
-        # --- Liaisons des événements
-        self.list_family.bind('<<ListboxSelect>>', self.update_entry_family)
-        self.list_size.bind('<<ListboxSelect>>', self.update_entry_size, add=True)
-        self.list_family.bind("<KeyPress>", self.keypress)
-        self.entry_family.bind("<Return>", self.change_font_family)
-        self.entry_family.bind("<Tab>", self.tab)
-        self.entry_size.bind("<Return>", self.change_font_size)
-        self.entry_family.bind("<Down>", self.down_family)
-        self.entry_size.bind("<Down>", self.down_size)
-        self.entry_family.bind("<Up>", self.up_family)
-        self.entry_size.bind("<Up>", self.up_size)
+        # --- initialisation
+        self.list_family.selection_set(0)
+        self.list_size.selection_set(0)
+        self.update_preview()
 
-        self.bind_class("TEntry", "<Control-a>", self.select_all)
-
-        self.wait_visibility(self)
         self.grab_set()
-        self.entry_family.focus_set()
         self.lift()
+        self.focus_set()
 
-    @staticmethod
-    def select_all(event):
-        """Sélectionne tout le contenu du champ."""
-        event.widget.selection_range(0, "end")
-
-    def keypress(self, event):
-        """Sélectionne la première police commençant par la lettre frappée."""
-        key = event.char.lower()
-        lst = [i for i in self.fonts if i[0].lower() == key]
-        if lst:
-            i = self.fonts.index(lst[0])
-            self.list_family.selection_clear(0, "end")
-            self.list_family.selection_set(i)
-            self.list_family.see(i)
-            self.update_entry_family()
-
-    def up_family(self, _event):
-        """Navigation vers le haut dans la liste des familles."""
+    # -------------------------------------------------------
+    # --- Aperçu PIL : rend la vraie police à partir du .ttf
+    # -------------------------------------------------------
+    def update_preview(self, _event=None):
+        family = self.var_family.get()
         try:
-            i = self.list_family.curselection()[0]
-            self.list_family.selection_clear(0, "end")
-            if i <= 0:
-                i = len(self.fonts)
-            self.list_family.see(i - 1)
-            self.list_family.select_set(i - 1)
-        except TclError:
-            self.list_family.selection_clear(0, "end")
-            i = len(self.fonts)
-            self.list_family.see(i - 1)
-            self.list_family.select_set(i - 1)
-        self.list_family.event_generate('<<ListboxSelect>>')
-
-    def up_size(self, _event):
-        """Navigation vers le haut dans la liste des tailles."""
-        try:
-            s = self.var_size.get()
-            if s in self.sizes:
-                i = self.sizes.index(s)
-            elif s:
-                sizes = list(self.sizes)
-                sizes.append(s)
-                sizes.sort(key=lambda x: int(x))
-                i = sizes.index(s)
-            else:
-                i = 0
-            self.list_size.selection_clear(0, "end")
-            if i <= 0:
-                i = len(self.sizes)
-            self.list_size.see(i - 1)
-            self.list_size.select_set(i - 1)
-        except TclError:
-            i = len(self.sizes)
-            self.list_size.see(i - 1)
-            self.list_size.select_set(i - 1)
-        self.list_size.event_generate('<<ListboxSelect>>')
-
-    def down_family(self, _event):
-        """Navigation vers le bas dans la liste des familles."""
-        try:
-            i = self.list_family.curselection()[0]
-            self.list_family.selection_clear(0, "end")
-            if i >= len(self.fonts):
-                i = -1
-            self.list_family.see(i + 1)
-            self.list_family.select_set(i + 1)
-        except TclError:
-            self.list_family.selection_clear(0, "end")
-            self.list_family.see(0)
-            self.list_family.select_set(0)
-        self.list_family.event_generate('<<ListboxSelect>>')
-
-    def down_size(self, _event):
-        """Navigation vers le bas dans la liste des tailles."""
-        try:
-            s = self.var_size.get()
-            if s in self.sizes:
-                i = self.sizes.index(s)
-            else:
-                sizes = list(self.sizes)
-                sizes.append(s)
-                sizes.sort(key=lambda x: int(x))
-                i = sizes.index(s) - 1
-            self.list_size.selection_clear(0, "end")
-            if i < len(self.sizes) - 1:
-                self.list_size.selection_set(i + 1)
-                self.list_size.see(i + 1)
-            else:
-                self.list_size.see(0)
-                self.list_size.select_set(0)
-        except TclError:
-            self.list_size.selection_set(0)
-        self.list_size.event_generate('<<ListboxSelect>>')
-
-    def change_font_family(self, _event=None):
-        """Met à jour l'aperçu lors du changement de famille."""
-        family = self.entry_family.get()
-        if family.replace(" ", r"\ ") in self.fonts:
-            self.preview_font.configure(family=family)
-
-    def change_font_size(self, _event=None):
-        """Met à jour l'aperçu lors du changement de taille."""
-        try:
-            size_str = self.var_size.get()
-            size = int(size_str)
-            if size < 1 or size > 300:
-                raise ValueError
-            self.preview_font.configure(size=size)
+            size = int(self.var_size.get())
         except ValueError:
-            self.var_size.set(str(self.preview_font.cget("size")))
-            messagebox.showwarning("Taille incorrecte")
+            size = 20
 
-    def validate_font_size(self, d, ch, v):
-        """Valide et complète la taille de police saisie."""
-        l_ = [i for i in self.sizes if i[:len(ch)] == ch]
-        i = None
-        if l_:
-            i = self.sizes.index(l_[0])
-        elif ch.isdigit():
-            sizes = list(self.sizes)
-            sizes.append(ch)
-            sizes.sort(key=lambda x: int(x))
-            i = min(sizes.index(ch), len(self.sizes))
-        if i is not None:
-            self.list_size.selection_clear(0, "end")
-            self.list_size.selection_set(i)
-            deb = self.list_size.nearest(0)
-            fin = self.list_size.nearest(self.list_size.winfo_height())
-            if v != "forced":
-                if i < deb or i > fin:
-                    self.list_size.see(i)
-                return True
-        if d == '1':
-            return ch.isdigit()
-        else:
-            return True
+        font_path = resource_path(f"./../../Fonts/{family}.ttf")
 
-    def tab(self, event):
-        """Place le curseur à la fin du champ lors de la touche Tab."""
-        self.entry_family = event.widget
-        self.entry_family.selection_clear()
-        self.entry_family.icursor("end")
-        return "break"
+        if not path.exists(font_path):
+            # fallback si non trouvé
+            font_path = resource_path(f"./../../Fonts/{self.fonts[0]}.ttf")
 
-    def validate_font_family(self, action, modif, pos, prev_txt, v):
-        """Complète ou valide le nom de police saisi."""
-        if self.entry_family.selection_present():
-            sel = self.entry_family.selection_get()
-            txt = prev_txt.replace(sel, '')
-        else:
-            txt = prev_txt
-        if action == "0":
-            return True
-        else:
-            txt = txt[:int(pos)] + modif + txt[int(pos):]
-            ch = txt.replace(" ", r"\ ")
-            list_font = [i for i in self.fonts if i[:len(ch)] == ch]
-            if list_font:
-                i = self.fonts.index(list_font[0])
-                self.list_family.selection_clear(0, "end")
-                self.list_family.selection_set(i)
-                deb = self.list_family.nearest(0)
-                fin = self.list_family.nearest(self.list_family.winfo_height())
-                index = self.entry_family.index("insert")
-                self.entry_family.delete(0, "end")
-                self.entry_family.insert(0, list_font[0].replace(r"\ ", " "))
-                self.entry_family.selection_range(index + 1, "end")
-                self.entry_family.icursor(index + 1)
-                if v != "forced":
-                    if i < deb or i > fin:
-                        self.list_family.see(i)
-                return True
-            else:
-                return False
+        try:
+            font = ImageFont.truetype(font_path, size)
+        except Exception as e:
+            print(f"[AVERTISSEMENT] Erreur de chargement police {font_path}: {e}")
+            font = ImageFont.load_default()
 
-    def update_entry_family(self, _event=None):
-        """Met à jour le champ famille depuis la liste."""
-        family = self.list_family.get(self.list_family.curselection()[0])
-        self.entry_family.delete(0, "end")
-        self.entry_family.insert(0, family)
-        self.entry_family.selection_clear()
-        self.entry_family.icursor("end")
-        self.change_font_family()
+        # crée l'image de prévisualisation
+        img = Image.new("RGB", (400, 80), "white")
+        draw = ImageDraw.Draw(img)
+        draw.text((10, 20), f"Aperçu : {family}", fill="black", font=font)
 
-    def update_entry_size(self, _event):
-        """Met à jour le champ taille depuis la liste."""
-        size = self.list_size.get(self.list_size.curselection()[0])
+        self.preview_image = ImageTk.PhotoImage(img)
+        self.preview.config(image=self.preview_image, text="")
+
+    def on_family_select(self, _event=None):
+        """Quand on sélectionne une famille de police."""
+        if not self.list_family.curselection():
+            return
+        index = self.list_family.curselection()[0]
+        family = self.list_family.get(index)
+        self.var_family.set(family)
+        self.update_preview()
+
+    def on_size_select(self, _event=None):
+        """Quand on sélectionne une taille."""
+        if not self.list_size.curselection():
+            return
+        index = self.list_size.curselection()[0]
+        size = self.list_size.get(index)
         self.var_size.set(size)
-        self.change_font_size()
+        self.update_preview()
 
     def ok(self):
-        """Valide le choix et ferme la boîte de dialogue."""
-        self.res = self.preview_font.actual()
-        # On ne garde que la famille et la taille
-        self.res = {
-            "family": self.res["family"],
-            "size": self.res["size"]
-        }
+        """Valide le choix."""
+        self.res = {"family": self.var_family.get(), "size": int(self.var_size.get())}
         self.quit()
-
-    def get_res(self) -> Optional[Dict[str, int]]:
-        """Retourne la police sélectionnée sous forme de dictionnaire."""
-        return self.res
 
     def quit(self):
         """Ferme la fenêtre."""
         self.destroy()
 
+    def get_res(self):
+        return self.res
 
-def ask_font(master: Any = None,
-             text: str = "Abcd",
-             title: str = "Choisir une police",
-             **font_args: Any) -> Optional[Dict[str, int]]:
-    """
-    Ouvre la boîte de dialogue de sélection de police (famille et taille).
-    Retourne le résultat sous forme de dictionnaire.
 
-    Arguments :
-        master : fenêtre parente (optionnel)
-        text : texte d’aperçu
-        title : titre de la boîte de dialogue
-        font_args : paramètres initiaux (family, size…)
-
-    Retour :
-        Dictionnaire {'family' : str, 'size' : int}
-    """
+# ----------------------------------------------------------
+# fonction helper comme avant : ask_font()
+# ----------------------------------------------------------
+def ask_font(master=None, text="Abcd", title="Choisir une police", **font_args):
     chooser = FontChooser(master, font_args, text, title)
     chooser.wait_window(chooser)
     return chooser.get_res()
 
 
+# ----------------------------------------------------------
+# test autonome
+# ----------------------------------------------------------
 if __name__ == "__main__":
-    from tkinter import Tk
-
-    root = Tk()
+    import tkinter as tk
+    root = tk.Tk()
 
     label = Label(root, text='Police choisie :')
     label.pack(padx=10, pady=(10, 4))
 
     def callback():
-        """ callback du bouton Sélecteur police"""
         font = ask_font(root, title="Choisir une police")
         if font:
-            # espaces dans family à échapper
             font_name = font['family']
-            font_name = str(font_name).replace(' ', r'\ ')
             font_str = f"{font_name} {font['size']}"
-            label.configure(font=font_str,
-                            text='Police choisie : ' + font_str.replace(r'\ ', ' '))
+            label.configure(text=f'Police choisie : {font_str}')
 
-    Button(root, text='Sélecteur de police',
-           command=callback).pack(padx=10, pady=(4, 10))
+    Button(root, text='Sélecteur de police', command=callback).pack(padx=10, pady=(4, 10))
     root.mainloop()

@@ -50,12 +50,12 @@ class ImageEditorApp:
             self.destination = destination
             self.standalone = standalone
             # Dimension de la fenêtre
-            self.WINDOWS = "1400x750"
-            self.prj_name = 'cadre_xxx'
+            self.WINDOWS = "1450x770"
+            self.prj_name = 'cadre_x'
             self.tk_root = root
 
             # Fixer la taille de la fenêtre
-            self.tk_root.geometry(self.WINDOWS)  # Largeur = 700 pixels, Hauteur = 1200 pixels
+            self.tk_root.geometry(self.WINDOWS)
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
             self.tk_root.title("Créateur de cadre V0.1")
@@ -65,12 +65,12 @@ class ImageEditorApp:
             self.main_frame.pack(side='top', expand=True, fill='both')
 
             # configure la grille pour les boutons 4 lignes x 3 colonnes
-            self.main_frame.rowconfigure(0, weight=2)
-            self.main_frame.rowconfigure(1, weight=1)
-            self.main_frame.rowconfigure(2, weight=1)
-            self.main_frame.columnconfigure(0, weight=2)
-            self.main_frame.columnconfigure(1, weight=2)
-            self.main_frame.columnconfigure(2, weight=1)
+            self.main_frame.rowconfigure(0)
+            self.main_frame.rowconfigure(1)
+            self.main_frame.rowconfigure(2)
+            self.main_frame.columnconfigure(0)
+            self.main_frame.columnconfigure(1)
+            self.main_frame.columnconfigure(2)
 
             # Liste des options pour le menu déroulant
             options = [f.name for f in Path(self.template).glob('template_*.xml')]
@@ -93,26 +93,35 @@ class ImageEditorApp:
 
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-            self.app1_frame.grid(column=0, row=1, sticky=tk.EW, padx=5, pady=5)
+            self.app1_frame.grid(column=0, row=1, padx=5, pady=5)
             self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0])
 
             # bouton synchronisation droite gauche
-            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('layer', '1_4'))
-            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
-            button_l.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=150)
-            button_r.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=150)
-            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('background', '1_4'))
-            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('background', '4_1'))
-            button_l.grid(column=1, row=1, sticky=tk.SE, padx=5, pady=40)
-            button_r.grid(column=1, row=1, sticky=tk.SW, padx=5, pady=40)
-            button_l = tk.Button(self.main_frame, text='->', command=lambda: self.copy_conf('all', '1_4'))
-            button_r = tk.Button(self.main_frame, text='<-', command=lambda: self.copy_conf('all', '4_1'))
-            button_l.grid(column=1, row=1, sticky=tk.NE, padx=5, pady=200)
-            button_r.grid(column=1, row=1, sticky=tk.NW, padx=5, pady=200)
+            self.arrow_frame = tk.Frame(self.main_frame)
+            self.arrow_frame.grid(column=1, row=1, padx=5)
+            self.arrow_frame_a = tk.Frame(self.arrow_frame)
+            self.arrow_frame_a.grid(column=1, row=0, padx=5, pady=150)
+            self.arrow_frame_l = tk.Frame(self.arrow_frame)
+            self.arrow_frame_l.grid(column=1, row=1, padx=5, pady=5)
+            self.arrow_frame_b = tk.Frame(self.arrow_frame)
+            self.arrow_frame_b.grid(column=1, row=2, padx=5, pady=5)
+
+            button_l_all = tk.Button(self.arrow_frame_a, text='->', command=lambda: self.copy_conf('all', '1_4'))
+            button_r_all = tk.Button(self.arrow_frame_a, text='<-', command=lambda: self.copy_conf('all', '4_1'))
+            button_l_all.pack(padx=5, pady=5, anchor='center')
+            button_r_all.pack(padx=5, pady=5, anchor='center')
+            button_l_layer = tk.Button(self.arrow_frame_l, text='->', command=lambda: self.copy_conf('layer', '1_4'))
+            button_r_layer = tk.Button(self.arrow_frame_l, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
+            button_l_layer.pack(padx=5, pady=5)
+            button_r_layer.pack(padx=5, pady=5)
+            button_l_back = tk.Button(self.arrow_frame_b, text='->', command=lambda: self.copy_conf('background', '1_4'))
+            button_r_back = tk.Button(self.arrow_frame_b, text='<-', command=lambda: self.copy_conf('background', '4_1'))
+            button_l_back.pack(padx=5, pady=5)
+            button_r_back.pack(padx=5, pady=5)
 
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
-            self.app4_frame.grid(column=2, row=1, sticky=tk.EW, padx=10, pady=10)
+            self.app4_frame.grid(column=2, row=1, padx=10, pady=10)
             self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1])
 
             # frame load save and export
@@ -195,7 +204,7 @@ class ImageEditorApp:
                 return path_prj_name
             else:
                 messagebox.showerror(title='erreur repertoire',
-                                     message="selectionner un repertoire de sortie")
+                                     message="sélectionner un repertoire de sortie")
                 return None
         except Exception as e:
             messagebox.showerror("Erreur de sélection", f"Une erreur inattendue s'est produite : {str(e)}")

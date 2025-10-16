@@ -90,8 +90,8 @@ class ImageEditor:
         self.param_frame = tk.Frame(self.root,
                                     borderwidth=2,
                                     relief="groove",
-                                    width=300,
-                                    height=200,
+                                    width=250,
+                                    height=150,
                                     padx=10,
                                     pady=10)
         self.param_frame.pack(side='right')
