@@ -50,12 +50,9 @@ class ImageEditorApp:
             self.destination = destination
             self.standalone = standalone
             # Dimension de la fenêtre
-            self.WINDOWS = "1450x770"
             self.prj_name = 'cadre_x'
             self.tk_root = root
 
-            # Fixer la taille de la fenêtre
-            self.tk_root.geometry(self.WINDOWS)
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
             self.tk_root.title("Créateur de cadre V0.1")
