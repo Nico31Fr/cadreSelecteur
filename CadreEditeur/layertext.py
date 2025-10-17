@@ -77,13 +77,13 @@ class LayerText(Layer):
 
         tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
         tk.Entry(frame,
-                 textvariable=self.text, width=40).pack(padx=10, pady=10, anchor='nw')
+                 textvariable=self.text, width=40).pack(padx=5, pady=5, anchor='nw')
         tk.Button(frame,
                   text='Couleur',
-                  command=lambda: self.choisir_couleur()).pack(padx=10, pady=10, side='top', anchor='nw')
+                  command=lambda: self.choisir_couleur()).pack(padx=5, pady=5, side='top', anchor='nw')
         tk.Button(frame,
                   text='Police',
-                  command=self.callback_font).pack(padx=10, pady=10, side='top', anchor='nw')
+                  command=self.callback_font).pack(padx=5, pady=5, side='top', anchor='nw')
         self.text.trace_add("write", self.on_text_change)
 
     def callback_font(self):
