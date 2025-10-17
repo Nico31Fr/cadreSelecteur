@@ -103,16 +103,22 @@ class ImageEditorApp:
             self.arrow_frame_b = tk.Frame(self.arrow_frame)
             self.arrow_frame_b.grid(column=1, row=2, padx=5, pady=5)
 
-            button_l_all = tk.Button(self.arrow_frame_a, text='->', command=lambda: self.copy_conf('all', '1_4'))
-            button_r_all = tk.Button(self.arrow_frame_a, text='<-', command=lambda: self.copy_conf('all', '4_1'))
+            button_l_all = tk.Button(self.arrow_frame_a, text='->',
+                                     command=lambda: self.copy_conf('all', '1_4'))
+            button_r_all = tk.Button(self.arrow_frame_a, text='<-',
+                                     command=lambda: self.copy_conf('all', '4_1'))
             button_l_all.pack(padx=5, pady=5, anchor='center')
             button_r_all.pack(padx=5, pady=5, anchor='center')
-            button_l_layer = tk.Button(self.arrow_frame_l, text='->', command=lambda: self.copy_conf('layer', '1_4'))
-            button_r_layer = tk.Button(self.arrow_frame_l, text='<-', command=lambda: self.copy_conf('layer', '4_1'))
+            button_l_layer = tk.Button(self.arrow_frame_l, text='->',
+                                       command=lambda: self.copy_conf('layer', '1_4'))
+            button_r_layer = tk.Button(self.arrow_frame_l, text='<-',
+                                       command=lambda: self.copy_conf('layer', '4_1'))
             button_l_layer.pack(padx=5, pady=5)
             button_r_layer.pack(padx=5, pady=5)
-            button_l_back = tk.Button(self.arrow_frame_b, text='->', command=lambda: self.copy_conf('background', '1_4'))
-            button_r_back = tk.Button(self.arrow_frame_b, text='<-', command=lambda: self.copy_conf('background', '4_1'))
+            button_l_back = tk.Button(self.arrow_frame_b, text='->',
+                                      command=lambda: self.copy_conf('background', '1_4'))
+            button_r_back = tk.Button(self.arrow_frame_b, text='<-',
+                                      command=lambda: self.copy_conf('background', '4_1'))
             button_l_back.pack(padx=5, pady=5)
             button_r_back.pack(padx=5, pady=5)
 

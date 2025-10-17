@@ -63,10 +63,6 @@ class CadreSelecteur:
         self.top_frame = Frame(self.master)
         self.top_frame.pack(fill='x', pady=10)
 
-        # Create text fields
-        self.text_field1 = StringVar()
-        self.text_field2 = StringVar()
-
         self.tk_editor = None
 
         # Font configuration
@@ -79,7 +75,7 @@ class CadreSelecteur:
         label1.pack(side='left', padx=5)
 
         label2 = Label(self.top_frame,
-                       text="Cadre installé                    ",
+                       text="Cadre installé                             ",
                        font=label_font)
         label2.pack(side='right', padx=5)
 
@@ -269,7 +265,7 @@ class CadreSelecteur:
                 # Créer le bouton avec l'image
                 bouton_supprimer = Button(item_frame,
                                           command=lambda f=filename: self.del_border(f),
-                                          image=icon_trash)
+                                          image=str(icon_trash))
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
                 thumbnail_label_1.pack(side='left', padx=5)
@@ -409,7 +405,7 @@ class CadreSelecteur:
         """
         Supprime le cadre (fichiers _1.png, _4.png, .xml) du dossier Templates,
         mais refuse la suppression si c'est le dernier cadre.
-        rafraîchit la liste après suppression.
+        Rafraîchit la liste après suppression.
         """
 
         file_1 = path.join(self.source_directory, filename)
@@ -458,6 +454,7 @@ class CadreSelecteur:
 
         # Rafraîchir la liste
         self.list_files_and_generate_thumbnails()
+
 
 def check_mandatory_path():
     """

@@ -2,7 +2,7 @@
 """Boîte de dialogue de sélection de police avec aperçu PIL (supporte les polices embarquées)."""
 
 from tkinter import (
-    Toplevel, Listbox, StringVar, messagebox, Scrollbar, Entry, Button
+    Toplevel, Listbox, StringVar, Scrollbar, Entry, Button
 )
 from tkinter.ttk import Frame, Label, Style
 from PIL import Image, ImageFont, ImageDraw, ImageTk
@@ -17,6 +17,8 @@ def resource_path(relative_path):
 
 
 class FontChooser(Toplevel):
+    """ Boîte de dialogue de sélection de police
+     """
     def __init__(self, master, font_dict=None, text="Abcd", title="Choisir une police", **kwargs):
         super().__init__(master, **kwargs)
         self.title(title)
@@ -111,6 +113,8 @@ class FontChooser(Toplevel):
     # --- Aperçu PIL : rend la vraie police à partir du .ttf
     # -------------------------------------------------------
     def update_preview(self, _event=None):
+        """ met a jour la zone de prévisualisation
+        """
         family = self.var_family.get()
         try:
             size = int(self.var_size.get())
@@ -135,7 +139,7 @@ class FontChooser(Toplevel):
         draw.text((10, 20), f"Aperçu : {family}", fill="black", font=font)
 
         self.preview_image = ImageTk.PhotoImage(img)
-        self.preview.config(image=self.preview_image, text="")
+        self.preview.config(image=str(self.preview_image), text="")
 
     def on_family_select(self, _event=None):
         """Quand on sélectionne une famille de police."""
@@ -165,6 +169,8 @@ class FontChooser(Toplevel):
         self.destroy()
 
     def get_res(self):
+        """ récupère la valeur de res
+        """
         return self.res
 
 
@@ -172,6 +178,7 @@ class FontChooser(Toplevel):
 # fonction helper comme avant : ask_font()
 # ----------------------------------------------------------
 def ask_font(master=None, text="Abcd", title="Choisir une police", **font_args):
+    """ lance un sélecteur de police"""
     chooser = FontChooser(master, font_args, text, title)
     chooser.wait_window(chooser)
     return chooser.get_res()
@@ -188,6 +195,7 @@ if __name__ == "__main__":
     label.pack(padx=10, pady=(10, 4))
 
     def callback():
+        """ _ """
         font = ask_font(root, title="Choisir une police")
         if font:
             font_name = font['family']

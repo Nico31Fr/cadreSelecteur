@@ -5,7 +5,8 @@
 from PIL import ImageFont, ImageDraw, Image
 import tkinter as tk
 from tkinter import messagebox, colorchooser
-import os, sys
+import os
+import sys
 
 from .layer import Layer
 from .text import ask_font
@@ -13,10 +14,8 @@ from .text import ask_font
 
 def resource_path(relative_path):
     """Retourne le chemin absolu du fichier embarqué (compatible PyInstaller)."""
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
+    # Accès à _MEIPASS nécessaire pour la compatibilité avec PyInstaller
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))  # type: ignore[attr-defined]
     return os.path.join(base_path, relative_path)
 
 
@@ -233,5 +232,5 @@ class LayerText(Layer):
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
         obj.font_name = obj.find_font_path(obj.sel_font['family']) or resource_path("Fonts/arial.ttf")
-        obj.pil_font = ImageFont.truetype(obj.font_name, obj.sel_font['size'])
+        obj.pil_font = ImageFont.truetype(str(obj.font_name), obj.sel_font['size'])
         return obj
