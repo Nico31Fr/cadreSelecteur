@@ -10,6 +10,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('resources/*', 'resources'),
+        ('Fonts/*', 'Fonts'),
     ],
     hiddenimports=collect_submodules('numpy') + [
         'PIL',

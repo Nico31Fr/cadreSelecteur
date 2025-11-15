@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import colorchooser, messagebox
 from PIL import Image, ImageTk
 from re import fullmatch
+from platform import system
 
 from .layerimage import LayerImage
 from .layertext import LayerText
@@ -100,7 +101,18 @@ class ImageEditor:
         # -- Drag & Resize --
         self.canvas.bind("<Button-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_drop)
-        self.canvas.bind("<MouseWheel>", self.resize)
+
+        # bind mousse wheel
+        if system() == "Linux":
+            # for Linux (X11) : Button-4 et Button-5
+            self.canvas.bind("<Button-4>", self.resize)
+            self.canvas.bind("<Button-5>", self.resize)
+        elif system() == "Windows" or system() == "Darwin":
+            # for Windows and macOS
+            self.canvas.bind("<MouseWheel>", self.resize)
+        else:
+            # Fallback
+            self.canvas.bind("<MouseWheel>", self.resize)  # <MouseWheel> by default
         self.start_drag_pos = None
 
         self.add_zone_exclu_layer()
@@ -248,12 +260,25 @@ class ImageEditor:
         """
         if 0 <= self.active_layer_idx < len(self.layers):
             layer = self.layers[self.active_layer_idx]
-            if layer.layer_type == 'Image':
-                delta = 10 if event.delta > 0 else -10
-                layer.resize(delta)
-            elif layer.layer_type == 'Texte':
-                delta = 2 if event.delta > 0 else -2
-                layer.resize_font(delta)
+
+            if system() == "Linux":
+                if event.num == 4:
+                    if layer.layer_type == 'Image':
+                        layer.resize(10)
+                    elif layer.layer_type == 'Texte':
+                        layer.resize_font(2)
+                elif event.num == 5:
+                    if layer.layer_type == 'Image':
+                        layer.resize(-10)
+                    elif layer.layer_type == 'Texte':
+                        layer.resize_font(-2)
+            else: # Windows
+                if layer.layer_type == 'Image':
+                    delta = 10 if event.delta > 0 else -10
+                    layer.resize(delta)
+                elif layer.layer_type == 'Texte':
+                    delta = 2 if event.delta > 0 else -2
+                    layer.resize_font(delta)
             self.update_canvas()
 
     def select_background_color(self):
