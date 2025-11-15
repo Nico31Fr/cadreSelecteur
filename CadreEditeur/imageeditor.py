@@ -102,17 +102,17 @@ class ImageEditor:
         self.canvas.bind("<Button-1>", self.start_drag)
         self.canvas.bind("<B1-Motion>", self.drag_drop)
 
-        # bind mousse wheel
+        # mollette souris
         if system() == "Linux":
-            # for Linux (X11) : Button-4 et Button-5
+            # pour Linux (X11) : Button-4 et Button-5
             self.canvas.bind("<Button-4>", self.resize)
             self.canvas.bind("<Button-5>", self.resize)
         elif system() == "Windows" or system() == "Darwin":
-            # for Windows and macOS
+            # pour Windows et autres
             self.canvas.bind("<MouseWheel>", self.resize)
         else:
             # Fallback
-            self.canvas.bind("<MouseWheel>", self.resize)  # <MouseWheel> by default
+            self.canvas.bind("<MouseWheel>", self.resize)  # <MouseWheel> par défaut
         self.start_drag_pos = None
 
         self.add_zone_exclu_layer()
@@ -272,7 +272,7 @@ class ImageEditor:
                         layer.resize(-10)
                     elif layer.layer_type == 'Texte':
                         layer.resize_font(-2)
-            else: # Windows
+            else: # Windows et autres
                 if layer.layer_type == 'Image':
                     delta = 10 if event.delta > 0 else -10
                     layer.resize(delta)
