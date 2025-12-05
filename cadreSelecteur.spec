@@ -9,7 +9,7 @@ a = Analysis(
     pathex=['.'],  # chemin vers ton script principal
     binaries=[],
     datas=[
-        ('resources/*', 'resources'),
+        ('resources/*', 'resources')
     ],
     hiddenimports=collect_submodules('numpy') + [
         'PIL',
@@ -43,5 +43,4 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,           # pas de console (GUI tkinter)
-    # icon='app.ico',        # décommente si tu ajoutes une icône
-)
+    icon='resources/cadreSelecteur.ico',)

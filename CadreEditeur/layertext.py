@@ -5,10 +5,25 @@
 from PIL import ImageFont, ImageDraw, Image
 import tkinter as tk
 from tkinter import messagebox, colorchooser
-import matplotlib.font_manager as fm
+from os import path, listdir
+import sys
 
 from .layer import Layer
 from .text import ask_font
+
+
+
+
+def get_app_dir():
+    """Retourne le dossier contenant le script (mode normal)
+       ou le .exe PyInstaller (mode frozen)."""
+    if getattr(sys, 'frozen', False):
+        # chemin de l'exécutable
+        print('ici')
+        return path.dirname(sys.executable)
+    else:
+        # chemin du script .py
+        return path.join(path.dirname(path.abspath(__file__)), "..")
 
 
 class LayerText(Layer):
@@ -27,115 +42,117 @@ class LayerText(Layer):
         self.tk_parent = tk_parent
         self.parent = parent
         self.layer_type = 'Texte'
-        # variables texte
+
+        # Variables texte
         self.text = tk.StringVar(value='Texte')
         self.font_color = '#000000'
         self.sel_font = {'family': "arial", 'size': 32}
-        self.font_name = 'arial.ttf'
-        self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
+
+        # Répertoire Fonts
+        self.fonts_dir = path.join(get_app_dir(), "Fonts")
+
+        # Police par défaut
+        self.font_name = self.find_font_path(self.sel_font['family']) or path.join(get_app_dir(),
+                                                                                   "Fonts/Anton-Regular.ttf")
+        self.pil_font = ImageFont.truetype(str(self.font_name), self.sel_font['size'])
+
         self.txt_start_drag_pos = None
 
     def set_text(self, value):
-        """
-        Modifie le texte du calque.
-
-        Args:
-            value (str): nouveau texte.
-        """
+        """Modifie le texte du calque."""
         self.text = value
 
     def resize_font(self, delta):
-        """
-        Redimensionne la police utilisée dans le calque.
-
-        Args :
-            delta (int) : Variation (en px) de la taille.
-        """
+        """Redimensionne la police utilisée dans le calque."""
         new_size = max(4, self.sel_font['size'] + delta)
         self.sel_font['size'] = new_size
-        self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
+        self.pil_font = ImageFont.truetype(str(self.font_name), self.sel_font['size'])
 
     def draw_on_image(self, image: Image.Image, export=False):
-        """
-        Dessine le texte sur l’image PIL, à la position courante.
-
-        Args:
-            image (PIL.Image): Image cible.
-            export (bool): True pour la résolution export.
-        """
+        """Dessine le texte sur l’image PIL, à la position courante."""
         if not self.visible or not self.text:
             return
         pos = self.image_position if export else self.display_position
         size = self.sel_font['size'] * self.RATIO if export else self.sel_font['size']
-        font = ImageFont.truetype(self.font_name, size)
+        font = ImageFont.truetype(str(self.font_name), size)
         draw = ImageDraw.Draw(image)
         draw.text(pos, self.text.get(), fill=self.font_color, font=font)
 
     def update_param_zone(self, frame):
+        """Met à jour la zone de paramètres du panneau latéral."""
         for widget in frame.winfo_children():
             widget.destroy()
 
         tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
-        # bouton et saisie pour le texte
         tk.Entry(frame,
-                 textvariable=self.text, width=40).pack(padx=10, pady=10, anchor='nw')
+                 textvariable=self.text, width=40).pack(padx=5, pady=5, anchor='nw')
         tk.Button(frame,
                   text='Couleur',
-                  command=lambda: self.choisir_couleur()).pack(padx=10, pady=10, side='top', anchor='nw')
+                  command=lambda: self.choisir_couleur()).pack(padx=5, pady=5, side='top', anchor='nw')
         tk.Button(frame,
                   text='Police',
-                  command=self.callback_font).pack(padx=10, pady=10, side='top', anchor='nw')
+                  command=self.callback_font).pack(padx=5, pady=5, side='top', anchor='nw')
         self.text.trace_add("write", self.on_text_change)
 
     def callback_font(self):
         """
-        lorsque le bouton font est cliqué lance l'interface
-         de selection de police d'écriture
+        Lorsque le bouton Police est cliqué :
+        ouvre la fenêtre ask_font() et charge la police sélectionnée
+        depuis le répertoire Fonts/.
         """
         try:
             font_selected = ask_font(self.tk_parent,
                                      text=self.text.get(),
-                                     title="Police",
+                                     title="Choisir une police",
                                      family=self.sel_font['family'],
-                                     size=self.sel_font['size'], )
+                                     size=self.sel_font['size'])
 
-            # met à jour la police sélectionné
             if font_selected:
                 self.sel_font = font_selected
                 family = self.sel_font['family']
-                if not isinstance(family, str):
-                    family = str(family)
+
+                # Recherche dans le dossier Fonts
                 font_name_found = self.find_font_path(family)
-                if font_name_found is not None:
+                if font_name_found:
                     self.font_name = font_name_found
+                    self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
+                else:
+                    messagebox.showwarning("Police introuvable",
+                                           f"La police '{family}' n'a pas été trouvée dans Fonts/. "
+                                           "Police par défaut utilisée.")
+                    self.font_name = path.join(get_app_dir(), "Fonts/Anton-Regular.ttf")
 
             self.parent.update_canvas()
 
         except Exception as e:
             messagebox.showerror("Erreur de font", f"Exception inattendue : {str(e)}")
 
-    @staticmethod
-    def find_font_path(font_name_to_find):
+    def find_font_path(self, font_name_to_find):
         """
-        trouve le chemin de la police
+        Trouve le chemin de la police dans le dossier Fonts.
+        Renvoie le chemin complet si trouvé, sinon None.
         """
         try:
-            # Obtenir la liste de toutes les polices système
-            font_paths = fm.findSystemFonts(fontpaths=None, fontext='ttf')
+            if not path.isdir(self.fonts_dir):
+                print(f"[AVERTISSEMENT] Dossier Fonts introuvable : {self.fonts_dir}")
+                return None
 
-            for font_path in font_paths:
-                # Vérifier si le nom de la police correspond
-                prop = fm.FontProperties(fname=font_path)
-                if prop.get_name().lower() == font_name_to_find.replace('@', '').lower():
-                    return font_path
+            for file in listdir(str(self.fonts_dir)):
+                if not file.lower().endswith(".ttf"):
+                    continue
+                name_no_ext = path.splitext(file)[0]
+                # Correspondance tolérante : ignore les espaces / majuscules
+                if name_no_ext.lower().replace(" ", "") == font_name_to_find.lower().replace(" ", ""):
+                    return path.join(str(self.fonts_dir), file)
+
             return None
+
         except Exception as e:
             messagebox.showerror("Erreur de police", f"Exception inattendue: {str(e)}")
             return None
 
-    # gestion couleur
     def choisir_couleur(self):
-        """ Ouvrir une boîte de dialogue de sélection de couleur """
+        """Ouvre une boîte de dialogue de sélection de couleur."""
         try:
             couleur = colorchooser.askcolor(title="Choisissez une couleur")
             self.font_color = couleur[1]
@@ -145,10 +162,7 @@ class LayerText(Layer):
             messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
 
     def on_text_change(self, *args):
-        """
-        Ajoute du texte provenant du champ de texte
-        à l'image à une position prédéfinie.
-        """
+        """Met à jour le texte sur le canvas quand il change."""
         try:
             if args:
                 self.parent.update_canvas()
@@ -156,10 +170,7 @@ class LayerText(Layer):
             messagebox.showerror("Erreur de texte", f"Exception inattendue : {str(e)}")
 
     def clone(self, tk_parent, parent):
-        """
-        Crée une copie indépendante de ce LayerText (mêmes réglages, nouvelle instance)
-        """
-        # Nouvelle instance avec mêmes paramètres de base
+        """Crée une copie indépendante de ce LayerText (mêmes réglages, nouvelle instance)."""
         new_layer = LayerText(
             tk_parent,
             parent,
@@ -168,22 +179,15 @@ class LayerText(Layer):
             self.RATIO,
             name=self.name + "_copie"
         )
-
-        # Copie des champs simples
         new_layer.display_position = tuple(self.display_position)
         new_layer.image_position = tuple(self.image_position)
         new_layer.visible = self.visible
         new_layer.locked = self.locked
-
-        # Copie du texte (tk.StringVar!)
         new_layer.text.set(self.text.get())
-
-        # Copie police/couleur
         new_layer.font_color = self.font_color
         new_layer.sel_font = self.sel_font.copy()
         new_layer.font_name = self.font_name
-        new_layer.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
-
+        new_layer.pil_font = ImageFont.truetype(str(self.font_name), self.sel_font['size'])
         return new_layer
 
     def to_dict(self):
@@ -197,7 +201,7 @@ class LayerText(Layer):
             "image_position": self.image_position,
             "visible": self.visible,
             "locked": self.locked,
-            "text": self.text.get(),  # pour tk.StringVar
+            "text": self.text.get(),
             "font_color": self.font_color,
             "sel_font": self.sel_font,
             "font_name": self.font_name,
@@ -235,6 +239,7 @@ class LayerText(Layer):
         obj.text.set(dct.get("text", "Texte"))
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
-        obj.font_name = dct.get("font_name", "arial.ttf")
-        obj.pil_font = ImageFont.truetype(obj.font_name, obj.sel_font['size'])
+        obj.font_name = obj.find_font_path(obj.sel_font['family']) or path.join(get_app_dir(),
+                                                                                "Fonts/Anton-Regular.ttf")
+        obj.pil_font = ImageFont.truetype(str(obj.font_name), obj.sel_font['size'])
         return obj
