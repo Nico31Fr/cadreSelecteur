@@ -5,11 +5,11 @@ from PyInstaller.utils.hooks import collect_submodules
 block_cipher = None
 
 a = Analysis(
-    ['__main__.py'],
-    pathex=['.'],  # chemin vers ton script principal
+    ['CadreSelecteur/__main__.py'],
+    pathex=['CadreSelecteur'],  # chemin vers ton script principal
     binaries=[],
     datas=[
-        ('resources/*', 'resources')
+        ('CadreSelecteur/resources/*', 'resources')
     ],
     hiddenimports=collect_submodules('numpy') + [
         'PIL',
@@ -43,4 +43,4 @@ exe = EXE(
     strip=False,
     upx=True,
     console=False,           # pas de console (GUI tkinter)
-    icon='resources/cadreSelecteur.ico',)
+    icon='CadreSelecteur/resources/cadreSelecteur.ico',)

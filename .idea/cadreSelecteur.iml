@@ -3,6 +3,8 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/CadreSelecteur/CadreEditeur/build" />
     </content>
     <orderEntry type="jdk" jdkName="cadreSelecteur_3.12" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
