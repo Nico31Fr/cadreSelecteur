@@ -5,18 +5,25 @@
 from PIL import ImageFont, ImageDraw, Image
 import tkinter as tk
 from tkinter import messagebox, colorchooser
-import os
+from os import path, listdir
 import sys
 
 from .layer import Layer
 from .text import ask_font
 
 
-def resource_path(relative_path):
-    """Retourne le chemin absolu du fichier embarqué (compatible PyInstaller)."""
-    # Accès à _MEIPASS nécessaire pour la compatibilité avec PyInstaller
-    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))  # type: ignore[attr-defined]
-    return os.path.join(base_path, relative_path)
+
+
+def get_app_dir():
+    """Retourne le dossier contenant le script (mode normal)
+       ou le .exe PyInstaller (mode frozen)."""
+    if getattr(sys, 'frozen', False):
+        # chemin de l'exécutable
+        print('ici')
+        return path.dirname(sys.executable)
+    else:
+        # chemin du script .py
+        return path.join(path.dirname(path.abspath(__file__)), "..")
 
 
 class LayerText(Layer):
@@ -41,11 +48,12 @@ class LayerText(Layer):
         self.font_color = '#000000'
         self.sel_font = {'family': "arial", 'size': 32}
 
-        # Répertoire Fonts (embarquable)
-        self.fonts_dir = resource_path('./Fonts')
+        # Répertoire Fonts
+        self.fonts_dir = path.join(get_app_dir(), "Fonts")
 
         # Police par défaut
-        self.font_name = self.find_font_path(self.sel_font['family']) or resource_path("Fonts/arial.ttf")
+        self.font_name = self.find_font_path(self.sel_font['family']) or path.join(get_app_dir(),
+                                                                                   "Fonts/Anton-Regular.ttf")
         self.pil_font = ImageFont.truetype(str(self.font_name), self.sel_font['size'])
 
         self.txt_start_drag_pos = None
@@ -112,7 +120,7 @@ class LayerText(Layer):
                     messagebox.showwarning("Police introuvable",
                                            f"La police '{family}' n'a pas été trouvée dans Fonts/. "
                                            "Police par défaut utilisée.")
-                    self.font_name = resource_path("Fonts/arial.ttf")
+                    self.font_name = path.join(get_app_dir(), "Fonts/Anton-Regular.ttf")
 
             self.parent.update_canvas()
 
@@ -125,17 +133,17 @@ class LayerText(Layer):
         Renvoie le chemin complet si trouvé, sinon None.
         """
         try:
-            if not os.path.isdir(self.fonts_dir):
+            if not path.isdir(self.fonts_dir):
                 print(f"[AVERTISSEMENT] Dossier Fonts introuvable : {self.fonts_dir}")
                 return None
 
-            for file in os.listdir(str(self.fonts_dir)):
+            for file in listdir(str(self.fonts_dir)):
                 if not file.lower().endswith(".ttf"):
                     continue
-                name_no_ext = os.path.splitext(file)[0]
+                name_no_ext = path.splitext(file)[0]
                 # Correspondance tolérante : ignore les espaces / majuscules
                 if name_no_ext.lower().replace(" ", "") == font_name_to_find.lower().replace(" ", ""):
-                    return os.path.join(str(self.fonts_dir), file)
+                    return path.join(str(self.fonts_dir), file)
 
             return None
 
@@ -231,6 +239,7 @@ class LayerText(Layer):
         obj.text.set(dct.get("text", "Texte"))
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
-        obj.font_name = obj.find_font_path(obj.sel_font['family']) or resource_path("Fonts/arial.ttf")
+        obj.font_name = obj.find_font_path(obj.sel_font['family']) or path.join(get_app_dir(),
+                                                                                "Fonts/Anton-Regular.ttf")
         obj.pil_font = ImageFont.truetype(str(obj.font_name), obj.sel_font['size'])
         return obj

@@ -10,11 +10,15 @@ from os import path, listdir
 import sys
 
 
-def resource_path(relative_path):
-    """Get absolute path (compatible with PyInstaller)."""
-    base_path = getattr(sys, '_MEIPASS', path.dirname(path.abspath(__file__)))
-    return path.join(base_path, relative_path)
-
+def get_app_dir():
+    """Retourne le dossier contenant le script (mode normal)
+       ou le .exe PyInstaller (mode frozen)."""
+    if getattr(sys, 'frozen', False):
+        # chemin de l'exécutable
+        return path.dirname(sys.executable)
+    else:
+        # chemin du script .py
+        return path.join(path.dirname(path.abspath(__file__)), "..", "..")
 
 class FontChooser(Toplevel):
     """ Boîte de dialogue de sélection de police
@@ -34,7 +38,7 @@ class FontChooser(Toplevel):
         self.configure(bg=bg)
 
         # --- Charger les polices du dossier Fonts
-        fonts_dir = resource_path('./../../Fonts')
+        fonts_dir = path.join(get_app_dir(), "Fonts")
         self.fonts = []
         if path.isdir(fonts_dir):
             for f in listdir(str(fonts_dir)):
@@ -45,7 +49,7 @@ class FontChooser(Toplevel):
             print(f"[AVERTISSEMENT] Dossier Fonts introuvable : {fonts_dir}")
 
         if not self.fonts:
-            self.fonts = ["Arial"]
+            self.fonts = ["adelia"]
 
         self.fonts.sort()
         max_length = int(2.5 * max([len(font) for font in self.fonts])) // 3
@@ -121,11 +125,10 @@ class FontChooser(Toplevel):
         except ValueError:
             size = 20
 
-        font_path = resource_path(f"./../../Fonts/{family}.ttf")
-
+        font_path = path.join(get_app_dir(), "Fonts", f"{family}.ttf")
         if not path.exists(font_path):
             # fallback si non trouvé
-            font_path = resource_path(f"./../../Fonts/{self.fonts[0]}.ttf")
+            font_path = path.join(get_app_dir(), "Fonts", f"{self.fonts[0]}.ttf")
 
         try:
             font = ImageFont.truetype(font_path, size)
