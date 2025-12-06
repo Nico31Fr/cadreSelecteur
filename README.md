@@ -5,29 +5,35 @@
 L'application cadre sélecteur pour PiBooth permet, via une interface graphique, de selectionner le cadre et le layout que l'on souhaite utiliser au prochain démarrage du photomaton.
 Il offre aussi la possibilité de créer un nouveau calque original.
 
-## Pré-requis
+## installation de l'executable 
+un executable Windows et Linux est disponible (cf.https://github.com/Nico31Fr/cadreSelecteur/releases)
 
-Avant de lancer l'application, assurez-vous que votre système dispose des éléments suivants :
+téléchargez l'archive correspondante a votre OS décompressez et lancer l'executable.
+
+## installation du package Python
+
+pour installer CadreSelecteur en mode module python :
+
+Installation des dépendances :
 
 - **Python** : Version 3.7 ou supérieure.
 - **Bibliothèques Python** : 
-  - `tkinter`
-  - `Pillow`
-  - `xml.etree.ElementTree`
-  - `json`
-  - `shutil`
+  - Pillow>=11.3.0
+  - matplotlib>=3.10.6
+  - numpy>=2.3.3
+  - fontTools>=4.60.1
 
 Les modules nécessaires peuvent être installés via pip :
 ```bash 
-pip install tkinter Pillow
+pip install -r requirements.txt
 ```
 
 ## Démarrage
 
-Pour lancer l'application, exécutez le script Python contenant la classe `ImageEditorApp`. La fenêtre principale de l'application s'ouvrira, vous permettant de créer et de gérer vos cadres.
+dans le répertoire cadreSelecteur :
 
 ```bash 
-python3 cadreselecteur.py
+python3 -m CadreSelecteur
 ```
 ## Fonctionnalités
 
@@ -38,9 +44,11 @@ python3 cadreselecteur.py
    - **Répertoires requis** :
      - `Templates` : Contenant les cadres et templates disponibles.
      - `Cadres` : Destination pour les cadres sélectionnés. (PiBooth est configuré pour venir chercher le cadre à utiliser ici)
+     - `Fonts` : contient les polices utilisables dans l'outil (vous pouvez en ajouter !)
 
    - **Fichiers nécessaires** :
-     - `template_std.xml` : Template par défaut utilisé en l'absence de fichier associé.
+     - `template_x.xml` : Template par défaut utilisé en l'absence de fichier associé.
+
 
 2. **Affichage** : L'application affiche une liste de vignettes des cadres disponibles à gauche et le cadre installé à droite.
     
@@ -51,7 +59,8 @@ python3 cadreselecteur.py
 - **Cadres disponibles** : Liste et prévisualisation des cadres disponibles dans `Templates`.
 - **Cadre installé** : Prévisualisation du cadre actuellement utilisé dans `Cadres`.
 - **Boutons d'action** : `Appliquer` pour exécuter la sélection et `Quitter` pour fermer l'application.
-
+- **bouton poubelle** : permet de supprimer un jeux de cadre
+- 
 Pour modifier le cadre que pibooth va utiliser :
 
 1. **Sélection** :
@@ -104,7 +113,7 @@ Situé dans la partie supérieure de l'application, le canvas affiche votre comp
 
 #### Zone de contrôle
 
-La zone de contrôle inclut les options suivantes :
+La zone de contrôle inclut les calques suivantes :
 
 1. **Texte** :
    - **Saisie** : Entrez votre texte.
