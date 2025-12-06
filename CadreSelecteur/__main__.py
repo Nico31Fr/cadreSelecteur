@@ -2,7 +2,7 @@
 """ Module de selection de cadre pour PiBooth
     |→ point d'entrée de l'appli autonome """
 
-from cadreselecteur import CadreSelecteur, check_mandatory_path
+from CadreSelecteur.cadreselecteur import CadreSelecteur, check_mandatory_path
 
 if __name__ == "__main__":
 

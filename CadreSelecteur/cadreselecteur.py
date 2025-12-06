@@ -11,21 +11,14 @@ from platform import system
 from pathlib import Path
 import sys
 
-from CadreEditeur.imageeditorapp import ImageEditorApp
-from CadreSelecteur import __version__
+from . import __version__
+from .CadreEditeur.imageeditorapp import ImageEditorApp
 
 # taille de la fenêtre
 WINDOWS_SIZE = "1000x600"
 # taille des vignettes
 THUMBNAIL_H = 128
 THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
-
-# repertoire avec tous les cadres / templates disponibles
-template_path = "Templates"
-# repertoire avec le cadre / template sélectionné
-destination_path = "Cadres/"
-# repertoire avec les resources scripts
-resources_path = "resources"
 
 # nom du template définie dans piBooth
 TEMPLATE_NAME = 'template.xml'
@@ -35,11 +28,21 @@ TEMPLATE_NAME_STD = 'template_1.xml'
 CADRE_NAME_1 = 'cadre_1.png'
 CADRE_NAME_4 = 'cadre_4.png'
 
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        # Exécution depuis un .exe PyInstaller
+        return path.dirname(sys.executable)
+    else:
+        # Exécution depuis le code source (PyCharm)
+        return path.dirname(path.abspath(__file__))
 
-def absolute_path(relative_path):
-    """ Get absolute path works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', path.dirname(path.abspath(__file__)))
-    return path.join(base_path, relative_path)
+BASE_PATH = get_base_path()
+# repertoire avec tous les cadres / templates disponibles
+template_path = path.join(BASE_PATH, "Templates")
+# repertoire avec le cadre / template sélectionné
+destination_path = path.join(BASE_PATH, "Cadres")
+# repertoire avec les resources scripts
+resources_path = path.join(BASE_PATH, "resources")
 
 
 class CadreSelecteur:
@@ -256,7 +259,7 @@ class CadreSelecteur:
                                        f=file_path_4: self.show_full_image(f))
 
                 # Charger et redimensionner l'image de la poubelle
-                icon_path = absolute_path(Path(resources_path, "trash.png"))
+                icon_path = Path(resources_path, "trash.png")
                 image = Image.open(icon_path).resize((30, 30))
                 icon_trash = ImageTk.PhotoImage(image)
 
@@ -266,7 +269,8 @@ class CadreSelecteur:
                 # Créer le bouton avec l'image
                 bouton_supprimer = Button(item_frame,
                                           command=lambda f=filename: self.del_border(f),
-                                          image=str(icon_trash))
+                                          image=icon_trash)
+
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
                 thumbnail_label_1.pack(side='left', padx=5)

@@ -6,7 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/CadreSelecteur/CadreEditeur/build" />
     </content>
-    <orderEntry type="jdk" jdkName="cadreSelecteur_3.12" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="cadreSelecteur_3.13" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
