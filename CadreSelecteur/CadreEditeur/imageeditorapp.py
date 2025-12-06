@@ -14,6 +14,7 @@ from .imageeditor import ImageEditor
 from .layerexcluzone import LayerExcluZone
 from .layertext import LayerText
 from .layerimage import LayerImage
+from CadreSelecteur import __version__
 
 
 def clean_all_layer(app):
@@ -55,7 +56,7 @@ class ImageEditorApp:
 
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
-            self.tk_root.title("Créateur de cadre V0.1")
+            self.tk_root.title(f'Créateur de cadre {__version__}')
 
             # Création de frame parent
             self.main_frame = tk.Frame(self.tk_root)
