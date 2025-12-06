@@ -6,15 +6,10 @@ from PyInstaller.utils.hooks import collect_submodules
 block_cipher = None
 
 # Répertoire racine du projet (le dossier qui contient CadreSelecteur/)
-#project_path = os.getcwd()
 project_path = os.path.abspath(".")
 
 datas = [
-    # Inclure seulement resources/
-    (
-        ('CadreSelecteur/resources/*', 'resources'),
-        "resources"
-    ),
+    ('CadreSelecteur/resources/*', 'resources'),
 ]
 
 hiddenimports = (

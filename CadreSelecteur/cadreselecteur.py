@@ -36,13 +36,21 @@ def get_base_path():
         # Exécution depuis le code source (PyCharm)
         return path.dirname(path.abspath(__file__))
 
+def resource_path(relative_path):
+    """
+    Retourne le chemin correct vers les ressources, que l'app tourne en .py ou en .exe
+    """
+    if hasattr(sys, '_MEIPASS'):  # Exécutable PyInstaller
+        return path.join(sys._MEIPASS, relative_path)
+    return path.join(path.dirname(path.abspath(__file__)), relative_path)
+
 BASE_PATH = get_base_path()
 # repertoire avec tous les cadres / templates disponibles
 template_path = path.join(BASE_PATH, "Templates")
 # repertoire avec le cadre / template sélectionné
 destination_path = path.join(BASE_PATH, "Cadres")
 # repertoire avec les resources scripts
-resources_path = path.join(BASE_PATH, "resources")
+resources_path = resource_path("resources")
 
 
 class CadreSelecteur:
