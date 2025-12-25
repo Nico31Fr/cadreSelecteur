@@ -1,0 +1,133 @@
+{
+  "selector": {
+    "title": "Frame selector for piBooth {version}",
+    "label": {
+      "available_frames": "Available frames",
+      "installed_frame": "Installed frame"
+    },
+    "button": {
+      "new_frame": "new frame",
+      "apply": "Apply",
+      "quit": "Quit"
+    },
+    "preview": {
+      "title": "Preview"
+    },
+    "msg": {
+      "error": {
+        "dir_missing_title": "Directory error",
+        "dir_missing_message": "Source directory {path} not found.",
+        "copy": "Copy error",
+        "copy_template": "Template copy error",
+        "no_selection_title": "Error",
+        "no_selection_message": "No image selected. Please choose an image."
+      },
+      "warn": {
+        "delete_impossible_title": "Delete impossible",
+        "delete_impossible_message": "Cannot delete the last available frame."
+      },
+      "confirm": {
+        "delete_title": "Confirm deletion",
+        "delete_message": "Delete frame '{name}' ?"
+      },
+      "info": {
+        "deleted_title": "Frame deleted",
+        "deleted_message": "Frame deleted successfully."
+      }
+    }
+  },
+  "editor": {
+    "title": "Frame creator {version}",
+    "label": {
+      "template": "template: "
+    },
+    "button": {
+      "load": "load",
+      "save": "Save",
+      "generate": "Generate frames"
+    },
+    "msg": {
+      "error": {
+        "no_template_title": "No template",
+        "no_template_message": "No template_*.xml files found in {path}",
+        "file": "File error",
+        "copy": "Copy error",
+        "no_project_name_title": "project name error",
+        "no_project_name_message": "please enter the project name",
+        "no_dir_title": "directory error",
+        "no_dir_message": "please select an output directory"
+      },
+      "info": {
+        "export_ok_title": "export success",
+        "export_ok_message": "Files were generated successfully.",
+        "save_ok_title": "Save successful",
+        "save_ok_message": "Project has been saved successfully.",
+        "load_ok_title": "Load successful",
+        "load_ok_message": "Project has been loaded successfully."
+      }
+    }
+  },
+  "image": {
+    "button": {
+      "add_image": "Add Image",
+      "add_text": "Add Text",
+      "delete": "Delete",
+      "move_up": "  ˄  ",
+      "move_down": "  ˅  "
+    },
+    "label": {
+      "bg_color": "Background color :"
+    },
+    "msg": {
+      "error": {
+        "save": "Save error",
+        "color": "Color error",
+        "text": "Text error"
+      }
+    },
+    "colorchooser": {
+      "title": "Choose a color"
+    }
+  },
+  "layerimage": {
+    "label": {
+      "info": "Layer {name}\nName : {filename}\nPosition : {position}\nSize : {size}"
+    }
+  },
+  "layer": {
+    "exclusion_name": "Photo insertion zones"
+  },
+  "layertext": {
+    "default_text": "Text",
+    "default_name": "Text {n}",
+    "label": {
+      "layer": "layer {name}"
+    },
+    "preview": "Preview : {family}",
+    "chosen_font": "Chosen font : {font}",
+    "button": {
+      "color": "Color",
+      "font": "Font"
+    },
+    "msg": {
+      "warn": {
+        "font_not_found_title": "Font not found",
+        "font_not_found_message": "The font '{family}' was not found in Fonts/. Default font used."
+      },
+      "fontchooser": {
+        "title": "Choose a font"
+      }
+    }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "cancel": "Cancel"
+  },
+  "menu": {
+    "language": "Language",
+    "fr": "Français",
+    "en": "English"
+  }
+}

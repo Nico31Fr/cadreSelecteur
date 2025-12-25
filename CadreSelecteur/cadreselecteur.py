@@ -13,25 +13,23 @@ from platform import system
 from pathlib import Path
 import sys
 import logging
+from typing import cast
 
 from . import __version__
 from .CadreEditeur.imageeditorapp import ImageEditorApp
+from .config_loader import (
+    WINDOWS_SIZE,
+    THUMBNAIL_H,
+    THUMBNAIL_L,
+    TEMPLATE_NAME,
+    TEMPLATE_NAME_STD,
+    CADRE_NAME_1,
+    CADRE_NAME_4,
+)
+# Import du traducteur (API publique du package i18n)
+from .i18n import t, set_language, get_language
 
 logger = logging.getLogger(__name__)
-
-# taille de la fenêtre
-WINDOWS_SIZE = "1000x600"
-# taille des vignettes
-THUMBNAIL_H = 128
-THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
-
-# nom du template définie dans piBooth
-TEMPLATE_NAME = 'template.xml'
-# template par défaut
-TEMPLATE_NAME_STD = 'template_1.xml'
-# nom du cadre définie dans piBooth
-CADRE_NAME_1 = 'cadre_1.png'
-CADRE_NAME_4 = 'cadre_4.png'
 
 
 def get_base_path() -> str:
@@ -82,13 +80,21 @@ class CadreSelecteur:
         and directory to display images.
         """
 
+        self.apply_button = None
+        self.quit_button = None
+        self.add_new_border = None
         self.master = Tk()
-        self.master.title(f'Sélecteur de cadre pour piBooth {__version__}')
+        self.master.title(t('selector.title', version=__version__))
         self.source_directory = template_path
         self.destination_directory = destination_path
         # Set the window size
         self.master.geometry(WINDOWS_SIZE)
 
+        # Barre supérieure : contient le sélecteur de langue aligné à droite
+        self.top_bar = Frame(self.master)
+        self.top_bar.pack(fill='x')
+
+        # Frame principal pour les labels (sous la barre supérieure)
         self.top_frame = Frame(self.master)
         self.top_frame.pack(fill='x', pady=10)
 
@@ -98,15 +104,16 @@ class CadreSelecteur:
         label_font = ("Arial", 14, "bold")
 
         # Add text labels
-        label1 = Label(self.top_frame,
-                       text="                Cadres disponibles",
-                       font=label_font)
-        label1.pack(side='left', padx=5)
+        # Labels (stocker comme attributs pour pouvoir les rafraîchir)
+        self.label1 = Label(self.top_frame,
+                            text=t('selector.label.available_frames'),
+                            font=label_font)
+        self.label1.pack(side='left', padx=5)
 
-        label2 = Label(self.top_frame,
-                       text="Cadre installé                             ",
-                       font=label_font)
-        label2.pack(side='right', padx=5)
+        self.label2 = Label(self.top_frame,
+                            text=t('selector.label.installed_frame'),
+                            font=label_font)
+        self.label2.pack(side='right', padx=5)
 
         # Create a frame with specific size
         self.frame_main = Frame(self.master, width=800, height=600)
@@ -162,6 +169,27 @@ class CadreSelecteur:
         # Create action buttons
         self.create_action_buttons()
 
+        # Sélecteur de langue déroulant (dans une barre tout en haut, aligné à droite)
+        try:
+            self.lang_btn = tk.Menubutton(self.top_bar, text=get_language(), relief='raised')
+            self.lang_menu = tk.Menu(self.lang_btn, tearoff=0)
+            self.lang_btn.config(menu=self.lang_menu)
+            # placer à droite dans la barre supérieure
+            self.lang_btn.pack(side='right', padx=4, pady=4)
+            Label(self.top_bar, text=t('menu.language')).pack(side='right', padx=4, pady=4)
+            # construire les entrées du menu en fonction des traductions
+            self._build_lang_menu()
+        except tk.TclError as e:
+            # Problème d'interface tkinter (par ex. en environnement headless)
+            logger.debug(f"GUI unavailable for language selector: {e}")
+            self.lang_btn = None
+            self.lang_menu = None
+        except Exception as e:
+            # Log toute autre erreur inattendue pour faciliter le diagnostic
+            logger.exception("Unexpected error while creating language selector", exc_info=e)
+            self.lang_btn = None
+            self.lang_menu = None
+
         self.system = system()
         if self.system == 'Windows' or self.system == 'Darwin':
             # bind to canvas to keep binding local to widget
@@ -201,7 +229,9 @@ class CadreSelecteur:
         self.create_dest_thumbnail()
         # protéger si le repertoire source est manquant
         if not path.exists(self.source_directory):
-            messagebox.showerror("Erreur repertoire", f"Le repertoire source {self.source_directory} est introuvable.")
+            messagebox.showerror(t('selector.msg.error.dir_missing_title'),
+                                 t('selector.msg.error.dir_missing_message',
+                                   path=self.source_directory))
             logger.error(f"Source directory not found: {self.source_directory}")
             return
 
@@ -318,7 +348,7 @@ class CadreSelecteur:
                 if self.trash_icon:
                     icon_trash = self.trash_icon
                 else:
-                    # Chargement de secours si la précharge a échoué
+                    # Chargement de secours si la précharge à échouer
                     icon_path = resources_path / "trash.png"
                     try:
                         with Image.open(icon_path) as img_icon:
@@ -338,11 +368,11 @@ class CadreSelecteur:
                 if icon_trash:
                     bouton_supprimer = Button(item_frame,
                                               command=lambda f=filename: self.del_border(f),
-                                              image=icon_trash)
+                                              image=cast(tk.PhotoImage, icon_trash))
                 else:
                     bouton_supprimer = Button(item_frame,
                                               command=lambda f=filename: self.del_border(f),
-                                              text='Supprimer')
+                                              text=t('image.button.delete'))
 
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
@@ -362,19 +392,85 @@ class CadreSelecteur:
         button_frame = Frame(self.master)
         button_frame.pack(side="bottom", fill="x", pady=10)
 
-        add_new_border = Button(button_frame,
-                                text="nouveau cadre",
-                                command=self.new_border)
-        add_new_border.pack(side='left', padx=10)
-        quit_button = Button(button_frame,
-                             text="Quitter",
-                             command=self.master.quit)
-        quit_button.pack(side="right", padx=10)
+        self.add_new_border = Button(button_frame,
+                                     text=t('selector.button.new_frame'),
+                                     command=self.new_border)
+        self.add_new_border.pack(side='left', padx=10)
+        self.quit_button = Button(button_frame,
+                                  text=t('selector.button.quit'),
+                                  command=self.master.quit)
+        self.quit_button.pack(side="right", padx=10)
 
-        apply_button = Button(button_frame,
-                              text="Appliquer",
-                              command=self.apply_selection)
-        apply_button.pack(side="right", padx=10)
+        self.apply_button = Button(button_frame,
+                                   text=t('selector.button.apply'),
+                                   command=self.apply_selection)
+        self.apply_button.pack(side="right", padx=10)
+
+        # expose references for refresh
+        return
+
+    def refresh_ui_texts(self):
+        """Met à jour les textes affichés selon la langue courante."""
+        try:
+            # fenêtre principale
+            self.master.title(t('selector.title', version=__version__))
+            # labels
+            self.label1.config(text=t('selector.label.available_frames'))
+            self.label2.config(text=t('selector.label.installed_frame'))
+            # boutons
+            self.add_new_border.config(text=t('selector.button.new_frame'))
+            self.apply_button.config(text=t('selector.button.apply'))
+            self.quit_button.config(text=t('selector.button.quit'))
+            # menu langue
+            if hasattr(self, 'lang_btn'):
+                self.lang_btn.config(text=get_language())
+                # reconstruire les entrées du menu pour prendre en compte la nouvelle langue
+                try:
+                    self._build_lang_menu()
+                except (AttributeError, tk.TclError, RuntimeError) as e:
+                    # erreurs possibles lors de la reconstruction du menu (widgets absents, Tk indisponible)
+                    logger.exception("Error rebuilding language menu after language change", exc_info=e)
+        except (AttributeError, tk.TclError, RuntimeError) as e:
+            # erreurs attendues lorsque des widgets n'existent pas encore
+            # (p.ex. refresh called early or in headless env). On loggue
+            # pour debug mais on ne propage pas l'exception afin de
+            # ne pas planter l'application.
+            logger.exception("Error refreshing UI texts", exc_info=e)
+
+    def change_language(self, lang_code: str):
+        """Change la langue via le traducteur et rafraîchit l'IHM."""
+        if set_language(lang_code):
+            # met à jour les textes de l'UI
+            self.refresh_ui_texts()
+        else:
+            messagebox.showwarning("i18n", f"Could not load language: {lang_code}")
+
+    def _build_lang_menu(self):
+        """(Re)construit le menu déroulant de sélection de langue avec les labels traduits."""
+        if not hasattr(self, 'lang_menu'):
+            return
+        # supprimer les entrées existantes
+        try:
+            self.lang_menu.delete(0, 'end')
+        except tk.TclError as e:
+            # suppression impossible si le widget n'existe plus ou si Tk est indisponible
+            logger.debug(f"Could not clear language menu: {e}")
+        except Exception as e:
+            logger.exception("Unexpected error when clearing language menu", exc_info=e)
+        # ajouter les entrées en utilisant les traductions
+        try:
+            # Récupère les libellés traduits via `t()` ; si la clé n'existe pas,
+            # `t()` retourne la clé. On fait un fallback lisible dans ce cas.
+            label_fr = 'fr'
+            label_en = 'en'
+
+        except Exception as e:
+            logger.exception("Error fetching translated labels", exc_info=e)
+            label_fr = 'fr'
+            label_en = 'en'
+
+        self.lang_menu.add_command(label=label_fr, command=lambda: self.change_language('fr'))
+        self.lang_menu.add_command(label=label_en, command=lambda: self.change_language('en'))
 
     def apply_selection(self):
         """
@@ -402,7 +498,7 @@ class CadreSelecteur:
                 copy(source_file_4, dest_file_4)
             except OSError as e:
                 logger.exception("Erreur lors de la copie des fichiers cadres", exc_info=e)
-                messagebox.showerror("Erreur copie", f"Impossible de copier les fichiers du cadre: {e}")
+                messagebox.showerror(t('selector.msg.error.copy'), f"Impossible de copier les fichiers du cadre: {e}")
                 return
 
             # Copier le fichier template
@@ -428,16 +524,16 @@ class CadreSelecteur:
                     copy(source_file_tpl, dest_file_tpl)
             except OSError as e:
                 logger.exception("Erreur lors de la copie du template", exc_info=e)
-                messagebox.showerror("Erreur copie template", f"Impossible de copier le template: {e}")
+                messagebox.showerror(t('selector.msg.error.copy_template'),
+                                     f"Impossible de copier le template: {e}")
                 return
 
             # rafraichie l'image dans dest
             self.create_dest_thumbnail()
 
         else:
-            messagebox.showerror("Erreur",
-                                 "Aucune image sélectionnée."
-                                 " Veuillez choisir une image.")
+            messagebox.showerror(t('selector.msg.error.no_selection_title'),
+                                 t('selector.msg.error.no_selection_message'))
             logger.warning("Aucune image sélectionnée.")
 
     def show_full_image(self, file_path, width=720, height=480):
@@ -447,7 +543,7 @@ class CadreSelecteur:
         """
         try:
             window = Toplevel(self.master)  # Create a Toplevel window
-            window.title("Prévisualisation")
+            window.title(t('selector.preview.title'))
             # To ensure close action shuts the window
             # without affecting the main app
             window.protocol("WM_DELETE_WINDOW", window.destroy)
@@ -498,7 +594,7 @@ class CadreSelecteur:
         Supprime le cadre (fichiers _1.png, _4.png, .xml) du dossier Templates.
         Refuse la suppression si c'est le dernier cadre disponible et
         affiche un message de confirmation avant suppression.
-        Rafraîchit ensuite la liste.
+        Rafraîchir ensuite la liste.
         """
 
         file_1 = path.join(self.source_directory, filename)
@@ -519,15 +615,15 @@ class CadreSelecteur:
                          if f.lower().endswith('_1.png')])
         if nb_cadres <= 1:
             messagebox.showwarning(
-                "Suppression impossible",
-                "Impossible de supprimer le dernier cadre disponible."
+                t('selector.msg.warn.delete_impossible_title'),
+                t('selector.msg.warn.delete_impossible_message')
             )
             return
 
         # Confirmation suppression
         if not messagebox.askyesno(
-                "Confirmer la suppression",
-                f"Supprimer le cadre '{filename.replace('_1.png', '')}' ?"
+                t('selector.msg.confirm.delete_title'),
+                t('selector.msg.confirm.delete_message', name=filename.replace('_1.png', ''))
         ):
             return  # abandon si non
 
@@ -539,11 +635,11 @@ class CadreSelecteur:
                     errors.append(str(e))
 
         if errors:
-            messagebox.showerror("Erreur suppression",
+            messagebox.showerror(t('selector.msg.error.delete'),
                                  f"Erreur lors de la suppression:\n"
                                  f"{errors}")
         else:
-            messagebox.showinfo("Cadre supprimé", "Cadre supprimé avec succès.")
+            messagebox.showinfo(t('selector.msg.info.deleted_title'), t('selector.msg.info.deleted_message'))
 
         # Rafraîchir la liste
         self.list_files_and_generate_thumbnails()
@@ -592,7 +688,7 @@ def check_mandatory_path():
         )
 
     if message_error != '':
-        messagebox.showerror(title='erreur fichiers', message=message_error)
+        messagebox.showerror(title=t('selector.msg.error.no_selection_title'), message=message_error)
         quit()
 
 

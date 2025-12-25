@@ -10,6 +10,8 @@ import sys
 
 from .layer import Layer
 from .text import ask_font
+# Import du traducteur
+from ..i18n.translator import _t
 
 
 def get_app_dir():
@@ -41,7 +43,11 @@ class LayerText(Layer):
         self.layer_type = 'Texte'
 
         # Variables texte
-        self.text = tk.StringVar(value='Texte')
+        try:
+            default_text = _t('layertext.default_text')
+        except Exception:
+            default_text = 'Texte'
+        self.text = tk.StringVar(value=default_text)
         self.font_color = '#000000'
         self.sel_font = {'family': "arial", 'size': 32}
 
@@ -92,14 +98,14 @@ class LayerText(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        tk.Label(frame, text=f"calque {self.name}").pack(anchor='nw')
+        tk.Label(frame, text=_t('layertext.label.layer', name=self.name)).pack(anchor='nw')
         tk.Entry(frame,
                  textvariable=self.text, width=40).pack(padx=5, pady=5, anchor='nw')
         tk.Button(frame,
-                  text='Couleur',
+                  text=_t('layertext.button.color'),
                   command=lambda: self.choisir_couleur()).pack(padx=5, pady=5, side='top', anchor='nw')
         tk.Button(frame,
-                  text='Police',
+                  text=_t('layertext.button.font'),
                   command=self.callback_font).pack(padx=5, pady=5, side='top', anchor='nw')
         self.text.trace_add("write", self.on_text_change)
 
@@ -112,7 +118,7 @@ class LayerText(Layer):
         try:
             font_selected = ask_font(self.tk_parent,
                                      text=self.text.get(),
-                                     title="Choisir une police",
+                                     title=_t('layertext.msg.fontchooser.title'),
                                      family=self.sel_font['family'],
                                      size=self.sel_font['size'])
 
@@ -126,9 +132,8 @@ class LayerText(Layer):
                     self.font_name = font_name_found
                     self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
                 else:
-                    messagebox.showwarning("Police introuvable",
-                                           f"La police '{family}' n'a pas été trouvée dans Fonts/. "
-                                           "Police par défaut utilisée.")
+                    messagebox.showwarning(_t('layertext.msg.warn.font_not_found_title'),
+                                           _t('layertext.msg.warn.font_not_found_message', family=family))
                     self.font_name = path.join(get_app_dir(), "Fonts/Anton-Regular.ttf")
 
             self.parent.update_canvas()
@@ -163,14 +168,13 @@ class LayerText(Layer):
     def choisir_couleur(self):
         """Ouvre une boîte de dialogue de sélection de couleur."""
         try:
-            couleur = colorchooser.askcolor(title="Choisissez une couleur")
+            couleur = colorchooser.askcolor(title=_t('image.colorchooser.title'))
             # couleur peut être (None, None) si annulation => vérifier
             if couleur and couleur[1]:
                 self.font_color = couleur[1]
                 self.parent.update_canvas()
-
         except Exception as e:
-            messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
+            messagebox.showerror(_t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     def on_text_change(self, *args):
         """Met à jour le texte sur le canvas quand il change."""
@@ -235,19 +239,30 @@ class LayerText(Layer):
         Returns:
             LayerText: un nouveau calque texte restauré.
         """
+        default_name = dct.get("name") or name
+        if not default_name:
+            try:
+                default_name = _t('layertext.default_name').replace('{n}', '')
+            except Exception:
+                default_name = name or 'Texte'
+
         obj = LayerText(
             tk_parent,
             parent,
             canva_size,
             image_size,
             ratio,
-            name=dct.get("name", name or "Texte")
+            name=default_name
         )
         obj.display_position = tuple(dct.get("display_position", (0, 0)))
         obj.image_position = tuple(dct.get("image_position", (0, 0)))
         obj.visible = dct.get("visible", True)
         obj.locked = dct.get("locked", False)
-        obj.text.set(dct.get("text", "Texte"))
+        try:
+            fallback_text = _t('layertext.default_text')
+        except Exception:
+            fallback_text = 'Texte'
+        obj.text.set(dct.get("text", fallback_text))
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
         obj.font_name = obj.find_font_path(obj.sel_font['family']) or path.join(get_app_dir(),

@@ -9,12 +9,27 @@ from json import dump, load
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
 from pathlib import Path
+import logging
 
 from .imageeditor import ImageEditor
 from .layerexcluzone import LayerExcluZone
 from .layertext import LayerText
 from .layerimage import LayerImage
 from CadreSelecteur import __version__
+# Import du traducteur
+from ..i18n.translator import _t
+
+# Configuration du logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+# Création d'un handler pour écrire dans un fichier
+file_handler = logging.FileHandler('image_editor.log')
+file_handler.setLevel(logging.DEBUG)
+# Création d'un formatter et ajout au handler
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+# Ajout du handler au logger
+logger.addHandler(file_handler)
 
 
 def clean_all_layer(app):
@@ -56,7 +71,7 @@ class ImageEditorApp:
 
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
-            self.tk_root.title(f'Créateur de cadre {__version__}')
+            self.tk_root.title(_t('editor.title', version=__version__))
 
             # Création de frame parent
             self.main_frame = tk.Frame(self.tk_root)
@@ -75,8 +90,8 @@ class ImageEditorApp:
 
             # Gérer le cas où aucun template n'est trouvé
             if not options:
-                messagebox.showerror("Aucun template",
-                                     f"Aucun fichier template_*.xml trouvé dans {self.template}")
+                messagebox.showerror(_t('editor.msg.error.no_template_title'),
+                                     _t('editor.msg.error.no_template_message', path=self.template))
                 # Pour éviter un crash ultérieur, ajouter un template fictif
                 options = ["template_1.xml"]
 
@@ -85,7 +100,7 @@ class ImageEditorApp:
             self.selected_template.set(options[0])  # Définir la valeur par défaut
 
             # Étiquette pour afficher l'option sélectionnée
-            label = tk.Label(self.main_frame, text="template : ")
+            label = tk.Label(self.main_frame, text=_t('editor.label.template'))
             label.grid(column=0, row=0, sticky=tk.E, padx=5, pady=5)
 
             # Créer le menu déroulant
@@ -147,28 +162,33 @@ class ImageEditorApp:
             self.export_frame.columnconfigure(2, weight=2)
 
             # charger / sauvegarder le projet
-            button_load = tk.Button(self.export_frame, text='charger', command=lambda: self.load_project())
-            button_save = tk.Button(self.export_frame, text='Sauvegarder', command=lambda: self.save_project())
+            button_load = tk.Button(self.export_frame, text=_t('editor.button.load'),
+                                    command=lambda: self.load_project())
+            button_save = tk.Button(self.export_frame, text=_t('editor.button.save'),
+                                    command=lambda: self.save_project())
             button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
             button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
             # export / nom du projet
-            tk.Label(self.export_frame, text="Nom du set de cadre :").grid(column=0,
-                                                                           row=1,
-                                                                           sticky=tk.EW,
-                                                                           padx=5,
-                                                                           pady=5)
+            self.prj_label = tk.Label(self.export_frame,
+                                      text=_t('editor.label.template').replace('template : ',
+                                                                               'Nom du set de cadre :'))
+            self.prj_label.grid(column=0,
+                                row=1,
+                                sticky=tk.EW,
+                                padx=5,
+                                pady=5)
             self.prj_name_var = tk.StringVar()
             self.texte_projet_name = tk.Entry(self.export_frame, textvariable=self.prj_name_var)
             self.texte_projet_name.insert(0, self.prj_name)
             self.texte_projet_name.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
             # export / Bouton pour générer les cadres
             button_export = tk.Button(self.export_frame,
-                                      text="Générer les cadres",
+                                      text=_t('editor.button.generate'),
                                       command=lambda: self.gen_images(self.app1, self.app4))
             button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
         except Exception as e:
-            messagebox.showerror("Erreur Initialization", f"Une erreur inattendue s'est produite : {str(e)}")
+            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
 
     # export du set de cadre (2 .png + XML)
     def gen_images(self, app_1, app_4):
@@ -185,11 +205,12 @@ class ImageEditorApp:
                 path_to_xml = path.join(self.template, self.selected_template.get())
                 dest_xml = path_im + '.xml'
                 copy(path_to_xml, dest_xml)
-                messagebox.showinfo("export réussie", "Les fichiers on été générés avec succès.")
+                messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
         except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Impossible de générer les fichiers.")
+            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
         except Error as e:
-            messagebox.showerror("Erreur de copie", f"Une erreur est survenue lors de la copie du XML : {str(e)}")
+            messagebox.showerror(_t('editor.msg.error.copy'),
+                                 f"Une erreur est survenue lors de la copie du XML : {str(e)}")
 
     def select_directory(self):
         """
@@ -199,8 +220,8 @@ class ImageEditorApp:
         try:
             tmp_prj_name = self.prj_name_var.get()
             if tmp_prj_name == "":
-                messagebox.showerror(title='erreur nom du projet',
-                                     message="saisir le nom du projet")
+                messagebox.showerror(title=_t('editor.msg.error.no_project_name_title'),
+                                     message=_t('editor.msg.error.no_project_name_message'))
                 return None
 
             if self.standalone:
@@ -214,11 +235,11 @@ class ImageEditorApp:
             if selected_dir:  # Vérifie si l'utilisateur à sélectionner un répertoire
                 return path_prj_name
             else:
-                messagebox.showerror(title='erreur repertoire',
-                                     message="sélectionner un repertoire de sortie")
+                messagebox.showerror(title=_t('editor.msg.error.no_dir_title'),
+                                     message=_t('editor.msg.error.no_dir_message'))
                 return None
         except Exception as e:
-            messagebox.showerror("Erreur de sélection", f"Une erreur inattendue s'est produite : {str(e)}")
+            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
             return None
 
     # section pour la sauvegarde recharge d'un projet
@@ -232,9 +253,11 @@ class ImageEditorApp:
             app4_layer_tmp = []
 
             for layer in self.app1.layers:
-                app1_layer_tmp.append(layer)
+                if layer is not None:
+                    app1_layer_tmp.append(layer)
             for layer in self.app4.layers:
-                app4_layer_tmp.append(layer)
+                if layer is not None:
+                    app4_layer_tmp.append(layer)
 
             project_data = {
                 "app1": {
@@ -250,10 +273,11 @@ class ImageEditorApp:
 
             with open(file_path, 'w', encoding='utf-8') as file:
                 dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
-            messagebox.showinfo("Sauvegarde réussie", "Le projet a été sauvegardé avec succès.")
+            messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
 
         except Exception as e:
-            messagebox.showerror("Erreur de sauvegarde", f"Une erreur inattendue s'est produite : {str(e)}")
+            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
+            return None
 
     def load_project(self):
         """Charge un projet depuis un fichier JSON."""
@@ -285,7 +309,12 @@ class ImageEditorApp:
                                           (app.CANVA_W, app.CANVA_H),
                                           (app.IMAGE_W, app.IMAGE_H),
                                           app.RATIO)
-                    app.layers.append(layer)
+                    try:
+                        # utiliser l'API d'ajout pour valider le layer
+                        app.add_layer(layer)
+                    except Exception:
+                        # fallback : append direct (compatibilité)
+                        app.layers.append(layer)
                 # Restaure couleur de fond
                 app.background_couleur = project_data[key].get("background_couleur", "#FFFFFF")
 
@@ -296,11 +325,11 @@ class ImageEditorApp:
             template_name = project_data["template"]
             self.selected_template.set(template_name)
 
-            messagebox.showinfo("Chargement réussi", "Le projet a été chargé avec succès.")
+            messagebox.showinfo(_t('editor.msg.info.load_ok_title'), _t('editor.msg.info.load_ok_message'))
 
         except Exception as e:
             messagebox.showerror(
-                "Erreur de chargement",
+                _t('editor.msg.error.file'),
                 f"Une erreur inattendue s'est produite : {str(e)}"
             )
 
@@ -317,14 +346,25 @@ class ImageEditorApp:
             if layer == 'layer':
                 if direction == '1_4':
                     new_layer = self.app1.layers[self.app1.active_layer_idx].clone(self.app4_frame, self.app4)
-                    n = len([layer for layer in self.app4.layers if layer.layer_type == new_layer.layer_type]) + 1
+                    n = len([layer for layer in self.app4.layers if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
-                    self.app4.layers.append(new_layer)
+                    # utiliser l'API d'ajout pour valider le layer
+                    try:
+                        added = self.app4.add_layer(new_layer)
+                        if not added:
+                            logger.error(f"add_layer refused new_layer when copying 1->4: {new_layer}")
+                    except Exception as e:
+                        logger.exception(f"Exception while adding new_layer to app4: {e}")
                 elif direction == '4_1':
                     new_layer = self.app4.layers[self.app4.active_layer_idx].clone(self.app1_frame, self.app1)
-                    n = len([layer for layer in self.app1.layers if layer.layer_type == new_layer.layer_type]) + 1
+                    n = len([layer for layer in self.app1.layers if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
-                    self.app1.layers.append(new_layer)
+                    try:
+                        added = self.app1.add_layer(new_layer)
+                        if not added:
+                            logger.error(f"add_layer refused new_layer when copying 4->1: {new_layer}")
+                    except Exception as e:
+                        logger.exception(f"Exception while adding new_layer to app1: {e}")
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
             if layer == 'all':
@@ -332,20 +372,34 @@ class ImageEditorApp:
                     clean_editable_layer(self.app4)
                     # copie tou les calques editable
                     for layer in self.app1.layers:
+                        if layer is None:
+                            continue
                         if layer.layer_type != 'ZoneEx':
                             new_layer = layer.clone(self.app4_frame, self.app4)
                             new_layer.name = layer.name
-                            self.app4.layers.append(new_layer)
+                            try:
+                                added = self.app4.add_layer(new_layer)
+                                if not added:
+                                    logger.error(f"add_layer refused new_layer in all-copy 1->4: {new_layer}")
+                            except Exception as e:
+                                logger.exception(f"Exception while adding new_layer to app4 in all-copy: {e}")
                     self.app4.background_couleur = self.app1.background_couleur
                 elif direction == '4_1':
                     # efface tous les calques editable
                     clean_editable_layer(self.app1)
                     # copie tou les calques
                     for layer in self.app4.layers:
+                        if layer is None:
+                            continue
                         if layer.layer_type != 'ZoneEx':
                             new_layer = layer.clone(self.app1_frame, self.app1)
                             new_layer.name = layer.name
-                            self.app1.layers.append(new_layer)
+                            try:
+                                added = self.app1.add_layer(new_layer)
+                                if not added:
+                                    logger.error(f"add_layer refused new_layer in all-copy 4->1: {new_layer}")
+                            except Exception as e:
+                                logger.exception(f"Exception while adding new_layer to app1 in all-copy: {e}")
                     self.app1.background_couleur = self.app4.background_couleur
                 else:
                     raise ValueError(f'ERROR: {direction} is not a valid DIR')
@@ -362,7 +416,7 @@ class ImageEditorApp:
             self.app1.update_canvas()
             self.app4.update_canvas()
         except ValueError as e:
-            messagebox.showerror("Erreur de direction",
+            messagebox.showerror(_t('editor.msg.error.file'),
                                  f"Une erreur s'est produite lors de la copie des couches : {str(e)}")
 
     # gestion des templates
@@ -408,11 +462,11 @@ class ImageEditorApp:
             return [new_exc_zone1, new_exc_zone4]
 
         except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Le fichier XML spécifié est introuvable.")
+            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
         except Et.ParseError:
-            messagebox.showerror("Erreur de XML", "Le fichier XML est corrompu ou non valide.")
+            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
         except Exception as e:
-            messagebox.showerror("Erreur de template", f"Une erreur inattendue s'est produite : {str(e)}")
+            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
 
     # gestion des templates
     def on_template_change(self, *_args):
@@ -462,11 +516,11 @@ class ImageEditorApp:
             self.app1.update_canvas()
             self.app4.update_canvas()
         except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror("Erreur de fichier", "Le fichier XML spécifié est introuvable.")
+            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
         except Et.ParseError:
-            messagebox.showerror("Erreur de XML", "Le fichier XML est corrompu ou non valide.")
+            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
         except Exception as e:
-            messagebox.showerror("Erreur de template", f"Une erreur inattendue s'est produite : {str(e)}")
+            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
 
 
 if __name__ == "__main__":

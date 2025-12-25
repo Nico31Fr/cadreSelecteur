@@ -12,6 +12,8 @@ import logging
 from .layerimage import LayerImage
 from .layertext import LayerText
 from .layerexcluzone import LayerExcluZone
+# Import du traducteur
+from ..i18n.translator import _t
 
 logger = logging.getLogger(__name__)
 
@@ -68,16 +70,21 @@ class ImageEditor:
         # — Boutons de gestion pile —
         button_frame = tk.Frame(self.layers_frame)
         button_frame.pack()
-        tk.Button(button_frame, text="Ajouter Image", command=self.add_image_layer).grid(row=0, column=0)
-        tk.Button(button_frame, text="Ajouter Texte", command=self.add_text_layer).grid(row=0, column=1)
-        tk.Button(button_frame, text="Supprimer", command=self.delete_layer).grid(row=0, column=2)
-        tk.Button(button_frame, text="  ˄  ", command=lambda: self.move_layer(-1)).grid(row=0, column=3)
-        tk.Button(button_frame, text="  ˅  ", command=lambda: self.move_layer(1)).grid(row=0, column=4)
+        tk.Button(button_frame, text=_t('image.button.add_image'),
+                  command=self.add_image_layer).grid(row=0, column=0)
+        tk.Button(button_frame, text=_t('image.button.add_text'),
+                  command=self.add_text_layer).grid(row=0, column=1)
+        tk.Button(button_frame, text=_t('image.button.delete'),
+                  command=self.delete_layer).grid(row=0, column=2)
+        tk.Button(button_frame, text=_t('image.button.move_up'),
+                  command=lambda: self.move_layer(-1)).grid(row=0, column=3)
+        tk.Button(button_frame, text=_t('image.button.move_down'),
+                  command=lambda: self.move_layer(1)).grid(row=0, column=4)
 
         # — Boutons de gestion couleur de fond —
         fond_frame = tk.Frame(self.layers_frame)
         fond_frame.pack(pady=(10, 0))
-        tk.Label(fond_frame, text="Couleur du fond :").pack(side="left", anchor='s', padx=5, pady=10)
+        tk.Label(fond_frame, text=_t('image.label.bg_color')).pack(side="left", anchor='s', padx=5, pady=10)
         self.texte_background = tk.Entry(fond_frame, textvariable=self.texte_background_value, width=8)
         self.texte_background.pack(side="left", padx=5)
         self.label_couleur = tk.Label(fond_frame, text="                  ",
@@ -122,6 +129,23 @@ class ImageEditor:
 
         self.update_canvas()
 
+    def add_layer(self, layer) -> bool:
+        """Ajoute un layer après validation minimale.
+
+        Retourne True si le layer a été ajouté, False sinon.
+        La validation vérifie que l'objet n'est pas None et possède
+        les attributs essentiels (layer_type, name).
+        """
+        if layer is None:
+            logger.error("Attempt to add None as a layer")
+            return False
+        # vérifier attributs minimaux
+        if not hasattr(layer, 'layer_type') or not hasattr(layer, 'name'):
+            logger.error(f"Invalid layer object: missing attributes (layer_type/name): {layer}")
+            return False
+        self.layers.append(layer)
+        return True
+
     def add_image_layer(self):
         """
         Ajoute un nouveau calque image et le sélectionne.
@@ -134,8 +158,8 @@ class ImageEditor:
                            self.RATIO,
                            name=f"Image {n}")
         if layer.import_image():
-            self.layers.append(layer)
-            self.active_layer_idx = len(self.layers)-1
+            if self.add_layer(layer):
+                self.active_layer_idx = len(self.layers)-1
             self.refresh_listbox()
             self.update_canvas()
         else:
@@ -146,15 +170,20 @@ class ImageEditor:
         Ajoute un nouveau calque texte et le sélectionne.
         """
         n = len([layer for layer in self.layers if layer.layer_type == 'Texte']) + 1
-        name = f"Texte {n}"
+        # nom traduit par défaut
+        try:
+            name_template = _t('layertext.default_name')
+            name = name_template.replace('{n}', str(n))
+        except Exception:
+            name = f"Texte {n}"
         layer = LayerText(self.root,
                           self,
                           (self.CANVA_W, self.CANVA_H),
                           (self.IMAGE_W, self.IMAGE_H),
                           self.RATIO,
                           name=name)
-        self.layers.append(layer)
-        self.active_layer_idx = len(self.layers) - 1
+        if self.add_layer(layer):
+            self.active_layer_idx = len(self.layers) - 1
         self.refresh_listbox()
         self.update_canvas()
 
@@ -162,7 +191,10 @@ class ImageEditor:
         """
         met à jour les zone d'exclusions
         """
-        name = "Zones insertion photos"
+        try:
+            name = _t('layer.exclusion_name')
+        except Exception:
+            name = "Zones insertion photos"
         layer = LayerExcluZone(self.root,
                                self,
                                (self.CANVA_W, self.CANVA_H),
@@ -170,8 +202,8 @@ class ImageEditor:
                                self.RATIO,
                                name=name)
         layer.set_exclusion_zone(self.exclusion_zone)
-        self.layers.append(layer)
-        self.active_layer_idx = len(self.layers)-1
+        if self.add_layer(layer):
+            self.active_layer_idx = len(self.layers)-1
         self.refresh_listbox()
         self.update_canvas()
 
@@ -222,6 +254,9 @@ class ImageEditor:
         """
         self.listbox.delete(0, "end")
         for i, l in enumerate(self.layers):
+            if l is None:
+                # sauter les entrées invalides si elles subsistent
+                continue
             name = l.name + (" [actif]" if i == self.active_layer_idx else "")
             self.listbox.insert("end", name)
         self.listbox.selection_clear(0, "end")
@@ -299,12 +334,12 @@ class ImageEditor:
     def select_background_color(self):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         try:
-            couleur = colorchooser.askcolor(title="Choisissez une couleur")
+            couleur = colorchooser.askcolor(title=_t('image.colorchooser.title'))
             if couleur[1]:
                 self.background_couleur = couleur[1]
                 self.update_canvas()
         except Exception as e:
-            messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
+            messagebox.showerror(_t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     def on_color_entry_change(self, *args):
         """
@@ -318,7 +353,7 @@ class ImageEditor:
                     self.background_couleur = color_code
                     self.update_canvas()
         except Exception as e:
-            messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")
+            messagebox.showerror(_t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     # export de l'image
     def save_image(self, out_path: str):
@@ -345,7 +380,7 @@ class ImageEditor:
             image_export.save(out_path)
 
         except Exception as e:
-            messagebox.showerror("Erreur d'enregistrement", f"Exception inattendue : {str(e)}")
+            messagebox.showerror(_t('image.msg.error.save'), f"Exception inattendue : {str(e)}")
 
     def update_canvas(self):
         """

@@ -10,6 +10,8 @@ from os import path, listdir
 import sys
 import logging
 
+from ...i18n.translator import _t
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,9 +29,14 @@ def get_app_dir():
 class FontChooser(Toplevel):
     """ Boîte de dialogue de sélection de police
      """
-    def __init__(self, master, font_dict=None, text="Abcd", title="Choisir une police", **kwargs):
+    def __init__(self, master, font_dict=None, text="Abcd", title=None, **kwargs):
         super().__init__(master, **kwargs)
-        self.title(title)
+        # Force the translated title to ensure the window is localized
+        try:
+            self.title(_t('layertext.msg.fontchooser.title'))
+        except Exception:
+            # fallback to provided title or a safe default
+            self.title(title or "Font chooser")
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self.quit)
 
@@ -99,8 +106,8 @@ class FontChooser(Toplevel):
         # --- boutons
         button_frame = Frame(self)
         button_frame.grid(row=3, column=0, columnspan=4, pady=(0, 10))
-        Button(button_frame, text="OK", command=self.ok).grid(row=0, column=0, padx=4)
-        Button(button_frame, text="Annuler", command=self.quit).grid(row=0, column=1, padx=4)
+        Button(button_frame, text=_t('common.ok'), command=self.ok).grid(row=0, column=0, padx=4)
+        Button(button_frame, text=_t('common.cancel'), command=self.quit).grid(row=0, column=1, padx=4)
 
         # --- bindings
         self.list_family.bind("<<ListboxSelect>>", self.on_family_select)
@@ -143,7 +150,11 @@ class FontChooser(Toplevel):
         # crée l'image de prévisualisation
         img = Image.new("RGB", (400, 80), "white")
         draw = ImageDraw.Draw(img)
-        draw.text((10, 20), f"Aperçu : {family}", fill="black", font=font)
+        try:
+            preview_text = _t('layertext.preview', family=family)
+        except Exception:
+            preview_text = f"Aperçu : {family}"
+        draw.text((10, 20), preview_text, fill="black", font=font)
 
         self.preview_image = ImageTk.PhotoImage(img)
         self.preview.config(image=str(self.preview_image), text="")
@@ -184,7 +195,7 @@ class FontChooser(Toplevel):
 # ----------------------------------------------------------
 # fonction helper comme avant : ask_font()
 # ----------------------------------------------------------
-def ask_font(master=None, text="Abcd", title="Choisir une police", **font_args):
+def ask_font(master=None, text="Abcd", title=None, **font_args):
     """ lance un sélecteur de police"""
     chooser = FontChooser(master, font_args, text, title)
     chooser.wait_window(chooser)
@@ -198,16 +209,16 @@ if __name__ == "__main__":
     import tkinter as tk
     root = tk.Tk()
 
-    label = Label(root, text='Police choisie :')
+    label = Label(root, text=_t('layertext.chosen_font', font=''))
     label.pack(padx=10, pady=(10, 4))
 
     def callback():
         """ _ """
-        font = ask_font(root, title="Choisir une police")
+        font = ask_font(root, title=_t('layertext.msg.fontchooser.title'))
         if font:
             font_name = font['family']
             font_str = f"{font_name} {font['size']}"
-            label.configure(text=f'Police choisie : {font_str}')
+            label.configure(text=_t('layertext.chosen_font', font=font_str))
 
-    Button(root, text='Sélecteur de police', command=callback).pack(padx=10, pady=(4, 10))
+    Button(root, text=_t('layertext.msg.fontchooser.title'), command=callback).pack(padx=10, pady=(4, 10))
     root.mainloop()

@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="cadreSelecteur_env" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="cadreSelecteur_3.13" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="cadreSelecteur_3.12" project-jdk-type="Python SDK" />
 </project>
