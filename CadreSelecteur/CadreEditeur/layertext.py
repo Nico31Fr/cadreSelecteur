@@ -12,8 +12,6 @@ from .layer import Layer
 from .text import ask_font
 
 
-
-
 def get_app_dir():
     """Retourne le dossier contenant le script (mode normal)
        ou le .exe PyInstaller (mode frozen)."""

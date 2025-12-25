@@ -7,10 +7,13 @@ from tkinter import colorchooser, messagebox
 from PIL import Image, ImageTk
 from re import fullmatch
 from platform import system
+import logging
 
 from .layerimage import LayerImage
 from .layertext import LayerText
 from .layerexcluzone import LayerExcluZone
+
+logger = logging.getLogger(__name__)
 
 
 class ImageEditor:
@@ -227,11 +230,12 @@ class ImageEditor:
             # Mettre à jour la zone de paramètres uniquement si l'index est valide
             try:
                 self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
-            except Exception as e:
+            except Exception as exc:
                 # En cas d'erreur, nettoyer la zone de paramètres pour éviter un état incohérent
                 for w in self.param_frame.winfo_children():
                     w.destroy()
-                # On peut logger l'erreur si nécessaire
+                # Log l'erreur pour diagnostic
+                logger.exception("Erreur lors de la mise à jour de la zone de paramètres", exc_info=exc)
         else:
             # Aucun calque actif : nettoyer la zone de paramètres
             for w in self.param_frame.winfo_children():
@@ -283,7 +287,7 @@ class ImageEditor:
                         layer.resize(-10)
                     elif layer.layer_type == 'Texte':
                         layer.resize_font(-2)
-            else: # Windows et autres
+            else:  # Windows et autres
                 if layer.layer_type == 'Image':
                     delta = 10 if event.delta > 0 else -10
                     layer.resize(delta)

@@ -23,6 +23,7 @@ def get_app_dir():
         # chemin du script .py
         return path.join(path.dirname(path.abspath(__file__)), "..", "..")
 
+
 class FontChooser(Toplevel):
     """ Boîte de dialogue de sélection de police
      """

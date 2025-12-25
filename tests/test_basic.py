@@ -1,5 +1,3 @@
-import types
-
 from CadreSelecteur.CadreEditeur import layertext, imageeditor
 
 
@@ -77,9 +75,9 @@ def test_imageeditor_refresh_listbox_guard():
     imageeditor.ImageEditor.refresh_listbox(obj)
 
     # Maintenant tester avec un calque actif
-    l = DummyLayer()
-    obj.layers = [l]
+    layer = DummyLayer()
+    obj.layers = [layer]
     obj.active_layer_idx = 0
     imageeditor.ImageEditor.refresh_listbox(obj)
 
-    assert l.updated is True
+    assert layer.updated is True

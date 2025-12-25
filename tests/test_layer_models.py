@@ -2,7 +2,6 @@ from PIL import Image
 import CadreSelecteur.CadreEditeur.layertext as layertext_mod
 from CadreSelecteur.CadreEditeur.layerimage import LayerImage
 from CadreSelecteur.CadreEditeur.layertext import LayerText
-from CadreSelecteur.CadreEditeur.layerexcluzone import LayerExcluZone
 
 
 class DummyStringVar:
@@ -34,7 +33,14 @@ def test_layerimage_to_from_dict(tmp_path):
         "image_imported_image_size": (30, 30),
     }
 
-    obj = LayerImage.from_dict(dct, tk_parent=None, parent=None, canva_size=(600, 400), image_size=(1800, 1200), ratio=3)
+    obj = LayerImage.from_dict(
+        dct,
+        tk_parent=None,
+        parent=None,
+        canva_size=(600, 400),
+        image_size=(1800, 1200),
+        ratio=3,
+    )
 
     assert obj.imported_image_path == str(img_path)
     assert obj.original_image is not None
