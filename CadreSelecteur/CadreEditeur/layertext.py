@@ -19,7 +19,6 @@ def get_app_dir():
        ou le .exe PyInstaller (mode frozen)."""
     if getattr(sys, 'frozen', False):
         # chemin de l'exécutable
-        print('ici')
         return path.dirname(sys.executable)
     else:
         # chemin du script .py
@@ -59,8 +58,20 @@ class LayerText(Layer):
         self.txt_start_drag_pos = None
 
     def set_text(self, value):
-        """Modifie le texte du calque."""
-        self.text = value
+        """Modifie le texte du calque.
+        Assure que l'on met à jour le StringVar au lieu d'écraser l'attribut.
+        """
+        # Avant : self.text = value  (écrasait le StringVar)
+        try:
+            # si self.text est un StringVar, utiliser .set
+            if hasattr(self, 'text') and hasattr(self.text, 'set'):
+                self.text.set(value)
+            else:
+                # fallback si changement d'implémentation
+                self.text = value
+        except Exception:
+            # ne faire remonter aucune exception UI dans ce setter
+            self.text = value
 
     def resize_font(self, delta):
         """Redimensionne la police utilisée dans le calque."""
@@ -155,8 +166,10 @@ class LayerText(Layer):
         """Ouvre une boîte de dialogue de sélection de couleur."""
         try:
             couleur = colorchooser.askcolor(title="Choisissez une couleur")
-            self.font_color = couleur[1]
-            self.parent.update_canvas()
+            # couleur peut être (None, None) si annulation => vérifier
+            if couleur and couleur[1]:
+                self.font_color = couleur[1]
+                self.parent.update_canvas()
 
         except Exception as e:
             messagebox.showerror("Erreur de couleur", f"Exception inattendue : {str(e)}")

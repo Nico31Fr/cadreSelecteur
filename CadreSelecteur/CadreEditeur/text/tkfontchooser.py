@@ -8,6 +8,9 @@ from tkinter.ttk import Frame, Label, Style
 from PIL import Image, ImageFont, ImageDraw, ImageTk
 from os import path, listdir
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_app_dir():
@@ -46,7 +49,7 @@ class FontChooser(Toplevel):
                     font_name = path.splitext(f)[0]
                     self.fonts.append(font_name)
         else:
-            print(f"[AVERTISSEMENT] Dossier Fonts introuvable : {fonts_dir}")
+            logger.warning(f"[AVERTISSEMENT] Dossier Fonts introuvable : {fonts_dir}")
 
         if not self.fonts:
             self.fonts = ["adelia"]
@@ -133,7 +136,7 @@ class FontChooser(Toplevel):
         try:
             font = ImageFont.truetype(font_path, size)
         except Exception as e:
-            print(f"[AVERTISSEMENT] Erreur de chargement police {font_path}: {e}")
+            logger.warning(f"[AVERTISSEMENT] Erreur de chargement police {font_path}: {e}")
             font = ImageFont.load_default()
 
         # crée l'image de prévisualisation

@@ -73,6 +73,13 @@ class ImageEditorApp:
             # Liste des options pour le menu déroulant
             options = [f.name for f in Path(self.template).glob('template_*.xml')]
 
+            # Gérer le cas où aucun template n'est trouvé
+            if not options:
+                messagebox.showerror("Aucun template",
+                                     f"Aucun fichier template_*.xml trouvé dans {self.template}")
+                # Pour éviter un crash ultérieur, ajouter un template fictif
+                options = ["template_1.xml"]
+
             # Variable pour stocker l'option sélectionnée
             self.selected_template = tk.StringVar()
             self.selected_template.set(options[0])  # Définir la valeur par défaut

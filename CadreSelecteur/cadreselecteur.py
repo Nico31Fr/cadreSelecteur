@@ -10,9 +10,12 @@ from shutil import copy
 from platform import system
 from pathlib import Path
 import sys
+import logging
 
 from . import __version__
 from .CadreEditeur.imageeditorapp import ImageEditorApp
+
+logger = logging.getLogger(__name__)
 
 # taille de la fenêtre
 WINDOWS_SIZE = "1000x600"
@@ -120,7 +123,22 @@ class CadreSelecteur:
 
         # Variable to store selected image
         self.selected_image = StringVar()
-        self.selected_image.set('None')
+        self.selected_image.set('')
+
+        # Conserver des références PhotoImage pour éviter le GC
+        self._image_refs = []
+
+        # Pré-charger l'icône poubelle pour réutilisation (évite d'ouvrir le fichier à chaque vignette)
+        try:
+            icon_path_global = Path(resources_path) / "trash.png"
+            with Image.open(icon_path_global) as _img:
+                img = _img.resize((30, 30))
+                self.trash_icon = ImageTk.PhotoImage(img, master=getattr(self, 'master', None))
+                # Conserver la référence
+                self._image_refs.append(self.trash_icon)
+        except Exception:
+            # Si l'icône est manquante, on continue sans provoquer d'exception
+            self.trash_icon = None
 
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
@@ -160,6 +178,12 @@ class CadreSelecteur:
             child.destroy()
 
         self.create_dest_thumbnail()
+        # protéger si le repertoire source est manquant
+        if not path.exists(self.source_directory):
+            messagebox.showerror("Erreur repertoire", f"Le repertoire source {self.source_directory} est introuvable.")
+            logger.error(f"Source directory not found: {self.source_directory}")
+            return
+
         for filename in sorted(listdir(self.source_directory)):
             if filename.lower().endswith('_1.png'):
                 self.create_src_thumbnail(filename)
@@ -185,13 +209,16 @@ class CadreSelecteur:
 
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_1 = ImageTk.PhotoImage(img)
+                thumbnail_img_1 = ImageTk.PhotoImage(img.copy())
 
             with Image.open(file_path_4) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_4 = ImageTk.PhotoImage(img)
+                thumbnail_img_4 = ImageTk.PhotoImage(img.copy())
 
             if thumbnail_img_1 and thumbnail_img_4:
+                # Conserver les références pour éviter GC
+                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
+
                 # Display the image on the canvas
                 img_id_1 = self.canvasDest.create_image((THUMBNAIL_H/2),
                                                         (THUMBNAIL_L/2),
@@ -205,6 +232,8 @@ class CadreSelecteur:
                 # Keep a reference to prevent garbage collection
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
+                # Conserver aussi dans la liste globale
+                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
 
                 # Bind click event to the image objects
                 self.canvasDest.tag_bind(img_id_1,
@@ -217,7 +246,7 @@ class CadreSelecteur:
                                          self.show_full_image(file_path_4))
 
         except Exception as e:
-            print(f"Error processing file : {e}")
+            logger.exception(f"Error processing file : {e}")
 
     def create_src_thumbnail(self, filename):
         """
@@ -232,13 +261,15 @@ class CadreSelecteur:
                                     filename.replace('_1.png', '_4.png'))
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_1: PhotoImage = ImageTk.PhotoImage(img)
+                thumbnail_img_1 = ImageTk.PhotoImage(img.copy(), master=getattr(self, 'master', None))
 
             with Image.open(file_path_4) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_4 = ImageTk.PhotoImage(img)
+                thumbnail_img_4 = ImageTk.PhotoImage(img.copy(), master=getattr(self, 'master', None))
 
             if thumbnail_img_1 and thumbnail_img_4:
+                # Conserver les références pour éviter GC
+                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
 
                 # Create a frame for each image and radio button
                 item_frame = Frame(self.list_frameSrc)
@@ -266,18 +297,33 @@ class CadreSelecteur:
                                        lambda e4,
                                        f=file_path_4: self.show_full_image(f))
 
-                # Charger et redimensionner l'image de la poubelle
-                icon_path = Path(resources_path, "trash.png")
-                image = Image.open(icon_path).resize((30, 30))
-                icon_trash = ImageTk.PhotoImage(image)
+                # Utiliser l'icône poubelle préchargée si disponible
+                if self.trash_icon:
+                    icon_trash = self.trash_icon
+                else:
+                    # Chargement de secours si la précharge a échoué
+                    icon_path = Path(resources_path, "trash.png")
+                    try:
+                        image = Image.open(icon_path).resize((30, 30))
+                        icon_trash = ImageTk.PhotoImage(image)
+                    except Exception:
+                        icon_trash = None
 
                 # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
                 item_frame.icon_trash = icon_trash
+                # Conserver la référence si présente
+                if icon_trash:
+                    self._image_refs.append(icon_trash)
 
                 # Créer le bouton avec l'image
-                bouton_supprimer = Button(item_frame,
-                                          command=lambda f=filename: self.del_border(f),
-                                          image=icon_trash)
+                if icon_trash:
+                    bouton_supprimer = Button(item_frame,
+                                              command=lambda f=filename: self.del_border(f),
+                                              image=icon_trash)
+                else:
+                    bouton_supprimer = Button(item_frame,
+                                              command=lambda f=filename: self.del_border(f),
+                                              text='Supprimer')
 
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
@@ -289,7 +335,7 @@ class CadreSelecteur:
                 text_label.pack(side='left', padx=5)
 
         except Exception as e:
-            print(f"Error processing file {filename}: {e}")
+            logger.exception(f"Error processing file {filename}: {e}")
 
     def create_action_buttons(self):
         """
@@ -318,8 +364,8 @@ class CadreSelecteur:
         Prints the selected image file to the console.
         """
         selected_file = self.selected_image.get()
-        if selected_file != 'None':
-            print(f"Image sélectionnée: {selected_file}")
+        if selected_file:
+            logger.info(f"Image sélectionnée: {selected_file}")
 
             source_file_1 = path.join(self.source_directory, selected_file)
             dest_file_1 = path.join(self.destination_directory,
@@ -331,10 +377,15 @@ class CadreSelecteur:
                                     CADRE_NAME_4)
 
             # Copier le fichier cadre
-            print(f">>> Copy :{source_file_1}/{source_file_4}\n"
-                  f"       to : {dest_file_1}/{dest_file_4}")
-            copy(source_file_1, dest_file_1)
-            copy(source_file_4, dest_file_4)
+            logger.info(f">>> Copy :{source_file_1}/{source_file_4}\n"
+                        f"       to : {dest_file_1}/{dest_file_4}")
+            try:
+                copy(source_file_1, dest_file_1)
+                copy(source_file_4, dest_file_4)
+            except Exception as e:
+                logger.exception(f"Erreur lors de la copie des fichiers cadres: {e}")
+                messagebox.showerror("Erreur copie", f"Impossible de copier les fichiers du cadre: {e}")
+                return
 
             # Copier le fichier template
             source_file_tpl = source_file_1.replace('_1.png',
@@ -342,20 +393,25 @@ class CadreSelecteur:
             dest_file_tpl = path.join(self.destination_directory,
                                       TEMPLATE_NAME)
 
-            if path.exists(source_file_tpl):
-                print(f">>> Copy :{source_file_tpl}\n"
-                      f"       to : {dest_file_tpl}")
-                copy(source_file_tpl, dest_file_tpl)
-            else:
-                source_file_tpl = path.join(self.source_directory,
-                                            TEMPLATE_NAME_STD)
-                dest_file_tpl = path.join(self.destination_directory,
-                                          TEMPLATE_NAME)
-                print('pas de fichier frame associé au cadre,'
-                      ' copy du template standard')
-                print(f">>> Copy :{source_file_tpl}\n"
-                      f"       to : {dest_file_tpl}")
-                copy(source_file_tpl, dest_file_tpl)
+            try:
+                if path.exists(source_file_tpl):
+                    logger.info(f">>> Copy :{source_file_tpl}\n"
+                                f"       to : {dest_file_tpl}")
+                    copy(source_file_tpl, dest_file_tpl)
+                else:
+                    source_file_tpl = path.join(self.source_directory,
+                                                TEMPLATE_NAME_STD)
+                    dest_file_tpl = path.join(self.destination_directory,
+                                              TEMPLATE_NAME)
+                    logger.info('pas de fichier frame associé au cadre,'
+                                ' copy du template standard')
+                    logger.info(f">>> Copy :{source_file_tpl}\n"
+                                f"       to : {dest_file_tpl}")
+                    copy(source_file_tpl, dest_file_tpl)
+            except Exception as e:
+                logger.exception(f"Erreur lors de la copie du template: {e}")
+                messagebox.showerror("Erreur copie template", f"Impossible de copier le template: {e}")
+                return
 
             # rafraichie l'image dans dest
             self.create_dest_thumbnail()
@@ -364,7 +420,7 @@ class CadreSelecteur:
             messagebox.showerror("Erreur",
                                  "Aucune image sélectionnée."
                                  " Veuillez choisir une image.")
-            print("Aucune image sélectionnée.")
+            logger.warning("Aucune image sélectionnée.")
 
     def show_full_image(self, file_path, width=720, height=480):
         """
@@ -387,7 +443,7 @@ class CadreSelecteur:
                 window.resizable(False, False)
 
         except Exception as e:
-            print(f"Error displaying full image: {e}")
+            logger.exception(f"Error displaying full image: {e}")
 
     def new_border(self):
         """

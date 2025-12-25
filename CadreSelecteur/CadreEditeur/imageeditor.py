@@ -222,9 +222,20 @@ class ImageEditor:
             name = l.name + (" [actif]" if i == self.active_layer_idx else "")
             self.listbox.insert("end", name)
         self.listbox.selection_clear(0, "end")
-        if self.active_layer_idx >= 0:
+        if 0 <= self.active_layer_idx < len(self.layers):
             self.listbox.selection_set(self.active_layer_idx)
-        self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
+            # Mettre à jour la zone de paramètres uniquement si l'index est valide
+            try:
+                self.layers[self.active_layer_idx].update_param_zone(self.param_frame)
+            except Exception as e:
+                # En cas d'erreur, nettoyer la zone de paramètres pour éviter un état incohérent
+                for w in self.param_frame.winfo_children():
+                    w.destroy()
+                # On peut logger l'erreur si nécessaire
+        else:
+            # Aucun calque actif : nettoyer la zone de paramètres
+            for w in self.param_frame.winfo_children():
+                w.destroy()
 
     def on_layer_select(self, _event):
         """
