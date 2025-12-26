@@ -6,6 +6,7 @@
 from PIL import ImageDraw, Image
 import tkinter as tk
 from .layer import Layer
+from ..i18n import t
 
 
 class LayerExcluZone(Layer):
@@ -63,7 +64,7 @@ class LayerExcluZone(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        tk.Label(frame, text='calque zone d\'exclusion').pack(anchor='nw')
+        tk.Label(frame, text=t('layer.exclusion_name')).pack(anchor='nw')
 
     def clone(self, tk_parent, parent):
         pass

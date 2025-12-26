@@ -18,18 +18,15 @@ from .layerimage import LayerImage
 from CadreSelecteur import __version__
 # Import du traducteur
 from ..i18n.translator import _t
+# Importer configuration centralisée du logging pour connaitre le chemin de log
+from ..logging_config import LOG_PATH
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-# Création d'un handler pour écrire dans un fichier
-file_handler = logging.FileHandler('image_editor.log')
-file_handler.setLevel(logging.DEBUG)
-# Création d'un formatter et ajout au handler
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-# Ajout du handler au logger
-logger.addHandler(file_handler)
+# Ne pas ajouter de FileHandler local : la configuration centrale (logging_config)
+# ajoute déjà un FileHandler vers resources/image_editor.log. Éviter d'ajouter
+# un handler relatif ici pour prévenir les fichiers vides quand le cwd diffère.
 
 
 def clean_all_layer(app):
@@ -346,7 +343,8 @@ class ImageEditorApp:
             if layer == 'layer':
                 if direction == '1_4':
                     new_layer = self.app1.layers[self.app1.active_layer_idx].clone(self.app4_frame, self.app4)
-                    n = len([layer for layer in self.app4.layers if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
+                    n = len([layer for layer in self.app4.layers
+                             if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
                     # utiliser l'API d'ajout pour valider le layer
                     try:
@@ -357,7 +355,8 @@ class ImageEditorApp:
                         logger.exception(f"Exception while adding new_layer to app4: {e}")
                 elif direction == '4_1':
                     new_layer = self.app4.layers[self.app4.active_layer_idx].clone(self.app1_frame, self.app1)
-                    n = len([layer for layer in self.app1.layers if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
+                    n = len([layer for layer in self.app1.layers
+                             if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
                     try:
                         added = self.app1.add_layer(new_layer)

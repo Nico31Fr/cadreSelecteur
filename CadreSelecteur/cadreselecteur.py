@@ -16,6 +16,8 @@ import logging
 from typing import cast
 
 from . import __version__
+# Assurer la configuration centrale du logging (ajoute un FileHandler vers resources/image_editor.log)
+from .logging_config import LOG_PATH  # noqa: F401
 from .CadreEditeur.imageeditorapp import ImageEditorApp
 from .config_loader import (
     WINDOWS_SIZE,
@@ -119,6 +121,7 @@ class CadreSelecteur:
         self.frame_main = Frame(self.master, width=800, height=600)
         self.frame_main.pack(fill='both', expand=True)
         self.master.resizable(False, False)  # Prevent window resizing
+        self.master.iconbitmap(path.join(resources_path, 'cadreSelecteur.ico'))
 
         # Initialize scrollbar for canvasSrc
         self.scrollbarSrc = Scrollbar(self.frame_main, orient="vertical")
