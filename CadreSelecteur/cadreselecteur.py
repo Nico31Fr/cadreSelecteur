@@ -26,7 +26,9 @@ from .config_loader import (
     TEMPLATE_NAME_STD,
     CADRE_NAME_1,
     CADRE_NAME_4,
+    RESOURCES_DIR,
 )
+
 # Import du traducteur (API publique du package i18n)
 from .i18n import t, set_language, get_language
 
@@ -121,7 +123,14 @@ class CadreSelecteur:
         self.frame_main = Frame(self.master, width=800, height=600)
         self.frame_main.pack(fill='both', expand=True)
         self.master.resizable(False, False)  # Prevent window resizing
-        #self.master.iconbitmap(path.join(resources_path, 'cadreSelecteur.ico'))
+
+        # mise a jour de l'icône de fenêtre
+        icon_path = path.join(RESOURCES_DIR, "cadreSelecteur.png")
+        icon_image = Image.open(icon_path)
+        icon_photo = ImageTk.PhotoImage(icon_image)
+        self.master.iconphoto(True, icon_photo)
+        # garder une référence !
+        self.master._icon_ref = icon_photo
 
         # Initialize scrollbar for canvasSrc
         self.scrollbarSrc = Scrollbar(self.frame_main, orient="vertical")

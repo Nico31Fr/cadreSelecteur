@@ -9,6 +9,7 @@ from .logging_config import LOG_PATH  # noqa: F401
 from .config_loader import RESOURCES_DIR
 logger = logging.getLogger(__name__)
 
+
 def splash():
     root = tk.Tk()
     root.overrideredirect(True)
