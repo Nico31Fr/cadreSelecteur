@@ -75,7 +75,7 @@ TEMPLATE_NAME: str = str(_config.get("TEMPLATE_NAME", _defaults["TEMPLATE_NAME"]
 TEMPLATE_NAME_STD: str = str(_config.get("TEMPLATE_NAME_STD", _defaults["TEMPLATE_NAME_STD"]))
 CADRE_NAME_1: str = str(_config.get("CADRE_NAME_1", _defaults["CADRE_NAME_1"]))
 CADRE_NAME_4: str = str(_config.get("CADRE_NAME_4", _defaults["CADRE_NAME_4"]))
-# Exposer la langue choisie dans config.json (fallback sur la valeur par défaut)
+# Exposer la langue choisie dans 'config.json' (fallback sur la valeur par défaut)
 LANGUAGE: str = str(_config.get("LANGUAGE", _defaults["LANGUAGE"]))
 
 __all__ = [

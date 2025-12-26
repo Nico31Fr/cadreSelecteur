@@ -13,7 +13,6 @@ from platform import system
 from pathlib import Path
 import sys
 import logging
-from typing import cast
 
 from . import __version__
 # Assurer la configuration centrale du logging (ajoute un FileHandler vers resources/image_editor.log)
@@ -86,6 +85,7 @@ class CadreSelecteur:
         self.quit_button = None
         self.add_new_border = None
         self.master = Tk()
+
         self.master.title(t('selector.title', version=__version__))
         self.source_directory = template_path
         self.destination_directory = destination_path
@@ -121,7 +121,7 @@ class CadreSelecteur:
         self.frame_main = Frame(self.master, width=800, height=600)
         self.frame_main.pack(fill='both', expand=True)
         self.master.resizable(False, False)  # Prevent window resizing
-        self.master.iconbitmap(path.join(resources_path, 'cadreSelecteur.ico'))
+        #self.master.iconbitmap(path.join(resources_path, 'cadreSelecteur.ico'))
 
         # Initialize scrollbar for canvasSrc
         self.scrollbarSrc = Scrollbar(self.frame_main, orient="vertical")
@@ -371,7 +371,7 @@ class CadreSelecteur:
                 if icon_trash:
                     bouton_supprimer = Button(item_frame,
                                               command=lambda f=filename: self.del_border(f),
-                                              image=cast(tk.PhotoImage, icon_trash))
+                                              image=icon_trash)
                 else:
                     bouton_supprimer = Button(item_frame,
                                               command=lambda f=filename: self.del_border(f),
