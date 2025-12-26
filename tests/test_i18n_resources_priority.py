@@ -56,5 +56,3 @@ def test_resources_have_priority_over_i18n():
                 i18n_file.write_text(orig_i18n, encoding='utf-8')
         except Exception:
             pass
-
-

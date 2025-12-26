@@ -22,7 +22,8 @@ pkg_logger = logging.getLogger('CadreSelecteur')
 pkg_logger.setLevel(logging.DEBUG)
 
 # Avoid adding duplicate file handlers for the same path
-_existing = [h for h in pkg_logger.handlers if isinstance(h, FileHandler) and getattr(h, 'baseFilename', None) == str(LOG_PATH)]
+_existing = [h for h in pkg_logger.handlers if isinstance(h, FileHandler) and getattr(h, 'baseFilename', None)
+             == str(LOG_PATH)]
 if not _existing:
     fh = FileHandler(str(LOG_PATH), encoding='utf-8')
     fh.setLevel(logging.DEBUG)

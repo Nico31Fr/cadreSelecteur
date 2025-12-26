@@ -18,8 +18,7 @@ from .layerimage import LayerImage
 from CadreSelecteur import __version__
 # Import du traducteur
 from ..i18n.translator import _t
-# Importer configuration centralisée du logging pour connaitre le chemin de log
-from ..logging_config import LOG_PATH
+
 
 # Configuration du logger
 logger = logging.getLogger(__name__)

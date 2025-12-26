@@ -161,7 +161,8 @@ def _load_translations(lang: str) -> None:
                         _current_lang = lang
                         return
                     else:
-                        logger.warning(f"Resource resources/{lang}.json does not contain a JSON object; using empty dict")
+                        logger.warning(f"Resource resources/{lang}.json does not contain a JSON object;"
+                                       f" using empty dict")
                         _translations = {}
                         _current_lang = lang
                         return
@@ -200,12 +201,14 @@ def _load_translations(lang: str) -> None:
                         _current_lang = lang
                         return
                     else:
-                        logger.warning(f"Resource resources/{lang}.json (pkgutil) does not contain a JSON object; using empty dict")
+                        logger.warning(f"Resource resources/{lang}.json (pkgutil) does not contain a JSON object;"
+                                       f" using empty dict")
                         _translations = {}
                         _current_lang = lang
                         return
                 except Exception:
-                    logger.warning(f"Resource resources/{lang}.json (pkgutil) is malformed; using empty translations for '{lang}'")
+                    logger.warning(f"Resource resources/{lang}.json (pkgutil) is malformed;"
+                                   f" using empty translations for '{lang}'")
                     _translations = {}
                     _current_lang = lang
                     return
