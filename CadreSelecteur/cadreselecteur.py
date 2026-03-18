@@ -28,12 +28,13 @@ from .config_loader import (
     CADRE_NAME_4,
     RESOURCES_DIR,
 )
+from .exceptions import FileOperationError, ImageProcessingError, UIError
+from .error_handler import handle_exception, ErrorContext
 
 # Import du traducteur (API publique du package i18n)
 from .i18n import t, set_language, get_language
 
 logger = logging.getLogger(__name__)
-
 
 def get_base_path() -> str:
     if getattr(sys, 'frozen', False):
@@ -42,7 +43,6 @@ def get_base_path() -> str:
     else:
         # Exécution depuis le code source (PyCharm)
         return path.dirname(path.abspath(__file__))
-
 
 def resource_path(relative_path: str) -> str:
     """
@@ -56,7 +56,6 @@ def resource_path(relative_path: str) -> str:
         return path.join(meipass, relative_path)
     return path.join(path.dirname(path.abspath(__file__)), relative_path)
 
-
 BASE_PATH = get_base_path()
 # repertoire avec tous les cadres / templates disponibles
 template_path = Path(BASE_PATH) / "Templates"
@@ -65,6 +64,33 @@ destination_path = Path(BASE_PATH) / "Cadres"
 # repertoire avec les resources scripts
 resources_path = Path(resource_path("resources"))
 
+def check_mandatory_path():
+    """
+    Vérifie la présence des répertoires indispensable au bon fonctionnement.
+    """
+    # verification de la presence des répertoire sources et dest.
+    message_error = ''
+    if not path.exists(template_path):
+        message_error = message_error + (
+            f"SOURCES :\nle repertoire : {str(template_path)} n'est pas accessible\n\n"
+        )
+
+    if not path.exists(destination_path):
+        message_error = message_error + (
+            f"DESTINATION:\nle repertoire : {str(destination_path)} n'est pas accessible\n\n"
+        )
+
+    # verification de la presence du template par default.
+    template_dft_file = path.join(template_path,
+                                  TEMPLATE_NAME_STD)
+    if not path.exists(template_dft_file):
+        message_error = message_error + (
+            f"TEMPLATE:\nle fichier : {str(template_dft_file)} n'est pas accessible\n\n"
+        )
+
+    if message_error != '':
+        messagebox.showerror(title=t('selector.msg.error.no_selection_title'), message=message_error)
+        quit()
 
 # configure un logger par défaut si aucune configuration n'est présente
 if not logging.getLogger().hasHandlers():
@@ -163,17 +189,24 @@ class CadreSelecteur:
 
         # Pré-charger l'icône poubelle pour réutilisation (évite d'ouvrir le fichier à chaque vignette).
         try:
-            icon_path_global = resources_path / "trash.png"
+            icon_path_trash = resources_path / "trash.png"
             # utiliser self.master explicitement (existe ici)
-            with Image.open(icon_path_global) as _img:
+            with Image.open(icon_path_trash) as _img:
                 img = _img.resize((30, 30))
                 self.trash_icon = ImageTk.PhotoImage(img.copy(), master=self.master)
                 # Conserver la référence
                 self._image_refs.append(self.trash_icon)
+            icon_path_edit = resources_path / "edit.png"
+            # utiliser self.master explicitement (existe ici)
+            with Image.open(icon_path_edit) as _img:
+                img = _img.resize((30, 30))
+                self.edit_icon = ImageTk.PhotoImage(img.copy(), master=self.master)
+                # Conserver la référence
+                self._image_refs.append(self.edit_icon)
         except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
             # Si l'icône est manquante ou invalide, on logge en debug et on continue
             logger.debug(f"Trash icon not available or invalid: {e}")
-            self.trash_icon = None
+            self.edit_icon = None
 
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
@@ -305,9 +338,13 @@ class CadreSelecteur:
                 self.canvasDest.tag_bind(img_id_1, "<Button-1>", lambda e1: self.show_full_image(file_path_1))
                 self.canvasDest.tag_bind(img_id_4, "<Button-1>", lambda e2: self.show_full_image(file_path_4))
 
-        except (FileNotFoundError, UnidentifiedImageError, OSError, tk.TclError, RuntimeError) as e:
-            # Erreurs d'I/O, PIL ou Tkinter lors du traitement des thumbnails
-            logger.exception("Error processing destination thumbnails", exc_info=e)
+        except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
+            # Erreurs de fichier ou image - log en debug (fallback silencieux acceptable)
+            logger.debug(f"Destination thumbnails processing: {type(e).__name__}: {e}")
+        except (tk.TclError, RuntimeError) as e:
+            # Erreurs UI - log avec contexte
+            handle_exception(e, operation="display_destination_thumbnails",
+                           show_messagebox=False, log_level='warning')
 
     def create_src_thumbnail(self, filename):
         """
@@ -320,6 +357,7 @@ class CadreSelecteur:
             file_path_1 = path.join(self.source_directory, filename)
             file_path_4 = path.join(self.source_directory,
                                     filename.replace('_1.png', '_4.png'))
+
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
                 thumbnail_img_1 = self._photoimage_from_pil(img)
@@ -366,9 +404,46 @@ class CadreSelecteur:
                         with Image.open(icon_path) as img_icon:
                             img2 = img_icon.resize((30, 30))
                             icon_trash = self._photoimage_from_pil(img2)
-                    except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
-                        logger.debug(f"fallback trash icon failed: {e}")
+                    except (FileNotFoundError, UnidentifiedImageError, OSError):
+                        logger.debug(f"Fallback trash icon failed for {filename}")
                         icon_trash = None
+
+                # check if json config file are present
+                json_file = path.join(self.source_directory,
+                                      filename.replace('_1.png', '.json'))
+                if path.exists(json_file):
+                    icon_edit = None
+                    if self.edit_icon:
+                        icon_edit = self.edit_icon
+                    else:
+                        # Chargement de secours si la précharge à échouer
+                        icon_path = resources_path / "edit.png"
+                        try:
+                            with Image.open(icon_path) as img_icon:
+                                img2 = img_icon.resize((30, 30))
+                                icon_edit = self._photoimage_from_pil(img2)
+                        except (FileNotFoundError, UnidentifiedImageError, OSError):
+                            logger.debug(f"Fallback edit icon failed for {filename}")
+                            icon_edit = None
+
+                    # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
+                    item_frame.icon_edit = icon_edit
+                    # Conserver la référence si présente
+                    if icon_edit:
+                        self._image_refs.append(icon_edit)
+
+                    # Créer le bouton avec l'image
+                    if icon_edit:
+                        button_edit = Button(item_frame,
+                                                  command=lambda f=filename: self.edit_border(f),
+                                                  image=icon_edit)
+                    else:
+                        button_edit = Button(item_frame,
+                                                  command=lambda f=filename: self.edit_border(f),
+                                                  text=t('image.button.edit'))
+
+                    button_edit.pack(side='right')
+
 
                 # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
                 item_frame.icon_trash = icon_trash
@@ -394,8 +469,11 @@ class CadreSelecteur:
                 text_label = Label(item_frame, text=filename.replace('_1.png', ''))
                 text_label.pack(side='left', padx=5)
 
-        except (FileNotFoundError, UnidentifiedImageError, OSError, tk.TclError, RuntimeError) as e:
-            logger.exception(f"Error processing file {filename}", exc_info=e)
+        except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
+            logger.debug(f"Image processing for {filename}: {type(e).__name__}")
+        except (tk.TclError, RuntimeError) as e:
+            handle_exception(e, operation=f"create_thumbnail_{filename}",
+                           show_messagebox=False, log_level='warning')
 
     def create_action_buttons(self):
         """
@@ -491,54 +569,46 @@ class CadreSelecteur:
         """
         selected_file = self.selected_image.get()
         if selected_file:
-            logger.info(f"Image sélectionnée: {selected_file}")
+            logger.info(f"Selected frame: {selected_file}")
 
             source_file_1 = path.join(self.source_directory, selected_file)
-            dest_file_1 = path.join(self.destination_directory,
-                                    CADRE_NAME_1)
+            dest_file_1 = path.join(self.destination_directory, CADRE_NAME_1)
             source_file_4 = path.join(self.source_directory,
-                                      selected_file.replace('_1.png',
-                                                            '_4.png'))
-            dest_file_4 = path.join(self.destination_directory,
-                                    CADRE_NAME_4)
+                                      selected_file.replace('_1.png', '_4.png'))
+            dest_file_4 = path.join(self.destination_directory, CADRE_NAME_4)
 
             # Copier le fichier cadre
-            logger.info(f">>> Copy :{source_file_1}/{source_file_4}\n"
-                        f"       to : {dest_file_1}/{dest_file_4}")
+            logger.debug(f"Copying frames: {source_file_1} & {source_file_4} → {dest_file_1} & {dest_file_4}")
             try:
                 copy(source_file_1, dest_file_1)
                 copy(source_file_4, dest_file_4)
+                logger.info("Frame files copied successfully")
             except OSError as e:
-                logger.exception("Erreur lors de la copie des fichiers cadres", exc_info=e)
-                messagebox.showerror(t('selector.msg.error.copy'), f"Impossible de copier les fichiers du cadre: {e}")
+                handle_exception(e, operation="copy_frame_files",
+                               context={'source': source_file_1, 'dest': dest_file_1},
+                               log_level='exception')
                 return
 
             # Copier le fichier template
-            source_file_tpl = source_file_1.replace('_1.png',
-                                                    '.xml')
-            dest_file_tpl = path.join(self.destination_directory,
-                                      TEMPLATE_NAME)
+            source_file_tpl = source_file_1.replace('_1.png', '.xml')
+            dest_file_tpl = path.join(self.destination_directory, TEMPLATE_NAME)
 
             try:
                 if path.exists(source_file_tpl):
-                    logger.info(f">>> Copy :{source_file_tpl}\n"
-                                f"       to : {dest_file_tpl}")
+                    logger.debug(f"Copying custom template: {source_file_tpl} → {dest_file_tpl}")
                     copy(source_file_tpl, dest_file_tpl)
+                    logger.info("Custom template copied")
                 else:
-                    source_file_tpl = path.join(self.source_directory,
-                                                TEMPLATE_NAME_STD)
-                    dest_file_tpl = path.join(self.destination_directory,
-                                              TEMPLATE_NAME)
-                    logger.info('pas de fichier frame associé au cadre,'
-                                ' copy du template standard')
-                    logger.info(f">>> Copy :{source_file_tpl}\n"
-                                f"       to : {dest_file_tpl}")
+                    source_file_tpl = path.join(self.source_directory, TEMPLATE_NAME_STD)
+                    logger.debug(f"Custom template not found, using standard: {source_file_tpl}")
                     copy(source_file_tpl, dest_file_tpl)
+                    logger.info("Standard template copied")
             except OSError as e:
-                logger.exception("Erreur lors de la copie du template", exc_info=e)
-                messagebox.showerror(t('selector.msg.error.copy_template'),
-                                     f"Impossible de copier le template: {e}")
+                handle_exception(e, operation="copy_template",
+                               context={'source': source_file_tpl, 'dest': dest_file_tpl},
+                               log_level='exception')
                 return
+
 
             # rafraichie l'image dans dest
             self.create_dest_thumbnail()
@@ -588,8 +658,7 @@ class CadreSelecteur:
 
         ImageEditorApp(self.tk_editor,
                        template=template_path,
-                       destination=destination_path,
-                       standalone=False)
+                       destination=destination_path)
 
     def on_closing(self):
         """
@@ -643,18 +712,46 @@ class CadreSelecteur:
             if path.exists(file):
                 try:
                     remove(file)
-                except OSError as e:
-                    errors.append(str(e))
+                    logger.debug(f"Deleted file: {file}")
+                except (OSError, PermissionError) as e:
+                    logger.warning(f"Failed to delete {file}: {type(e).__name__}")
+                    errors.append(f"{path.basename(file)}: {str(e)}")
 
         if errors:
-            messagebox.showerror(t('selector.msg.error.delete'),
-                                 f"Erreur lors de la suppression:\n"
-                                 f"{errors}")
+            error_msg = "\n".join(errors)
+            handle_exception(
+                FileOperationError(f"errors.file_operation.io_error",
+                                  {'files': error_msg}),
+                operation="delete_frame",
+                show_messagebox=True,
+                log_level='warning'
+            )
         else:
+            logger.info(f"Frame deleted successfully: {filename}")
             messagebox.showinfo(t('selector.msg.info.deleted_title'), t('selector.msg.info.deleted_message'))
 
         # Rafraîchir la liste
         self.list_files_and_generate_thumbnails()
+
+    def edit_border(self, filename):
+        """
+        Lance l'éditeur de cadres en ouvrant le projet et
+        minimise la fenêtre principale pendant l'édition.
+        """
+        self.master.iconify()
+
+        self.tk_editor = Toplevel(self.master)
+
+        # Lier la fonction on_closing à l'événement de fermeture de la fenêtre
+        self.tk_editor.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        json_file = path.join(self.source_directory,
+                              filename.replace('_1.png', '.json'))
+
+        ImageEditorApp(self.tk_editor,
+                       template=template_path,
+                       destination=destination_path,
+                       project=json_file)
 
     def _photoimage_from_pil(self, pil_image):
         """
@@ -673,35 +770,6 @@ class CadreSelecteur:
                 # Errors from Tk internals when running headless or no display.
                 logger.exception("Failed to create PhotoImage (even without master)", exc_info=e2)
                 return None
-
-
-def check_mandatory_path():
-    """
-    Vérifie la présence des répertoires indispensable au bon fonctionnement.
-    """
-    # verification de la presence des répertoire sources et dest.
-    message_error = ''
-    if not path.exists(template_path):
-        message_error = message_error + (
-            f"SOURCES :\nle repertoire : {str(template_path)} n'est pas accessible\n\n"
-        )
-
-    if not path.exists(destination_path):
-        message_error = message_error + (
-            f"DESTINATION:\nle repertoire : {str(destination_path)} n'est pas accessible\n\n"
-        )
-
-    # verification de la presence du template par default.
-    template_dft_file = path.join(template_path,
-                                  TEMPLATE_NAME_STD)
-    if not path.exists(template_dft_file):
-        message_error = message_error + (
-            f"TEMPLATE:\nle fichier : {str(template_dft_file)} n'est pas accessible\n\n"
-        )
-
-    if message_error != '':
-        messagebox.showerror(title=t('selector.msg.error.no_selection_title'), message=message_error)
-        quit()
 
 
 if __name__ == "__main__":

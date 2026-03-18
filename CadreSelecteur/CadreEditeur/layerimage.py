@@ -9,7 +9,7 @@ from tkinter import filedialog, messagebox
 from .layer import Layer
 from os.path import basename
 # Import du traducteur
-from ..i18n.translator import _t
+from ..i18n import t
 
 
 class LayerImage(Layer):
@@ -105,7 +105,7 @@ class LayerImage(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        info = _t('layerimage.label.info',
+        info = t('layerimage.label.info',
                   name=self.name,
                   filename=(basename(self.imported_image_path) if self.imported_image_path else ''),
                   position=self.image_position,

@@ -16,6 +16,8 @@ from .layerexcluzone import LayerExcluZone
 from .layertext import LayerText
 from .layerimage import LayerImage
 from CadreSelecteur import __version__
+from CadreSelecteur.exceptions import ProjectError, FileOperationError
+from CadreSelecteur.error_handler import handle_exception
 # Import du traducteur
 from ..i18n.translator import _t
 
@@ -54,7 +56,8 @@ class ImageEditorApp:
                  root,
                  template="../Templates/",
                  destination='../Cadres/',
-                 standalone=True):
+                 standalone=True,
+                 project=None):
 
         try:
             # recuperation des paramètres
@@ -183,8 +186,13 @@ class ImageEditorApp:
                                       text=_t('editor.button.generate'),
                                       command=lambda: self.gen_images(self.app1, self.app4))
             button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
+
+            if project:
+                self.load_project(project)
+
         except Exception as e:
-            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
+            handle_exception(e, operation="initialize_editor",
+                           log_level='exception')
 
     # export du set de cadre (2 .png + XML)
     def gen_images(self, app_1, app_4):
@@ -197,16 +205,29 @@ class ImageEditorApp:
                 # exporte les images
                 app_1.save_image(path_im)
                 app_4.save_image(path_im)
-                # copie et renomme le XML de template
-                path_to_xml = path.join(self.template, self.selected_template.get())
-                dest_xml = path_im + '.xml'
-                copy(path_to_xml, dest_xml)
-                messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
-        except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
-        except Error as e:
-            messagebox.showerror(_t('editor.msg.error.copy'),
-                                 f"Une erreur est survenue lors de la copie du XML : {str(e)}")
+                logger.info(f"Frame images exported to {path_im}")
+        except FileOperationError as e:
+            handle_exception(e, operation="export_images", log_level='exception')
+            return
+        except Exception as e:
+            handle_exception(e, operation="export_images", log_level='exception')
+            return
+
+        # copie et renomme le XML de template
+        try:
+            path_to_xml = path.join(self.template, self.selected_template.get())
+            dest_xml = path_im + '.xml'
+            copy(path_to_xml, dest_xml)
+            logger.info(f"Template XML copied to {dest_xml}")
+            messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
+        except FileNotFoundError as e:
+            handle_exception(e, operation="copy_template_xml",
+                           context={'source': path_to_xml},
+                           log_level='warning')
+        except (OSError, Error) as e:
+            handle_exception(e, operation="copy_template_xml",
+                           context={'source': path_to_xml, 'dest': dest_xml},
+                           log_level='exception')
 
     def select_directory(self):
         """
@@ -234,8 +255,11 @@ class ImageEditorApp:
                 messagebox.showerror(title=_t('editor.msg.error.no_dir_title'),
                                      message=_t('editor.msg.error.no_dir_message'))
                 return None
+        except tk.TclError as e:
+            handle_exception(e, operation="select_directory", log_level='warning')
+            return None
         except Exception as e:
-            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
+            handle_exception(e, operation="select_directory", log_level='exception')
             return None
 
     # section pour la sauvegarde recharge d'un projet
@@ -269,17 +293,31 @@ class ImageEditorApp:
 
             with open(file_path, 'w', encoding='utf-8') as file:
                 dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
+            logger.info(f"Project saved to {file_path}")
             messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
 
+        except (OSError, IOError) as e:
+            handle_exception(e, operation="save_project",
+                           context={'file': file_path},
+                           log_level='exception')
+            return None
+        except (TypeError, ValueError) as e:
+            handle_exception(e, operation="serialize_project_data",
+                           log_level='exception')
+            return None
         except Exception as e:
-            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
+            handle_exception(e, operation="save_project", log_level='exception')
             return None
 
-    def load_project(self):
+    def load_project(self, project=None):
         """Charge un projet depuis un fichier JSON."""
 
         try:
-            file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+            if project:
+                file_path = project
+            else:
+                file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
+
             if not file_path:
                 return
 
@@ -321,13 +359,18 @@ class ImageEditorApp:
             template_name = project_data["template"]
             self.selected_template.set(template_name)
 
+            logger.info(f"Project loaded from {file_path}")
             messagebox.showinfo(_t('editor.msg.info.load_ok_title'), _t('editor.msg.info.load_ok_message'))
 
+        except FileNotFoundError as e:
+            handle_exception(e, operation="load_project",
+                           context={'file': file_path},
+                           log_level='warning')
+        except (KeyError, ValueError) as e:
+            handle_exception(e, operation="parse_project_data",
+                           log_level='exception')
         except Exception as e:
-            messagebox.showerror(
-                _t('editor.msg.error.file'),
-                f"Une erreur inattendue s'est produite : {str(e)}"
-            )
+            handle_exception(e, operation="load_project", log_level='exception')
 
     # gestion de la synchro droite gauche
     def copy_conf(self, layer, direction):
@@ -345,13 +388,12 @@ class ImageEditorApp:
                     n = len([layer for layer in self.app4.layers
                              if layer is not None and getattr(layer, 'layer_type', None) == new_layer.layer_type]) + 1
                     new_layer.name = f"{new_layer.layer_type} {n}"
-                    # utiliser l'API d'ajout pour valider le layer
                     try:
                         added = self.app4.add_layer(new_layer)
                         if not added:
-                            logger.error(f"add_layer refused new_layer when copying 1->4: {new_layer}")
+                            logger.warning(f"add_layer refused new_layer when copying 1->4: {new_layer}")
                     except Exception as e:
-                        logger.exception(f"Exception while adding new_layer to app4: {e}")
+                        logger.warning(f"Exception while adding new_layer to app4: {e}")
                 elif direction == '4_1':
                     new_layer = self.app4.layers[self.app4.active_layer_idx].clone(self.app1_frame, self.app1)
                     n = len([layer for layer in self.app1.layers
@@ -360,62 +402,63 @@ class ImageEditorApp:
                     try:
                         added = self.app1.add_layer(new_layer)
                         if not added:
-                            logger.error(f"add_layer refused new_layer when copying 4->1: {new_layer}")
+                            logger.warning(f"add_layer refused new_layer when copying 4->1: {new_layer}")
                     except Exception as e:
-                        logger.exception(f"Exception while adding new_layer to app1: {e}")
+                        logger.warning(f"Exception while adding new_layer to app1: {e}")
                 else:
-                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
+                    raise ValueError(f'Invalid direction: {direction}')
             if layer == 'all':
                 if direction == '1_4':
                     clean_editable_layer(self.app4)
-                    # copie tou les calques editable
-                    for layer in self.app1.layers:
-                        if layer is None:
+                    for layer_obj in self.app1.layers:
+                        if layer_obj is None:
                             continue
-                        if layer.layer_type != 'ZoneEx':
-                            new_layer = layer.clone(self.app4_frame, self.app4)
-                            new_layer.name = layer.name
+                        if layer_obj.layer_type != 'ZoneEx':
+                            new_layer = layer_obj.clone(self.app4_frame, self.app4)
+                            new_layer.name = layer_obj.name
                             try:
                                 added = self.app4.add_layer(new_layer)
                                 if not added:
-                                    logger.error(f"add_layer refused new_layer in all-copy 1->4: {new_layer}")
+                                    logger.warning(f"add_layer refused new_layer in all-copy 1->4: {new_layer}")
                             except Exception as e:
-                                logger.exception(f"Exception while adding new_layer to app4 in all-copy: {e}")
+                                logger.warning(f"Exception while adding new_layer to app4 in all-copy: {e}")
                     self.app4.background_couleur = self.app1.background_couleur
                 elif direction == '4_1':
-                    # efface tous les calques editable
                     clean_editable_layer(self.app1)
-                    # copie tou les calques
-                    for layer in self.app4.layers:
-                        if layer is None:
+                    for layer_obj in self.app4.layers:
+                        if layer_obj is None:
                             continue
-                        if layer.layer_type != 'ZoneEx':
-                            new_layer = layer.clone(self.app1_frame, self.app1)
-                            new_layer.name = layer.name
+                        if layer_obj.layer_type != 'ZoneEx':
+                            new_layer = layer_obj.clone(self.app1_frame, self.app1)
+                            new_layer.name = layer_obj.name
                             try:
                                 added = self.app1.add_layer(new_layer)
                                 if not added:
-                                    logger.error(f"add_layer refused new_layer in all-copy 4->1: {new_layer}")
+                                    logger.warning(f"add_layer refused new_layer in all-copy 4->1: {new_layer}")
                             except Exception as e:
-                                logger.exception(f"Exception while adding new_layer to app1 in all-copy: {e}")
+                                logger.warning(f"Exception while adding new_layer to app1 in all-copy: {e}")
                     self.app1.background_couleur = self.app4.background_couleur
                 else:
-                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
+                    raise ValueError(f'Invalid direction: {direction}')
             if layer == 'background' or layer == 'all':
                 if direction == '1_4':
                     self.app4.background_couleur = self.app1.background_couleur
                 elif direction == '4_1':
                     self.app1.background_couleur = self.app4.background_couleur
                 else:
-                    raise ValueError(f'ERROR: {direction} is not a valid DIR')
+                    raise ValueError(f'Invalid direction: {direction}')
 
             self.app1.refresh_listbox()
             self.app4.refresh_listbox()
             self.app1.update_canvas()
             self.app4.update_canvas()
+            logger.debug(f"Configuration synced: layer={layer}, direction={direction}")
         except ValueError as e:
-            messagebox.showerror(_t('editor.msg.error.file'),
-                                 f"Une erreur s'est produite lors de la copie des couches : {str(e)}")
+            logger.warning(f"Invalid copy_conf parameters: {e}")
+        except Exception as e:
+            handle_exception(e, operation="copy_configuration",
+                           context={'layer': layer, 'direction': direction},
+                           log_level='warning')
 
     # gestion des templates
     def load_default_template(self):
@@ -459,12 +502,22 @@ class ImageEditorApp:
                                     break
             return [new_exc_zone1, new_exc_zone4]
 
-        except (FileNotFoundError, IsADirectoryError):
+        except FileNotFoundError as e:
+            logger.debug(f"Template file not found: {path_to_xml}")
             messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
-        except Et.ParseError:
-            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
+            return [[], []]
+        except Et.ParseError as e:
+            handle_exception(e, operation="parse_template_xml",
+                           context={'file': path_to_xml},
+                           log_level='warning')
+            return [[], []]
+        except (ValueError, AttributeError) as e:
+            handle_exception(e, operation="extract_template_coordinates",
+                           log_level='warning')
+            return [[], []]
         except Exception as e:
-            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
+            handle_exception(e, operation="load_default_template", log_level='exception')
+            return [[], []]
 
     # gestion des templates
     def on_template_change(self, *_args):
@@ -513,12 +566,18 @@ class ImageEditorApp:
             self.app4.update_zone_exclu_layer(new_exc_zone4)
             self.app1.update_canvas()
             self.app4.update_canvas()
-        except (FileNotFoundError, IsADirectoryError):
-            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
-        except Et.ParseError:
-            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
+            logger.debug(f"Template changed to {self.selected_template.get()}")
+        except FileNotFoundError as e:
+            logger.debug(f"Template file not found: {path_to_xml}")
+        except Et.ParseError as e:
+            handle_exception(e, operation="parse_template_xml_on_change",
+                           context={'file': path_to_xml},
+                           log_level='warning')
+        except (ValueError, AttributeError) as e:
+            handle_exception(e, operation="extract_template_coordinates_on_change",
+                           log_level='warning')
         except Exception as e:
-            messagebox.showerror(_t('editor.msg.error.file'), f"Une erreur inattendue s'est produite : {str(e)}")
+            handle_exception(e, operation="on_template_change", log_level='warning')
 
 
 if __name__ == "__main__":

@@ -72,6 +72,7 @@
       "add_image": "Ajouter Image",
       "add_text": "Ajouter Texte",
       "delete": "Supprimer",
+      "edit": "editer",
       "move_up": "  ˄  ",
       "move_down": "  ˅  "
     },
@@ -129,6 +130,49 @@
     "language": "Langue",
     "fr": "Français",
     "en": "Anglais"
+  },
+  "errors": {
+    "general": {
+      "title": "Erreur lors de {operation}"
+    },
+    "file_operation": {
+      "not_found": "Le fichier ou répertoire n'existe pas.",
+      "permission_denied": "Permission refusée lors de l'accès au fichier.",
+      "is_directory": "Opération invalide : cible est un répertoire.",
+      "io_error": "Erreur d'entrée/sortie lors de l'accès au fichier.",
+      "unknown": "Erreur inconnue lors de l'opération fichier."
+    },
+    "image_processing": {
+      "load_failed": "Impossible de charger l'image.",
+      "format_unsupported": "Format d'image non supporté.",
+      "resize_failed": "Impossible de redimensionner l'image.",
+      "render_failed": "Impossible de rendre l'image.",
+      "unknown": "Erreur inconnue lors du traitement d'image."
+    },
+    "project": {
+      "malformed_data": "Format de projet invalide ou données corrompues.",
+      "save_failed": "Impossible de sauvegarder le projet.",
+      "load_failed": "Impossible de charger le projet.",
+      "invalid_structure": "Structure de projet non reconnue.",
+      "unknown": "Erreur inconnue lors de l'opération projet."
+    },
+    "ui": {
+      "tkinter_error": "Erreur interface graphique Tkinter.",
+      "widget_error": "Erreur lors de la manipulation d'un widget.",
+      "unknown": "Erreur inconnue dans l'interface."
+    },
+    "configuration": {
+      "invalid_json": "Fichier de configuration JSON invalide.",
+      "missing_key": "Clé de configuration manquante : {key}",
+      "invalid_value": "Valeur de configuration invalide : {key}",
+      "unknown": "Erreur inconnue dans la configuration."
+    },
+    "validation": {
+      "invalid_value": "Valeur invalide fournie.",
+      "invalid_path": "Chemin invalide ou sécurité compromise.",
+      "empty_field": "Champ requis vide : {field}",
+      "unknown": "Erreur de validation."
+    }
   }
 }
 

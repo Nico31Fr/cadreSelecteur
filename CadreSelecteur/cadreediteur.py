@@ -14,8 +14,3 @@ def start_cadre_editeur():
     ImageEditorApp(tk_root)
     return tk_root
 
-
-if __name__ == "__main__":
-
-    root = start_cadre_editeur()
-    root.mainloop()

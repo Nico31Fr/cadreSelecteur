@@ -83,6 +83,7 @@ def test_create_src_thumbnail_no_gui(tmp_path, monkeypatch):
     obj.list_frameSrc = DummyFrame()
     obj.selected_image = type('SV', (), {'set': lambda self, v: None, 'get': lambda self: ''})()
     obj.trash_icon = None
+    obj.edit_icon = None
     obj._image_refs = []
     # Provide a dummy master to satisfy PhotoImage(master=...)
     obj.master = DummyWidget()
@@ -92,3 +93,5 @@ def test_create_src_thumbnail_no_gui(tmp_path, monkeypatch):
 
     # After call, _image_refs should contain at least the two thumbnails
     assert len(obj._image_refs) >= 2
+
+

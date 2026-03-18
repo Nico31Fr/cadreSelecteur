@@ -72,6 +72,7 @@
       "add_image": "Add Image",
       "add_text": "Add Text",
       "delete": "Delete",
+      "edit": "edit",
       "move_up": "  ˄  ",
       "move_down": "  ˅  "
     },
@@ -127,8 +128,51 @@
   },
   "menu": {
     "language": "Language",
-    "fr": "Français",
+    "fr": "French",
     "en": "English"
+  },
+  "errors": {
+    "general": {
+      "title": "Error during {operation}"
+    },
+    "file_operation": {
+      "not_found": "File or directory not found.",
+      "permission_denied": "Permission denied when accessing file.",
+      "is_directory": "Invalid operation: target is a directory.",
+      "io_error": "Input/output error when accessing file.",
+      "unknown": "Unknown error during file operation."
+    },
+    "image_processing": {
+      "load_failed": "Failed to load image.",
+      "format_unsupported": "Image format not supported.",
+      "resize_failed": "Failed to resize image.",
+      "render_failed": "Failed to render image.",
+      "unknown": "Unknown error during image processing."
+    },
+    "project": {
+      "malformed_data": "Invalid project format or corrupted data.",
+      "save_failed": "Failed to save project.",
+      "load_failed": "Failed to load project.",
+      "invalid_structure": "Unrecognized project structure.",
+      "unknown": "Unknown error during project operation."
+    },
+    "ui": {
+      "tkinter_error": "Tkinter GUI error.",
+      "widget_error": "Error during widget manipulation.",
+      "unknown": "Unknown error in interface."
+    },
+    "configuration": {
+      "invalid_json": "Invalid configuration JSON file.",
+      "missing_key": "Missing configuration key: {key}",
+      "invalid_value": "Invalid configuration value: {key}",
+      "unknown": "Unknown error in configuration."
+    },
+    "validation": {
+      "invalid_value": "Invalid value provided.",
+      "invalid_path": "Invalid path or security compromised.",
+      "empty_field": "Required field empty: {field}",
+      "unknown": "Validation error."
+    }
   }
 }
 

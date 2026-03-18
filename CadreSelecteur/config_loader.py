@@ -87,4 +87,5 @@ __all__ = [
     "CADRE_NAME_1",
     "CADRE_NAME_4",
     "LANGUAGE",
+    "RESOURCES_DIR",
 ]
