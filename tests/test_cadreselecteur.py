@@ -84,14 +84,16 @@ def test_create_src_thumbnail_no_gui(tmp_path, monkeypatch):
     obj.selected_image = type('SV', (), {'set': lambda self, v: None, 'get': lambda self: ''})()
     obj.trash_icon = None
     obj.edit_icon = None
-    obj._image_refs = []
+    # Initialiser le gestionnaire de références d'images
+    from CadreSelecteur.image_ref_manager import ImageRefManager
+    obj.image_ref_manager = ImageRefManager()
     # Provide a dummy master to satisfy PhotoImage(master=...)
     obj.master = DummyWidget()
 
     # Call the function under test - should not raise
     obj.create_src_thumbnail(filename)
 
-    # After call, _image_refs should contain at least the two thumbnails
-    assert len(obj._image_refs) >= 2
+    # After call, image_ref_manager should contain at least the two thumbnails
+    assert obj.image_ref_manager.get_count('thumbnails') >= 2
 
 

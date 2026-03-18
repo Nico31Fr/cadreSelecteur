@@ -30,6 +30,7 @@ from .config_loader import (
 )
 from .exceptions import FileOperationError, ImageProcessingError, UIError
 from .error_handler import handle_exception, ErrorContext
+from .image_ref_manager import ImageRefManager
 
 # Import du traducteur (API publique du package i18n)
 from .i18n import t, set_language, get_language
@@ -184,28 +185,25 @@ class CadreSelecteur:
         self.selected_image = StringVar()
         self.selected_image.set('')
 
-        # Conserver des références PhotoImage pour éviter le GC
-        self._image_refs = []
+        # Gestionnaire centralisé de références PhotoImage
+        self.image_ref_manager = ImageRefManager()
 
-        # Pré-charger l'icône poubelle pour réutilisation (évite d'ouvrir le fichier à chaque vignette).
+        # Pré-charger les icônes trash et edit pour réutilisation (évite d'ouvrir le fichier à chaque vignette)
         try:
             icon_path_trash = resources_path / "trash.png"
-            # utiliser self.master explicitement (existe ici)
             with Image.open(icon_path_trash) as _img:
                 img = _img.resize((30, 30))
                 self.trash_icon = ImageTk.PhotoImage(img.copy(), master=self.master)
-                # Conserver la référence
-                self._image_refs.append(self.trash_icon)
+                self.image_ref_manager.add_ref(self.trash_icon, 'icons')
             icon_path_edit = resources_path / "edit.png"
-            # utiliser self.master explicitement (existe ici)
             with Image.open(icon_path_edit) as _img:
                 img = _img.resize((30, 30))
                 self.edit_icon = ImageTk.PhotoImage(img.copy(), master=self.master)
-                # Conserver la référence
-                self._image_refs.append(self.edit_icon)
+                self.image_ref_manager.add_ref(self.edit_icon, 'icons')
         except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
-            # Si l'icône est manquante ou invalide, on logge en debug et on continue
-            logger.debug(f"Trash icon not available or invalid: {e}")
+            # Si les icônes sont manquantes ou invalides, on logge en debug et on continue
+            logger.debug(f"Icons not available: {e}")
+            self.trash_icon = None
             self.edit_icon = None
 
         # List and generate image thumbnails
@@ -267,9 +265,9 @@ class CadreSelecteur:
         for child in self.list_frameSrc.winfo_children():
             child.destroy()
 
-        # Reset image references to avoid accumulation on repeated refresh
-        # (we keep references only for current displayed widgets)
-        self._image_refs.clear()
+        # Effacer les referencias d'images obsolètes
+        self.image_ref_manager.clear_category('thumbnails')
+        self.image_ref_manager.clear_category('dest_canvas')
 
         self.create_dest_thumbnail()
         # protéger si le repertoire source est manquant
@@ -326,12 +324,13 @@ class CadreSelecteur:
                                                         THUMBNAIL_H + 20,
                                                         (THUMBNAIL_L/2),
                                                         image=thumbnail_img_4)
-                # Keep a reference to prevent garbage collection
-                # Conserver la référence pour éviter la collecte par le GC
+                # IMPORTANT: Garder les références DANS le canvas (pattern Tkinter)
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
-                # Conserver aussi dans la liste globale (une seule fois)
-                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
+                
+                # Garder aussi les références via le manager pour éviter le GC
+                self.image_ref_manager.add_ref(thumbnail_img_1, 'dest_canvas')
+                self.image_ref_manager.add_ref(thumbnail_img_4, 'dest_canvas')
 
                 # Bind click event to the image objects
                 # Lier le clic à la prévisualisation
@@ -367,8 +366,9 @@ class CadreSelecteur:
                 thumbnail_img_4 = self._photoimage_from_pil(img)
 
             if thumbnail_img_1 and thumbnail_img_4:
-                # Conserver les références pour éviter GC
-                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
+                # Garder les références via le manager
+                self.image_ref_manager.add_ref(thumbnail_img_1, 'thumbnails')
+                self.image_ref_manager.add_ref(thumbnail_img_4, 'thumbnails')
 
                 # Create a frame for each image and radio button
                 item_frame = Frame(self.list_frameSrc)
@@ -379,17 +379,23 @@ class CadreSelecteur:
                                            value=filename)
                 radio_button.pack(side="left", padx=5)
 
-                # noinspection PyTypeChecker
+                # Créer les labels avec les thumbnails (Tkinter gère le type automatiquement)
                 thumbnail_label_1 = Label(item_frame, image=thumbnail_img_1)
-                # Conserver la référence pour éviter la collecte par le GC
-                thumbnail_label_1.image = thumbnail_img_1
-                # noinspection PyTypeChecker
                 thumbnail_label_4 = Label(item_frame, image=thumbnail_img_4)
-                # Conserver la référence pour éviter la collecte par le GC
+
+                # IMPORTANT: Garder les références DANS les labels (pattern Tkinter)
+                thumbnail_label_1.image = thumbnail_img_1
                 thumbnail_label_4.image = thumbnail_img_4
 
+                # Garder aussi les références via le manager
+                self.image_ref_manager.add_ref(thumbnail_img_1, 'thumbnails')
+                self.image_ref_manager.add_ref(thumbnail_img_4, 'thumbnails')
+
+                # Afficher les labels
+                thumbnail_label_1.pack(side='left', padx=5)
+                thumbnail_label_4.pack(side='left', padx=5)
+
                 # Bind click event to show full size image
-                # Lier le clic à la prévisualisation
                 thumbnail_label_1.bind("<Button-1>", lambda e1, f=file_path_1: self.show_full_image(f))
                 thumbnail_label_4.bind("<Button-1>", lambda e4, f=file_path_4: self.show_full_image(f))
 
@@ -398,12 +404,13 @@ class CadreSelecteur:
                 if self.trash_icon:
                     icon_trash = self.trash_icon
                 else:
-                    # Chargement de secours si la précharge à échouer
+                    # Chargement de secours si la précharge a échoué
                     icon_path = resources_path / "trash.png"
                     try:
                         with Image.open(icon_path) as img_icon:
                             img2 = img_icon.resize((30, 30))
                             icon_trash = self._photoimage_from_pil(img2)
+                            self.image_ref_manager.add_ref(icon_trash, 'icons_fallback')
                     except (FileNotFoundError, UnidentifiedImageError, OSError):
                         logger.debug(f"Fallback trash icon failed for {filename}")
                         icon_trash = None
@@ -416,55 +423,41 @@ class CadreSelecteur:
                     if self.edit_icon:
                         icon_edit = self.edit_icon
                     else:
-                        # Chargement de secours si la précharge à échouer
+                        # Chargement de secours si la précharge a échoué
                         icon_path = resources_path / "edit.png"
                         try:
                             with Image.open(icon_path) as img_icon:
                                 img2 = img_icon.resize((30, 30))
                                 icon_edit = self._photoimage_from_pil(img2)
+                                self.image_ref_manager.add_ref(icon_edit, 'icons_fallback')
                         except (FileNotFoundError, UnidentifiedImageError, OSError):
                             logger.debug(f"Fallback edit icon failed for {filename}")
                             icon_edit = None
 
-                    # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
-                    item_frame.icon_edit = icon_edit
-                    # Conserver la référence si présente
-                    if icon_edit:
-                        self._image_refs.append(icon_edit)
-
                     # Créer le bouton avec l'image
                     if icon_edit:
                         button_edit = Button(item_frame,
-                                                  command=lambda f=filename: self.edit_border(f),
-                                                  image=icon_edit)
+                                            command=lambda f=filename: self.edit_border(f),
+                                            image=icon_edit)
                     else:
                         button_edit = Button(item_frame,
-                                                  command=lambda f=filename: self.edit_border(f),
-                                                  text=t('image.button.edit'))
+                                            command=lambda f=filename: self.edit_border(f),
+                                            text=t('image.button.edit'))
 
                     button_edit.pack(side='right')
 
-
-                # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
-                item_frame.icon_trash = icon_trash
-                # Conserver la référence si présente
-                if icon_trash:
-                    self._image_refs.append(icon_trash)
-
-                # Créer le bouton avec l'image
+                # Créer le bouton avec l'image poubelle
                 if icon_trash:
                     bouton_supprimer = Button(item_frame,
-                                              command=lambda f=filename: self.del_border(f),
-                                              image=icon_trash)
+                                             command=lambda f=filename: self.del_border(f),
+                                             image=icon_trash)
                 else:
                     bouton_supprimer = Button(item_frame,
-                                              command=lambda f=filename: self.del_border(f),
-                                              text=t('image.button.delete'))
+                                             command=lambda f=filename: self.del_border(f),
+                                             text=t('image.button.delete'))
 
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
-                thumbnail_label_1.pack(side='left', padx=5)
-                thumbnail_label_4.pack(side='left', padx=5)
 
                 text_label = Label(item_frame, text=filename.replace('_1.png', ''))
                 text_label.pack(side='left', padx=5)
@@ -633,12 +626,12 @@ class CadreSelecteur:
             with Image.open(file_path) as img:
                 img_resized = img.resize((width, height))
                 img_full: PhotoImage = ImageTk.PhotoImage(img_resized, master=window)
-                # noinspection PyTypeChecker
+                # Créer le label (Tkinter gère le type automatiquement)
                 label = Label(window, image=img_full)
-                # Conserver la référence attachée à la fenêtre de prévisualisation
-                label.image = img_full
                 label.pack()
                 window.resizable(False, False)
+                # Garder la référence attachée à la fenêtre (évite GC)
+                label.image = img_full
 
         except (FileNotFoundError, UnidentifiedImageError, OSError, tk.TclError, RuntimeError) as e:
             # Erreurs d'I/O, PIL ou Tkinter lors de la prévisualisation
