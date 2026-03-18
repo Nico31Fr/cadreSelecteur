@@ -2,33 +2,41 @@
 """ sélecteur de cadre pour pibooth """
 
 from os import path, listdir, remove
+import tkinter as tk
 from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
+from PIL import UnidentifiedImageError
 from PIL.ImageTk import PhotoImage
 from shutil import copy
 from platform import system
 from pathlib import Path
 import sys
+import logging
 
 from . import __version__
+# Assurer la configuration centrale du logging (ajoute un FileHandler vers resources/image_editor.log)
+from .logging_config import LOG_PATH  # noqa: F401
 from .CadreEditeur.imageeditorapp import ImageEditorApp
+from .config_loader import (
+    WINDOWS_SIZE,
+    THUMBNAIL_H,
+    THUMBNAIL_L,
+    TEMPLATE_NAME,
+    TEMPLATE_NAME_STD,
+    CADRE_NAME_1,
+    CADRE_NAME_4,
+    RESOURCES_DIR,
+)
+from .exceptions import FileOperationError, ImageProcessingError, UIError
+from .error_handler import handle_exception, ErrorContext
 
-# taille de la fenêtre
-WINDOWS_SIZE = "1000x600"
-# taille des vignettes
-THUMBNAIL_H = 128
-THUMBNAIL_L = int((THUMBNAIL_H/15)*10)
+# Import du traducteur (API publique du package i18n)
+from .i18n import t, set_language, get_language
 
-# nom du template définie dans piBooth
-TEMPLATE_NAME = 'template.xml'
-# template par défaut
-TEMPLATE_NAME_STD = 'template_1.xml'
-# nom du cadre définie dans piBooth
-CADRE_NAME_1 = 'cadre_1.png'
-CADRE_NAME_4 = 'cadre_4.png'
+logger = logging.getLogger(__name__)
 
-def get_base_path():
+def get_base_path() -> str:
     if getattr(sys, 'frozen', False):
         # Exécution depuis un .exe PyInstaller
         return path.dirname(sys.executable)
@@ -36,42 +44,87 @@ def get_base_path():
         # Exécution depuis le code source (PyCharm)
         return path.dirname(path.abspath(__file__))
 
-def resource_path(relative_path):
+def resource_path(relative_path: str) -> str:
     """
     Retourne le chemin correct vers les ressources, que l'app tourne en .py ou en .exe
     """
-    if hasattr(sys, '_MEIPASS'):  # Exécutable PyInstaller
-        return path.join(sys._MEIPASS, relative_path)
+    # PyInstaller stocke le chemin temporaire dans l'attribut protégé _MEIPASS.
+    # Utiliser getattr permet d'accéder de façon plus explicite et de fournir
+    # une valeur par défaut None si l'attribut n'existe pas (mode script).
+    meipass = getattr(sys, '_MEIPASS', None)
+    if meipass:  # Exécutable PyInstaller
+        return path.join(meipass, relative_path)
     return path.join(path.dirname(path.abspath(__file__)), relative_path)
 
 BASE_PATH = get_base_path()
 # repertoire avec tous les cadres / templates disponibles
-template_path = path.join(BASE_PATH, "Templates")
+template_path = Path(BASE_PATH) / "Templates"
 # repertoire avec le cadre / template sélectionné
-destination_path = path.join(BASE_PATH, "Cadres")
+destination_path = Path(BASE_PATH) / "Cadres"
 # repertoire avec les resources scripts
-resources_path = resource_path("resources")
+resources_path = Path(resource_path("resources"))
+
+def check_mandatory_path():
+    """
+    Vérifie la présence des répertoires indispensable au bon fonctionnement.
+    """
+    # verification de la presence des répertoire sources et dest.
+    message_error = ''
+    if not path.exists(template_path):
+        message_error = message_error + (
+            f"SOURCES :\nle repertoire : {str(template_path)} n'est pas accessible\n\n"
+        )
+
+    if not path.exists(destination_path):
+        message_error = message_error + (
+            f"DESTINATION:\nle repertoire : {str(destination_path)} n'est pas accessible\n\n"
+        )
+
+    # verification de la presence du template par default.
+    template_dft_file = path.join(template_path,
+                                  TEMPLATE_NAME_STD)
+    if not path.exists(template_dft_file):
+        message_error = message_error + (
+            f"TEMPLATE:\nle fichier : {str(template_dft_file)} n'est pas accessible\n\n"
+        )
+
+    if message_error != '':
+        messagebox.showerror(title=t('selector.msg.error.no_selection_title'), message=message_error)
+        quit()
+
+# configure un logger par défaut si aucune configuration n'est présente
+if not logging.getLogger().hasHandlers():
+    logging.basicConfig(level=logging.INFO)
 
 
 class CadreSelecteur:
     """
-    Class to display image thumbnails and select a template
-    using radio buttons within a GUI.
+    Sélecteur de cadres : affiche des vignettes d'images et permet
+    de sélectionner un template via des boutons radio dans l'interface.
     """
 
-    def __init__(self):
+    def __init__(self, start_mainloop: bool = True):
         """
         Initializes the TemplateSelector with a window
         and directory to display images.
         """
 
+        self.apply_button = None
+        self.quit_button = None
+        self.add_new_border = None
         self.master = Tk()
-        self.master.title(f'Sélecteur de cadre pour piBooth {__version__}')
+
+        self.master.title(t('selector.title', version=__version__))
         self.source_directory = template_path
         self.destination_directory = destination_path
         # Set the window size
         self.master.geometry(WINDOWS_SIZE)
 
+        # Barre supérieure : contient le sélecteur de langue aligné à droite
+        self.top_bar = Frame(self.master)
+        self.top_bar.pack(fill='x')
+
+        # Frame principal pour les labels (sous la barre supérieure)
         self.top_frame = Frame(self.master)
         self.top_frame.pack(fill='x', pady=10)
 
@@ -81,20 +134,29 @@ class CadreSelecteur:
         label_font = ("Arial", 14, "bold")
 
         # Add text labels
-        label1 = Label(self.top_frame,
-                       text="                Cadres disponibles",
-                       font=label_font)
-        label1.pack(side='left', padx=5)
+        # Labels (stocker comme attributs pour pouvoir les rafraîchir)
+        self.label1 = Label(self.top_frame,
+                            text=t('selector.label.available_frames'),
+                            font=label_font)
+        self.label1.pack(side='left', padx=5)
 
-        label2 = Label(self.top_frame,
-                       text="Cadre installé                             ",
-                       font=label_font)
-        label2.pack(side='right', padx=5)
+        self.label2 = Label(self.top_frame,
+                            text=t('selector.label.installed_frame'),
+                            font=label_font)
+        self.label2.pack(side='right', padx=5)
 
         # Create a frame with specific size
         self.frame_main = Frame(self.master, width=800, height=600)
         self.frame_main.pack(fill='both', expand=True)
         self.master.resizable(False, False)  # Prevent window resizing
+
+        # mise a jour de l'icône de fenêtre
+        icon_path = path.join(RESOURCES_DIR, "cadreSelecteur.png")
+        icon_image = Image.open(icon_path)
+        icon_photo = ImageTk.PhotoImage(icon_image)
+        self.master.iconphoto(True, icon_photo)
+        # garder une référence !
+        self.master._icon_ref = icon_photo
 
         # Initialize scrollbar for canvasSrc
         self.scrollbarSrc = Scrollbar(self.frame_main, orient="vertical")
@@ -120,7 +182,31 @@ class CadreSelecteur:
 
         # Variable to store selected image
         self.selected_image = StringVar()
-        self.selected_image.set('None')
+        self.selected_image.set('')
+
+        # Conserver des références PhotoImage pour éviter le GC
+        self._image_refs = []
+
+        # Pré-charger l'icône poubelle pour réutilisation (évite d'ouvrir le fichier à chaque vignette).
+        try:
+            icon_path_trash = resources_path / "trash.png"
+            # utiliser self.master explicitement (existe ici)
+            with Image.open(icon_path_trash) as _img:
+                img = _img.resize((30, 30))
+                self.trash_icon = ImageTk.PhotoImage(img.copy(), master=self.master)
+                # Conserver la référence
+                self._image_refs.append(self.trash_icon)
+            icon_path_edit = resources_path / "edit.png"
+            # utiliser self.master explicitement (existe ici)
+            with Image.open(icon_path_edit) as _img:
+                img = _img.resize((30, 30))
+                self.edit_icon = ImageTk.PhotoImage(img.copy(), master=self.master)
+                # Conserver la référence
+                self._image_refs.append(self.edit_icon)
+        except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
+            # Si l'icône est manquante ou invalide, on logge en debug et on continue
+            logger.debug(f"Trash icon not available or invalid: {e}")
+            self.edit_icon = None
 
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
@@ -128,14 +214,37 @@ class CadreSelecteur:
         # Create action buttons
         self.create_action_buttons()
 
+        # Sélecteur de langue déroulant (dans une barre tout en haut, aligné à droite)
+        try:
+            self.lang_btn = tk.Menubutton(self.top_bar, text=get_language(), relief='raised')
+            self.lang_menu = tk.Menu(self.lang_btn, tearoff=0)
+            self.lang_btn.config(menu=self.lang_menu)
+            # placer à droite dans la barre supérieure
+            self.lang_btn.pack(side='right', padx=4, pady=4)
+            Label(self.top_bar, text=t('menu.language')).pack(side='right', padx=4, pady=4)
+            # construire les entrées du menu en fonction des traductions
+            self._build_lang_menu()
+        except tk.TclError as e:
+            # Problème d'interface tkinter (par ex. en environnement headless)
+            logger.debug(f"GUI unavailable for language selector: {e}")
+            self.lang_btn = None
+            self.lang_menu = None
+        except Exception as e:
+            # Log toute autre erreur inattendue pour faciliter le diagnostic
+            logger.exception("Unexpected error while creating language selector", exc_info=e)
+            self.lang_btn = None
+            self.lang_menu = None
+
         self.system = system()
         if self.system == 'Windows' or self.system == 'Darwin':
-            self.canvasSrc.bind_all("<MouseWheel>", self._on_mousewheel)  # Windows et macOS
+            # bind to canvas to keep binding local to widget
+            self.canvasSrc.bind("<MouseWheel>", self._on_mousewheel)  # Windows et macOS
         else:  # Linux
-            self.canvasSrc.bind_all("<Button-4>", self._on_mousewheel)
-            self.canvasSrc.bind_all("<Button-5>", self._on_mousewheel)
+            self.canvasSrc.bind("<Button-4>", self._on_mousewheel)
+            self.canvasSrc.bind("<Button-5>", self._on_mousewheel)
 
-        self.master.mainloop()
+        if start_mainloop:
+            self.master.mainloop()
 
     def _on_mousewheel(self, event):
         if self.system == 'Windows':
@@ -150,16 +259,27 @@ class CadreSelecteur:
 
     def list_files_and_generate_thumbnails(self):
         """
-        Lists files from the specified directory
-        and generates thumbnails for image files.
-        Configures the scroll region after adding items.
+        Parcourt le répertoire source et génère les vignettes pour les images.
+        Met à jour la zone de défilement une fois les éléments ajoutés.
         """
 
         # Efface tous les widgets existants dans la frame
         for child in self.list_frameSrc.winfo_children():
             child.destroy()
 
+        # Reset image references to avoid accumulation on repeated refresh
+        # (we keep references only for current displayed widgets)
+        self._image_refs.clear()
+
         self.create_dest_thumbnail()
+        # protéger si le repertoire source est manquant
+        if not path.exists(self.source_directory):
+            messagebox.showerror(t('selector.msg.error.dir_missing_title'),
+                                 t('selector.msg.error.dir_missing_message',
+                                   path=self.source_directory))
+            logger.error(f"Source directory not found: {self.source_directory}")
+            return
+
         for filename in sorted(listdir(self.source_directory)):
             if filename.lower().endswith('_1.png'):
                 self.create_src_thumbnail(filename)
@@ -170,9 +290,9 @@ class CadreSelecteur:
 
     def create_dest_thumbnail(self):
         """
-        Creates  thumbnail for the destination image file
-        and displays it along with a radio button.
-
+        Génère et affiche la vignette du cadre installé (destination).
+        Affiche les deux images (cadre_1 et cadre_4) et lie le clic à la
+        prévisualisation en plein écran.
         """
         try:
             file_path_1 = path.join(self.destination_directory,
@@ -183,13 +303,18 @@ class CadreSelecteur:
             # Clear the canvas before adding a new image
             self.canvasDest.delete("all")
 
+            # vérifier la présence des fichiers avant d'ouvrir
+            if not path.exists(file_path_1) or not path.exists(file_path_4):
+                logger.debug(f"Destination images absentes: {file_path_1}, {file_path_4}")
+                return
+
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_1 = ImageTk.PhotoImage(img)
+                thumbnail_img_1 = self._photoimage_from_pil(img)
 
             with Image.open(file_path_4) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_4 = ImageTk.PhotoImage(img)
+                thumbnail_img_4 = self._photoimage_from_pil(img)
 
             if thumbnail_img_1 and thumbnail_img_4:
                 # Display the image on the canvas
@@ -202,43 +327,48 @@ class CadreSelecteur:
                                                         (THUMBNAIL_L/2),
                                                         image=thumbnail_img_4)
                 # Keep a reference to prevent garbage collection
-                # Keep a reference to prevent garbage collection
+                # Conserver la référence pour éviter la collecte par le GC
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
+                # Conserver aussi dans la liste globale (une seule fois)
+                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
 
                 # Bind click event to the image objects
-                self.canvasDest.tag_bind(img_id_1,
-                                         "<Button-1>",
-                                         lambda e1:
-                                         self.show_full_image(file_path_1))
-                self.canvasDest.tag_bind(img_id_4,
-                                         "<Button-1>",
-                                         lambda e2:
-                                         self.show_full_image(file_path_4))
+                # Lier le clic à la prévisualisation
+                self.canvasDest.tag_bind(img_id_1, "<Button-1>", lambda e1: self.show_full_image(file_path_1))
+                self.canvasDest.tag_bind(img_id_4, "<Button-1>", lambda e2: self.show_full_image(file_path_4))
 
-        except Exception as e:
-            print(f"Error processing file : {e}")
+        except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
+            # Erreurs de fichier ou image - log en debug (fallback silencieux acceptable)
+            logger.debug(f"Destination thumbnails processing: {type(e).__name__}: {e}")
+        except (tk.TclError, RuntimeError) as e:
+            # Erreurs UI - log avec contexte
+            handle_exception(e, operation="display_destination_thumbnails",
+                           show_messagebox=False, log_level='warning')
 
     def create_src_thumbnail(self, filename):
         """
-        Creates a thumbnail for the specified image file
-        and displays it along with a radio button.
+        Génère la vignette pour le fichier source `filename` et crée
+        l'élément UI associé (radio, vignettes, étiquette et bouton supprimer).
 
-        :param filename: The name of the image file.
+        :param filename: nom du fichier image source.
         """
         try:
             file_path_1 = path.join(self.source_directory, filename)
             file_path_4 = path.join(self.source_directory,
                                     filename.replace('_1.png', '_4.png'))
+
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_1: PhotoImage = ImageTk.PhotoImage(img)
+                thumbnail_img_1 = self._photoimage_from_pil(img)
 
             with Image.open(file_path_4) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
-                thumbnail_img_4 = ImageTk.PhotoImage(img)
+                thumbnail_img_4 = self._photoimage_from_pil(img)
 
             if thumbnail_img_1 and thumbnail_img_4:
+                # Conserver les références pour éviter GC
+                self._image_refs.extend([thumbnail_img_1, thumbnail_img_4])
 
                 # Create a frame for each image and radio button
                 item_frame = Frame(self.list_frameSrc)
@@ -251,147 +381,273 @@ class CadreSelecteur:
 
                 # noinspection PyTypeChecker
                 thumbnail_label_1 = Label(item_frame, image=thumbnail_img_1)
-                # Keep a reference to prevent garbage collection
+                # Conserver la référence pour éviter la collecte par le GC
                 thumbnail_label_1.image = thumbnail_img_1
                 # noinspection PyTypeChecker
                 thumbnail_label_4 = Label(item_frame, image=thumbnail_img_4)
-                # Keep a reference to prevent garbage collection
+                # Conserver la référence pour éviter la collecte par le GC
                 thumbnail_label_4.image = thumbnail_img_4
 
                 # Bind click event to show full size image
-                thumbnail_label_1.bind("<Button-1>",
-                                       lambda e1,
-                                       f=file_path_1: self.show_full_image(f))
-                thumbnail_label_4.bind("<Button-1>",
-                                       lambda e4,
-                                       f=file_path_4: self.show_full_image(f))
+                # Lier le clic à la prévisualisation
+                thumbnail_label_1.bind("<Button-1>", lambda e1, f=file_path_1: self.show_full_image(f))
+                thumbnail_label_4.bind("<Button-1>", lambda e4, f=file_path_4: self.show_full_image(f))
 
-                # Charger et redimensionner l'image de la poubelle
-                icon_path = Path(resources_path, "trash.png")
-                image = Image.open(icon_path).resize((30, 30))
-                icon_trash = ImageTk.PhotoImage(image)
+                # Utiliser l'icône poubelle préchargée si disponible
+                icon_trash = None
+                if self.trash_icon:
+                    icon_trash = self.trash_icon
+                else:
+                    # Chargement de secours si la précharge à échouer
+                    icon_path = resources_path / "trash.png"
+                    try:
+                        with Image.open(icon_path) as img_icon:
+                            img2 = img_icon.resize((30, 30))
+                            icon_trash = self._photoimage_from_pil(img2)
+                    except (FileNotFoundError, UnidentifiedImageError, OSError):
+                        logger.debug(f"Fallback trash icon failed for {filename}")
+                        icon_trash = None
+
+                # check if json config file are present
+                json_file = path.join(self.source_directory,
+                                      filename.replace('_1.png', '.json'))
+                if path.exists(json_file):
+                    icon_edit = None
+                    if self.edit_icon:
+                        icon_edit = self.edit_icon
+                    else:
+                        # Chargement de secours si la précharge à échouer
+                        icon_path = resources_path / "edit.png"
+                        try:
+                            with Image.open(icon_path) as img_icon:
+                                img2 = img_icon.resize((30, 30))
+                                icon_edit = self._photoimage_from_pil(img2)
+                        except (FileNotFoundError, UnidentifiedImageError, OSError):
+                            logger.debug(f"Fallback edit icon failed for {filename}")
+                            icon_edit = None
+
+                    # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
+                    item_frame.icon_edit = icon_edit
+                    # Conserver la référence si présente
+                    if icon_edit:
+                        self._image_refs.append(icon_edit)
+
+                    # Créer le bouton avec l'image
+                    if icon_edit:
+                        button_edit = Button(item_frame,
+                                                  command=lambda f=filename: self.edit_border(f),
+                                                  image=icon_edit)
+                    else:
+                        button_edit = Button(item_frame,
+                                                  command=lambda f=filename: self.edit_border(f),
+                                                  text=t('image.button.edit'))
+
+                    button_edit.pack(side='right')
+
 
                 # GARDER LA RÉFÉRENCE à l'image (sinon l'image disparaît !)
                 item_frame.icon_trash = icon_trash
+                # Conserver la référence si présente
+                if icon_trash:
+                    self._image_refs.append(icon_trash)
 
                 # Créer le bouton avec l'image
-                bouton_supprimer = Button(item_frame,
-                                          command=lambda f=filename: self.del_border(f),
-                                          image=icon_trash)
+                if icon_trash:
+                    bouton_supprimer = Button(item_frame,
+                                              command=lambda f=filename: self.del_border(f),
+                                              image=icon_trash)
+                else:
+                    bouton_supprimer = Button(item_frame,
+                                              command=lambda f=filename: self.del_border(f),
+                                              text=t('image.button.delete'))
 
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
                 thumbnail_label_1.pack(side='left', padx=5)
                 thumbnail_label_4.pack(side='left', padx=5)
 
-                text_label = Label(item_frame,
-                                   text=filename.replace('_1.png', ''))
+                text_label = Label(item_frame, text=filename.replace('_1.png', ''))
                 text_label.pack(side='left', padx=5)
 
-        except Exception as e:
-            print(f"Error processing file {filename}: {e}")
+        except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
+            logger.debug(f"Image processing for {filename}: {type(e).__name__}")
+        except (tk.TclError, RuntimeError) as e:
+            handle_exception(e, operation=f"create_thumbnail_{filename}",
+                           show_messagebox=False, log_level='warning')
 
     def create_action_buttons(self):
         """
-        Creates Apply and Quit buttons in the main interface.
+        Crée les boutons d'action (nouveau cadre, Appliquer, Quitter).
         """
         button_frame = Frame(self.master)
         button_frame.pack(side="bottom", fill="x", pady=10)
 
-        add_new_border = Button(button_frame,
-                                text="nouveau cadre",
-                                command=self.new_border)
-        add_new_border.pack(side='left', padx=10)
-        quit_button = Button(button_frame,
-                             text="Quitter",
-                             command=self.master.quit)
-        quit_button.pack(side="right", padx=10)
+        self.add_new_border = Button(button_frame,
+                                     text=t('selector.button.new_frame'),
+                                     command=self.new_border)
+        self.add_new_border.pack(side='left', padx=10)
+        self.quit_button = Button(button_frame,
+                                  text=t('selector.button.quit'),
+                                  command=self.master.quit)
+        self.quit_button.pack(side="right", padx=10)
 
-        apply_button = Button(button_frame,
-                              text="Appliquer",
-                              command=self.apply_selection)
-        apply_button.pack(side="right", padx=10)
+        self.apply_button = Button(button_frame,
+                                   text=t('selector.button.apply'),
+                                   command=self.apply_selection)
+        self.apply_button.pack(side="right", padx=10)
+
+        # expose references for refresh
+        return
+
+    def refresh_ui_texts(self):
+        """Met à jour les textes affichés selon la langue courante."""
+        try:
+            # fenêtre principale
+            self.master.title(t('selector.title', version=__version__))
+            # labels
+            self.label1.config(text=t('selector.label.available_frames'))
+            self.label2.config(text=t('selector.label.installed_frame'))
+            # boutons
+            self.add_new_border.config(text=t('selector.button.new_frame'))
+            self.apply_button.config(text=t('selector.button.apply'))
+            self.quit_button.config(text=t('selector.button.quit'))
+            # menu langue
+            if hasattr(self, 'lang_btn'):
+                self.lang_btn.config(text=get_language())
+                # reconstruire les entrées du menu pour prendre en compte la nouvelle langue
+                try:
+                    self._build_lang_menu()
+                except (AttributeError, tk.TclError, RuntimeError) as e:
+                    # erreurs possibles lors de la reconstruction du menu (widgets absents, Tk indisponible)
+                    logger.exception("Error rebuilding language menu after language change", exc_info=e)
+        except (AttributeError, tk.TclError, RuntimeError) as e:
+            # erreurs attendues lorsque des widgets n'existent pas encore
+            # (p.ex. refresh called early or in headless env). On loggue
+            # pour debug mais on ne propage pas l'exception afin de
+            # ne pas planter l'application.
+            logger.exception("Error refreshing UI texts", exc_info=e)
+
+    def change_language(self, lang_code: str):
+        """Change la langue via le traducteur et rafraîchit l'IHM."""
+        if set_language(lang_code):
+            # met à jour les textes de l'UI
+            self.refresh_ui_texts()
+        else:
+            messagebox.showwarning("i18n", f"Could not load language: {lang_code}")
+
+    def _build_lang_menu(self):
+        """(Re)construit le menu déroulant de sélection de langue avec les labels traduits."""
+        if not hasattr(self, 'lang_menu'):
+            return
+        # supprimer les entrées existantes
+        try:
+            self.lang_menu.delete(0, 'end')
+        except tk.TclError as e:
+            # suppression impossible si le widget n'existe plus ou si Tk est indisponible
+            logger.debug(f"Could not clear language menu: {e}")
+        except Exception as e:
+            logger.exception("Unexpected error when clearing language menu", exc_info=e)
+        # ajouter les entrées en utilisant les traductions
+        try:
+            # Récupère les libellés traduits via `t()` ; si la clé n'existe pas,
+            # `t()` retourne la clé. On fait un fallback lisible dans ce cas.
+            label_fr = 'fr'
+            label_en = 'en'
+
+        except Exception as e:
+            logger.exception("Error fetching translated labels", exc_info=e)
+            label_fr = 'fr'
+            label_en = 'en'
+
+        self.lang_menu.add_command(label=label_fr, command=lambda: self.change_language('fr'))
+        self.lang_menu.add_command(label=label_en, command=lambda: self.change_language('en'))
 
     def apply_selection(self):
         """
-        Function to execute when Apply button is clicked.
-        Prints the selected image file to the console.
+        Applique le cadre sélectionné : copie les fichiers _1 et _4 ainsi que
+        le template associé dans le dossier de destination et rafraîchit l'affichage.
         """
         selected_file = self.selected_image.get()
-        if selected_file != 'None':
-            print(f"Image sélectionnée: {selected_file}")
+        if selected_file:
+            logger.info(f"Selected frame: {selected_file}")
 
             source_file_1 = path.join(self.source_directory, selected_file)
-            dest_file_1 = path.join(self.destination_directory,
-                                    CADRE_NAME_1)
+            dest_file_1 = path.join(self.destination_directory, CADRE_NAME_1)
             source_file_4 = path.join(self.source_directory,
-                                      selected_file.replace('_1.png',
-                                                            '_4.png'))
-            dest_file_4 = path.join(self.destination_directory,
-                                    CADRE_NAME_4)
+                                      selected_file.replace('_1.png', '_4.png'))
+            dest_file_4 = path.join(self.destination_directory, CADRE_NAME_4)
 
             # Copier le fichier cadre
-            print(f">>> Copy :{source_file_1}/{source_file_4}\n"
-                  f"       to : {dest_file_1}/{dest_file_4}")
-            copy(source_file_1, dest_file_1)
-            copy(source_file_4, dest_file_4)
+            logger.debug(f"Copying frames: {source_file_1} & {source_file_4} → {dest_file_1} & {dest_file_4}")
+            try:
+                copy(source_file_1, dest_file_1)
+                copy(source_file_4, dest_file_4)
+                logger.info("Frame files copied successfully")
+            except OSError as e:
+                handle_exception(e, operation="copy_frame_files",
+                               context={'source': source_file_1, 'dest': dest_file_1},
+                               log_level='exception')
+                return
 
             # Copier le fichier template
-            source_file_tpl = source_file_1.replace('_1.png',
-                                                    '.xml')
-            dest_file_tpl = path.join(self.destination_directory,
-                                      TEMPLATE_NAME)
+            source_file_tpl = source_file_1.replace('_1.png', '.xml')
+            dest_file_tpl = path.join(self.destination_directory, TEMPLATE_NAME)
 
-            if path.exists(source_file_tpl):
-                print(f">>> Copy :{source_file_tpl}\n"
-                      f"       to : {dest_file_tpl}")
-                copy(source_file_tpl, dest_file_tpl)
-            else:
-                source_file_tpl = path.join(self.source_directory,
-                                            TEMPLATE_NAME_STD)
-                dest_file_tpl = path.join(self.destination_directory,
-                                          TEMPLATE_NAME)
-                print('pas de fichier frame associé au cadre,'
-                      ' copy du template standard')
-                print(f">>> Copy :{source_file_tpl}\n"
-                      f"       to : {dest_file_tpl}")
-                copy(source_file_tpl, dest_file_tpl)
+            try:
+                if path.exists(source_file_tpl):
+                    logger.debug(f"Copying custom template: {source_file_tpl} → {dest_file_tpl}")
+                    copy(source_file_tpl, dest_file_tpl)
+                    logger.info("Custom template copied")
+                else:
+                    source_file_tpl = path.join(self.source_directory, TEMPLATE_NAME_STD)
+                    logger.debug(f"Custom template not found, using standard: {source_file_tpl}")
+                    copy(source_file_tpl, dest_file_tpl)
+                    logger.info("Standard template copied")
+            except OSError as e:
+                handle_exception(e, operation="copy_template",
+                               context={'source': source_file_tpl, 'dest': dest_file_tpl},
+                               log_level='exception')
+                return
+
 
             # rafraichie l'image dans dest
             self.create_dest_thumbnail()
 
         else:
-            messagebox.showerror("Erreur",
-                                 "Aucune image sélectionnée."
-                                 " Veuillez choisir une image.")
-            print("Aucune image sélectionnée.")
+            messagebox.showerror(t('selector.msg.error.no_selection_title'),
+                                 t('selector.msg.error.no_selection_message'))
+            logger.warning("Aucune image sélectionnée.")
 
     def show_full_image(self, file_path, width=720, height=480):
         """
-        Opens a new window to display the full-size image.
+        Ouvre une fenêtre de prévisualisation affichant l'image en taille
+        complète (redimensionnée aux dimensions fournies).
         """
         try:
             window = Toplevel(self.master)  # Create a Toplevel window
-            window.title("Prévisualisation")
+            window.title(t('selector.preview.title'))
             # To ensure close action shuts the window
             # without affecting the main app
             window.protocol("WM_DELETE_WINDOW", window.destroy)
 
             with Image.open(file_path) as img:
                 img_resized = img.resize((width, height))
-                img_full: PhotoImage = ImageTk.PhotoImage(img_resized)
+                img_full: PhotoImage = ImageTk.PhotoImage(img_resized, master=window)
                 # noinspection PyTypeChecker
                 label = Label(window, image=img_full)
-                label.image = img_full  # Keep a reference
+                # Conserver la référence attachée à la fenêtre de prévisualisation
+                label.image = img_full
                 label.pack()
                 window.resizable(False, False)
 
-        except Exception as e:
-            print(f"Error displaying full image: {e}")
+        except (FileNotFoundError, UnidentifiedImageError, OSError, tk.TclError, RuntimeError) as e:
+            # Erreurs d'I/O, PIL ou Tkinter lors de la prévisualisation
+            logger.exception("Error displaying full image", exc_info=e)
 
     def new_border(self):
         """
-        lance l'éditeur de cadre sur clic du bouton
+        Lance l'éditeur de cadres (ouvre la fenêtre d'édition) et
+        minimise la fenêtre principale pendant l'édition.
         """
         self.master.iconify()
 
@@ -402,13 +658,13 @@ class CadreSelecteur:
 
         ImageEditorApp(self.tk_editor,
                        template=template_path,
-                       destination=destination_path,
-                       standalone=False)
+                       destination=destination_path)
 
     def on_closing(self):
-        """ détruit la fenêtre d'édition de cadre
-            ré-affiche la fenêtre de sélecteur de cadre
-            et rafraichie la liste des vignettes"""
+        """
+        Fermeture de l'éditeur : détruit la fenêtre d'édition, restaure la
+        fenêtre principale et rafraîchit la liste des vignettes.
+        """
         self.tk_editor.destroy()
         self.master.deiconify()
         # List and generate image thumbnails
@@ -416,9 +672,10 @@ class CadreSelecteur:
 
     def del_border(self, filename):
         """
-        Supprime le cadre (fichiers _1.png, _4.png, .xml) du dossier Templates,
-        mais refuse la suppression si c'est le dernier cadre.
-        Rafraîchit la liste après suppression.
+        Supprime le cadre (fichiers _1.png, _4.png, .xml) du dossier Templates.
+        Refuse la suppression si c'est le dernier cadre disponible et
+        affiche un message de confirmation avant suppression.
+        Rafraîchir ensuite la liste.
         """
 
         file_1 = path.join(self.source_directory, filename)
@@ -439,15 +696,15 @@ class CadreSelecteur:
                          if f.lower().endswith('_1.png')])
         if nb_cadres <= 1:
             messagebox.showwarning(
-                "Suppression impossible",
-                "Impossible de supprimer le dernier cadre disponible."
+                t('selector.msg.warn.delete_impossible_title'),
+                t('selector.msg.warn.delete_impossible_message')
             )
             return
 
         # Confirmation suppression
         if not messagebox.askyesno(
-                "Confirmer la suppression",
-                f"Supprimer le cadre '{filename.replace('_1.png', '')}' ?"
+                t('selector.msg.confirm.delete_title'),
+                t('selector.msg.confirm.delete_message', name=filename.replace('_1.png', ''))
         ):
             return  # abandon si non
 
@@ -455,50 +712,64 @@ class CadreSelecteur:
             if path.exists(file):
                 try:
                     remove(file)
-                except Exception as e:
-                    errors.append(str(e))
+                    logger.debug(f"Deleted file: {file}")
+                except (OSError, PermissionError) as e:
+                    logger.warning(f"Failed to delete {file}: {type(e).__name__}")
+                    errors.append(f"{path.basename(file)}: {str(e)}")
 
         if errors:
-            messagebox.showerror("Erreur suppression",
-                                 f"Erreur lors de la suppression:\n"
-                                 f"{errors}")
+            error_msg = "\n".join(errors)
+            handle_exception(
+                FileOperationError(f"errors.file_operation.io_error",
+                                  {'files': error_msg}),
+                operation="delete_frame",
+                show_messagebox=True,
+                log_level='warning'
+            )
         else:
-            messagebox.showinfo("Cadre supprimé", "Cadre supprimé avec succès.")
+            logger.info(f"Frame deleted successfully: {filename}")
+            messagebox.showinfo(t('selector.msg.info.deleted_title'), t('selector.msg.info.deleted_message'))
 
         # Rafraîchir la liste
         self.list_files_and_generate_thumbnails()
 
+    def edit_border(self, filename):
+        """
+        Lance l'éditeur de cadres en ouvrant le projet et
+        minimise la fenêtre principale pendant l'édition.
+        """
+        self.master.iconify()
 
-def check_mandatory_path():
-    """
-    Vérifie la présence des répertoires indispensable au bon fonctionnement.
-    """
-    # verification de la presence des répertoire sources et dest.
-    message_error = ''
-    if not path.exists(template_path):
-        message_error = message_error +\
-                        "SOURCES :\nle repertoire :" +\
-                        template_path +\
-                        " n'est pas accessible\n\n"
+        self.tk_editor = Toplevel(self.master)
 
-    if not path.exists(destination_path):
-        message_error = message_error + \
-                        "DESTINATION:\nle repertoire :" + \
-                        destination_path + \
-                        " n'est pas accessible\n\n"
+        # Lier la fonction on_closing à l'événement de fermeture de la fenêtre
+        self.tk_editor.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-    # verification de la presence du template par default.
-    template_dft_file = path.join(template_path,
-                                  TEMPLATE_NAME_STD)
-    if not path.exists(template_dft_file):
-        message_error = message_error + \
-                        "TEMPLATE:\nle fichier :" + \
-                        template_dft_file + \
-                        " n'est pas accessible\n\n"
+        json_file = path.join(self.source_directory,
+                              filename.replace('_1.png', '.json'))
 
-    if message_error != '':
-        messagebox.showerror(title='erreur fichiers', message=message_error)
-        quit()
+        ImageEditorApp(self.tk_editor,
+                       template=template_path,
+                       destination=destination_path,
+                       project=json_file)
+
+    def _photoimage_from_pil(self, pil_image):
+        """
+        Crée et retourne un ImageTk.PhotoImage à partir d'une image PIL.
+        Fait une copie et attache l'image au master de l'instance pour
+        éviter des erreurs Tkinter et la collecte par le garbage collector.
+        """
+        try:
+            return ImageTk.PhotoImage(pil_image.copy(), master=getattr(self, 'master', None))
+        except (RuntimeError, tk.TclError) as e:
+            # Environnements headless ou erreur Tkinter : retenter sans master
+            logger.debug(f"PhotoImage with master failed: {e}; retrying without master")
+            try:
+                return ImageTk.PhotoImage(pil_image.copy())
+            except tk.TclError as e2:
+                # Errors from Tk internals when running headless or no display.
+                logger.exception("Failed to create PhotoImage (even without master)", exc_info=e2)
+                return None
 
 
 if __name__ == "__main__":

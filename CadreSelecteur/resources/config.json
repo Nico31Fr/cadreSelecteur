@@ -1,0 +1,10 @@
+{
+  "WINDOWS_SIZE": "1000x600",
+  "THUMBNAIL_H": 128,
+  "THUMBNAIL_L": 85,
+  "TEMPLATE_NAME": "template.xml",
+  "TEMPLATE_NAME_STD": "template_1.xml",
+  "CADRE_NAME_1": "cadre_1.png",
+  "CADRE_NAME_4": "cadre_4.png",
+  "LANGUAGE": "fr"
+}

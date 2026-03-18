@@ -8,6 +8,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from .layer import Layer
 from os.path import basename
+# Import du traducteur
+from ..i18n import t
 
 
 class LayerImage(Layer):
@@ -103,12 +105,12 @@ class LayerImage(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        tk.Label(frame,
-                 justify="left",
-                 text=f'Calque {self.name}\n'
-                      f'Nom : {basename(self.imported_image_path)}\n'
-                      f'Position : {self.image_position}\n'
-                      f'Taille : {self.image_imported_image_size}').pack(anchor='nw')
+        info = t('layerimage.label.info',
+                  name=self.name,
+                  filename=(basename(self.imported_image_path) if self.imported_image_path else ''),
+                  position=self.image_position,
+                  size=self.image_imported_image_size)
+        tk.Label(frame, justify="left", text=info).pack(anchor='nw')
 
     def clone(self, tk_parent, parent):
         """
@@ -194,13 +196,16 @@ class LayerImage(Layer):
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)
                 obj.image_imported_image = obj.original_image.resize(obj.image_imported_image_size)
             except FileNotFoundError:
-                print(f"Fichier non trouvé: {obj.imported_image_path}")
+                logger = __import__('logging').getLogger(__name__)
+                logger.warning(f"Fichier non trouvé: {obj.imported_image_path}")
                 obj.original_image = None
             except UnidentifiedImageError:
-                print(f"Erreur d'identification de l'image: {obj.imported_image_path}")
+                logger = __import__('logging').getLogger(__name__)
+                logger.warning(f"Erreur d'identification de l'image: {obj.imported_image_path}")
                 obj.original_image = None
             except IOError:
-                print(f"Erreur E/S: {obj.imported_image_path}")
+                logger = __import__('logging').getLogger(__name__)
+                logger.warning(f"Erreur E/S: {obj.imported_image_path}")
                 obj.original_image = None
 
         return obj

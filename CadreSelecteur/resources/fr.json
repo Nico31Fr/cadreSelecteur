@@ -1,0 +1,178 @@
+{
+  "selector": {
+    "title": "Sélecteur de cadre pour piBooth {version}",
+    "label": {
+      "available_frames": "Cadres disponibles",
+      "installed_frame": "Cadre installé"
+    },
+    "button": {
+      "new_frame": "nouveau cadre",
+      "apply": "Appliquer",
+      "quit": "Quitter"
+    },
+    "preview": {
+      "title": "Prévisualisation"
+    },
+    "msg": {
+      "error": {
+        "dir_missing_title": "Erreur repertoire",
+        "dir_missing_message": "Le repertoire source {path} est introuvable.",
+        "copy": "Erreur copie",
+        "copy_template": "Erreur copie template",
+        "no_selection_title": "Erreur",
+        "no_selection_message": "Aucune image sélectionnée. Veuillez choisir une image."
+      },
+      "warn": {
+        "delete_impossible_title": "Suppression impossible",
+        "delete_impossible_message": "Impossible de supprimer le dernier cadre disponible."
+      },
+      "confirm": {
+        "delete_title": "Confirmer la suppression",
+        "delete_message": "Supprimer le cadre '{name}' ?"
+      },
+      "info": {
+        "deleted_title": "Cadre supprimé",
+        "deleted_message": "Cadre supprimé avec succès."
+      }
+    }
+  },
+  "editor": {
+    "title": "Créateur de cadre {version}",
+    "label": {
+      "template": "template : "
+    },
+    "button": {
+      "load": "charger",
+      "save": "Sauvegarder",
+      "generate": "Générer les cadres"
+    },
+    "msg": {
+      "error": {
+        "no_template_title": "Aucun template",
+        "no_template_message": "Aucun fichier template_*.xml trouvé dans {path}",
+        "file": "Erreur de fichier",
+        "copy": "Erreur de copie",
+        "no_project_name_title": "erreur nom du projet",
+        "no_project_name_message": "saisir le nom du projet",
+        "no_dir_title": "erreur repertoire",
+        "no_dir_message": "sélectionner un repertoire de sortie"
+      },
+      "info": {
+        "export_ok_title": "export réussie",
+        "export_ok_message": "Les fichiers ont été générés avec succès.",
+        "save_ok_title": "Sauvegarde réussie",
+        "save_ok_message": "Le projet a été sauvegardé avec succès.",
+        "load_ok_title": "Chargement réussi",
+        "load_ok_message": "Le projet a été chargé avec succès."
+      }
+    }
+  },
+  "image": {
+    "button": {
+      "add_image": "Ajouter Image",
+      "add_text": "Ajouter Texte",
+      "delete": "Supprimer",
+      "edit": "editer",
+      "move_up": "  ˄  ",
+      "move_down": "  ˅  "
+    },
+    "label": {
+      "bg_color": "Couleur du fond :"
+    },
+    "msg": {
+      "error": {
+        "save": "Erreur d'enregistrement",
+        "color": "Erreur de couleur",
+        "text": "Erreur de texte"
+      }
+    },
+    "colorchooser": {
+      "title": "Choisissez une couleur"
+    }
+  },
+  "layerimage": {
+    "label": {
+      "info": "Calque {name}\nNom : {filename}\nPosition : {position}\nTaille : {size}"
+    }
+  },
+  "layer": {
+    "exclusion_name": "Zones insertion photos"
+  },
+  "layertext": {
+    "default_text": "Texte",
+    "default_name": "Texte {n}",
+    "label": {
+      "layer": "calque {name}"
+    },
+    "preview": "Aperçu : {family}",
+    "chosen_font": "Police choisie : {font}",
+    "button": {
+      "color": "Couleur",
+      "font": "Police"
+    },
+    "msg": {
+      "warn": {
+        "font_not_found_title": "Police introuvable",
+        "font_not_found_message": "La police '{family}' n'a pas été trouvée dans Fonts/. Police par défaut utilisée."
+      },
+      "fontchooser": {
+        "title": "Choisir une police"
+      }
+    }
+  },
+  "common": {
+    "yes": "Oui",
+    "no": "Non",
+    "ok": "OK",
+    "cancel": "Annuler"
+  },
+  "menu": {
+    "language": "Langue",
+    "fr": "Français",
+    "en": "Anglais"
+  },
+  "errors": {
+    "general": {
+      "title": "Erreur lors de {operation}"
+    },
+    "file_operation": {
+      "not_found": "Le fichier ou répertoire n'existe pas.",
+      "permission_denied": "Permission refusée lors de l'accès au fichier.",
+      "is_directory": "Opération invalide : cible est un répertoire.",
+      "io_error": "Erreur d'entrée/sortie lors de l'accès au fichier.",
+      "unknown": "Erreur inconnue lors de l'opération fichier."
+    },
+    "image_processing": {
+      "load_failed": "Impossible de charger l'image.",
+      "format_unsupported": "Format d'image non supporté.",
+      "resize_failed": "Impossible de redimensionner l'image.",
+      "render_failed": "Impossible de rendre l'image.",
+      "unknown": "Erreur inconnue lors du traitement d'image."
+    },
+    "project": {
+      "malformed_data": "Format de projet invalide ou données corrompues.",
+      "save_failed": "Impossible de sauvegarder le projet.",
+      "load_failed": "Impossible de charger le projet.",
+      "invalid_structure": "Structure de projet non reconnue.",
+      "unknown": "Erreur inconnue lors de l'opération projet."
+    },
+    "ui": {
+      "tkinter_error": "Erreur interface graphique Tkinter.",
+      "widget_error": "Erreur lors de la manipulation d'un widget.",
+      "unknown": "Erreur inconnue dans l'interface."
+    },
+    "configuration": {
+      "invalid_json": "Fichier de configuration JSON invalide.",
+      "missing_key": "Clé de configuration manquante : {key}",
+      "invalid_value": "Valeur de configuration invalide : {key}",
+      "unknown": "Erreur inconnue dans la configuration."
+    },
+    "validation": {
+      "invalid_value": "Valeur invalide fournie.",
+      "invalid_path": "Chemin invalide ou sécurité compromise.",
+      "empty_field": "Champ requis vide : {field}",
+      "unknown": "Erreur de validation."
+    }
+  }
+}
+
