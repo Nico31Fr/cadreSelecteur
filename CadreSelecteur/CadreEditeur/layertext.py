@@ -6,23 +6,15 @@ from PIL import ImageFont, ImageDraw, Image
 import tkinter as tk
 from tkinter import messagebox, colorchooser
 from os import path, listdir
-import sys
+import logging
 
 from .layer import Layer
 from .text import ask_font
+from ..path_resolver import resolve_file_in_package
 # Import du traducteur
 from ..i18n.translator import _t
 
-
-def get_app_dir():
-    """Retourne le dossier contenant le script (mode normal)
-       ou le .exe PyInstaller (mode frozen)."""
-    if getattr(sys, 'frozen', False):
-        # chemin de l'exécutable
-        return path.dirname(sys.executable)
-    else:
-        # chemin du script .py
-        return path.join(path.dirname(path.abspath(__file__)), "..")
+logger = logging.getLogger(__name__)
 
 
 class LayerText(Layer):
@@ -51,13 +43,16 @@ class LayerText(Layer):
         self.font_color = '#000000'
         self.sel_font = {'family': "arial", 'size': 32}
 
-        # Répertoire Fonts
-        self.fonts_dir = path.join(get_app_dir(), "Fonts")
+        # Répertoire Fonts (utiliser path_resolver centralisé)
+        fonts_dir = resolve_file_in_package('Fonts')
+        self.fonts_dir = str(fonts_dir)
 
         # Police par défaut
-        self.font_name = self.find_font_path(self.sel_font['family']) or path.join(get_app_dir(),
-                                                                                   "Fonts/Anton-Regular.ttf")
-        self.pil_font = ImageFont.truetype(str(self.font_name), self.sel_font['size'])
+        default_font = self.find_font_path(self.sel_font['family'])
+        if not default_font:
+            default_font = fonts_dir / "Anton-Regular.ttf"
+        self.font_name = str(default_font)
+        self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
 
         self.txt_start_drag_pos = None
 

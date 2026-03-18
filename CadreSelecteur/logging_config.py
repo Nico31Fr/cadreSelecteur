@@ -4,14 +4,15 @@ from logging import FileHandler, Formatter
 import sys
 import tempfile
 
-BASE_DIR = Path(__file__).resolve().parent
-# Si on est dans un exécutable PyInstaller, ne pas écrire dans _MEIPASS (non modifiable) —
-# utiliser un emplacement temporaire ou user data dir. Sinon, utiliser resources/ du package.
-if getattr(sys, 'frozen', False):
-    # Utiliser un dossier dans le répertoire temporaire spécifique à l'application
+from .path_resolver import resolve_resources_dir, PathResolver
+
+# Utiliser le resolver pour déterminer où écrire les logs
+if PathResolver.is_frozen():
+    # Mode PyInstaller: logs dans tempdir (lecture seule _MEIPASS)
     RESOURCES_DIR = Path(tempfile.gettempdir()) / 'CadreSelecteur'
 else:
-    RESOURCES_DIR = BASE_DIR / 'resources'
+    # Mode développement: logs dans resources/
+    RESOURCES_DIR = resolve_resources_dir()
 
 # Créer le dossier (parents=True pour éviter WinError 3 si le parent n'existe pas)
 RESOURCES_DIR.mkdir(parents=True, exist_ok=True)

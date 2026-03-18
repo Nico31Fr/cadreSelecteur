@@ -6,39 +6,17 @@ comme demandé.
 Exporte des constantes : WINDOWS_SIZE, THUMBNAIL_H, THUMBNAIL_L, TEMPLATE_NAME,
 TEMPLATE_NAME_STD, CADRE_NAME_1, CADRE_NAME_4
 """
-from pathlib import Path
 import json
 import logging
-import sys
 from typing import Any
+
+from .path_resolver import resolve_file_in_resources, resolve_resources_dir
 
 logger = logging.getLogger(__name__)
 
-BASE_DIR = Path(__file__).resolve().parent
-# En mode PyInstaller, tenter de lire CONFIG depuis _MEIPASS
-MEIPASS_DIR = None
-if getattr(sys, 'frozen', False):
-    MEIPASS_DIR = Path(getattr(sys, '_MEIPASS', ''))
-
-if MEIPASS_DIR:
-    # essayer plusieurs emplacements plausibles
-    possible = [
-        MEIPASS_DIR / 'CadreSelecteur' / 'resources',
-        MEIPASS_DIR / 'resources',
-        MEIPASS_DIR,
-    ]
-    RESOURCES_DIR = None
-    for p in possible:
-        if p.exists():
-            RESOURCES_DIR = p
-            break
-    # fallback sur le répertoire resources du package si aucun des chemins MEIPASS n'existe
-    if RESOURCES_DIR is None:
-        RESOURCES_DIR = BASE_DIR / 'resources'
-else:
-    RESOURCES_DIR = BASE_DIR / 'resources'
-
-CONFIG_PATH = RESOURCES_DIR / 'config.json'
+# Utiliser le resolver centralisé pour les chemins
+RESOURCES_DIR = resolve_resources_dir()
+CONFIG_PATH = resolve_file_in_resources('config.json')
 
 # Defaults in case the file is missing or invalid
 _defaults = {
