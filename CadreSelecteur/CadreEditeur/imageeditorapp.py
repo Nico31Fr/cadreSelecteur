@@ -18,6 +18,7 @@ from .layerimage import LayerImage
 from CadreSelecteur import __version__
 from CadreSelecteur.exceptions import ProjectError, FileOperationError
 from CadreSelecteur.error_handler import handle_exception
+from CadreSelecteur.validators import Validators, ValidationError
 # Import du traducteur
 from ..i18n.translator import _t
 
@@ -239,6 +240,14 @@ class ImageEditorApp:
             if tmp_prj_name == "":
                 messagebox.showerror(title=_t('editor.msg.error.no_project_name_title'),
                                      message=_t('editor.msg.error.no_project_name_message'))
+                return None
+
+            # Valider le nom du projet (prévention chemin traversal)
+            try:
+                tmp_prj_name = Validators.validate_project_name(tmp_prj_name)
+            except ValidationError as e:
+                messagebox.showerror(title=_t('editor.msg.error.no_project_name_title'),
+                                   message=f"Nom de projet invalide: {str(e)}")
                 return None
 
             if self.standalone:
