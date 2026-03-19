@@ -152,21 +152,30 @@ class TestPathValidation:
         p = Validators.validate_path(str(tmp_path))
         assert isinstance(p, Path)
 
-    def test_path_traversal(self):
+    def test_path_traversal(self, tmp_path):
         """Chemins traversal doivent être résolus (et échouer si non-existent)."""
         # Ce test montre que resolve() évite les traversals
-        p = Validators.validate_path("/etc/../etc/passwd", must_exist=False)
-        assert "/etc" in str(p)
+        # Créer un chemin avec traversal (..) dans tmp_path
+        test_file = tmp_path / "test" / "file.txt"
+        traversal_path = str(test_file.parent.parent / "test" / ".." / "test" / "file.txt")
+        p = Validators.validate_path(traversal_path, must_exist=False)
+        # Le chemin doit être résolu (sans les ..)
+        assert "test" in str(p)
+        # Vérifier que c'est un chemin absolu résolu
+        assert p.is_absolute()
 
     def test_nonexistent_path_ignored(self):
         """Chemins inexistants OK si must_exist=False."""
-        p = Validators.validate_path("/nonexistent/path", must_exist=False)
+        # Utiliser un chemin inexistant qui fonctionne sur tous les systèmes
+        p = Validators.validate_path("./this_path_does_not_exist_12345/subdir", must_exist=False)
         assert isinstance(p, Path)
 
     def test_nonexistent_path_required(self, tmp_path):
         """Chemins inexistants échouent si must_exist=True."""
+        # Créer un chemin inexistant basé sur tmp_path pour garantir qu'il n'existe pas
+        nonexistent_path = tmp_path / "definitely" / "nonexistent" / "path" / "that_wont_exist"
         with pytest.raises(ValidationError):
-            Validators.validate_path("/definitely/nonexistent/path", must_exist=True)
+            Validators.validate_path(str(nonexistent_path), must_exist=True)
 
 
 class TestProjectNameValidation:
