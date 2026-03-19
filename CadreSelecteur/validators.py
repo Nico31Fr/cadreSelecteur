@@ -113,6 +113,21 @@ class Validators:
         return color
 
     @staticmethod
+    def is_valid_hex_color(color: str) -> bool:
+        """
+        Vérifie si une couleur hex est valide (sans lever d'exception).
+        
+        Args:
+            color: couleur en format hex
+            
+        Returns:
+            True si valide, False sinon
+        """
+        if not color or not isinstance(color, str):
+            return False
+        return bool(Validators.HEX_COLOR_REGEX.match(color.strip().upper()))
+
+    @staticmethod
     def validate_positive_number(value: Union[int, float], 
                                  name: str = "value",
                                  allow_zero: bool = False) -> Union[int, float]:
@@ -313,6 +328,35 @@ class Validators:
 
         logger.debug(f"JSON structure validated: {expected_type.__name__}")
         return data
+
+    @staticmethod
+    def validate_project_filename(filepath: str) -> str:
+        """
+        Valide un chemin de fichier de projet (.json).
+        
+        Args:
+            filepath: chemin du fichier
+            
+        Returns:
+            Chemin validé
+            
+        Raises:
+            ValidationError: si invalide
+        """
+        if not filepath:
+            raise ValidationError("Project filepath cannot be empty")
+        
+        p = Path(filepath)
+        
+        # Vérifier extension
+        if p.suffix.lower() != '.json':
+            raise ValidationError(f"Project file must be .json, got {p.suffix}")
+        
+        # Valider nom
+        Validators.validate_filename(p.name)
+        
+        logger.debug(f"Project filename validated: {filepath}")
+        return filepath
 
 
 __all__ = ['Validators', 'ValidationError']
