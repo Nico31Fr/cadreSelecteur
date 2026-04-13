@@ -1,4 +1,5 @@
-# PiBooth Cadre Sélecteur
+ ![IHM](CadreSelecteur/resources/cadreSelecteur.png)
+ # PiBooth Cadre Sélecteur
 
 ## Introduction
 
