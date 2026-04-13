@@ -191,7 +191,7 @@ PiBooth expects frame selection result at `Cadres/cadre_1.png` or `Cadres/cadre_
 
 ### Multiprocessing Behavior
 
-- Splash screen runs in separate process (3-second display)
+- Splash screen runs in separate process
 - Main app in separate process (prevents freeze during startup)
 - Communicate via file system only (no queues/pipes needed)
 

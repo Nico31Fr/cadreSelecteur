@@ -17,6 +17,7 @@ import logging
 from . import __version__
 # Assurer la configuration centrale du logging (ajoute un FileHandler vers resources/image_editor.log)
 from .logging_config import LOG_PATH  # noqa: F401
+from .ttk_theme import apply_clam_theme
 from .CadreEditeur.imageeditorapp import ImageEditorApp
 from .config_loader import (
     WINDOWS_SIZE,
@@ -114,6 +115,9 @@ class CadreSelecteur:
         self.quit_button = None
         self.add_new_border = None
         self.master = Tk()
+
+        # Apply ttk clam theme
+        apply_clam_theme(self.master)
 
         self.master.title(t('selector.title', version=__version__))
         self.source_directory = template_path

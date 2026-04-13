@@ -29,6 +29,8 @@ _defaults = {
     "CADRE_NAME_4": "cadre_4.png",
     # langue par défaut (français)
     "LANGUAGE": "fr",
+    # thème ttk par défaut
+    "TTK_THEME": "clam",
 }
 
 _config: dict[str, Any] = _defaults.copy()
@@ -55,6 +57,8 @@ CADRE_NAME_1: str = str(_config.get("CADRE_NAME_1", _defaults["CADRE_NAME_1"]))
 CADRE_NAME_4: str = str(_config.get("CADRE_NAME_4", _defaults["CADRE_NAME_4"]))
 # Exposer la langue choisie dans 'config.json' (fallback sur la valeur par défaut)
 LANGUAGE: str = str(_config.get("LANGUAGE", _defaults["LANGUAGE"]))
+# Exposer le thème ttk choisi dans 'config.json' (fallback sur la valeur par défaut)
+TTK_THEME: str = str(_config.get("TTK_THEME", _defaults["TTK_THEME"]))
 
 __all__ = [
     "WINDOWS_SIZE",
@@ -65,5 +69,6 @@ __all__ = [
     "CADRE_NAME_1",
     "CADRE_NAME_4",
     "LANGUAGE",
+    "TTK_THEME",
     "RESOURCES_DIR",
 ]

@@ -16,6 +16,7 @@ from .layerexcluzone import LayerExcluZone
 from .layertext import LayerText
 from .layerimage import LayerImage
 from CadreSelecteur import __version__
+from CadreSelecteur.ttk_theme import apply_clam_theme
 from CadreSelecteur.exceptions import ProjectError, FileOperationError
 from CadreSelecteur.error_handler import handle_exception
 from CadreSelecteur.validators import Validators, ValidationError
@@ -68,6 +69,9 @@ class ImageEditorApp:
             # Dimension de la fenêtre
             self.prj_name = 'cadre_x'
             self.tk_root = root
+
+            # Apply ttk clam theme
+            apply_clam_theme(self.tk_root)
 
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
