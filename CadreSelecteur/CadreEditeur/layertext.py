@@ -22,16 +22,18 @@ class LayerText(Layer):
     Calque texte éditable, positionable, redimensionnable.
     """
 
-    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name="Text"):
+    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name="Text", base_dir=None):
         """
         Args:
             parent (object): widget parent Tkinter.
             canva_size, image_size, ratio : cf. Layer.
             name (str): nom du calque.
+            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
         """
         super().__init__(name, canva_size, image_size, ratio)
         self.tk_parent = tk_parent
         self.parent = parent
+        self.base_dir = base_dir
         self.layer_type = 'Texte'
 
         # Variables texte
@@ -129,7 +131,7 @@ class LayerText(Layer):
                 else:
                     messagebox.showwarning(_t('layertext.msg.warn.font_not_found_title'),
                                            _t('layertext.msg.warn.font_not_found_message', family=family))
-                    self.font_name = path.join(get_app_dir(), "Fonts/Anton-Regular.ttf")
+                    self.font_name = str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf")
 
             self.parent.update_canvas()
 
@@ -187,7 +189,8 @@ class LayerText(Layer):
             (self.CANVA_W, self.CANVA_H),
             (self.IMAGE_W, self.IMAGE_H),
             self.RATIO,
-            name=self.name + "_copie"
+            name=self.name + "_copie",
+            base_dir=self.base_dir
         )
         new_layer.display_position = tuple(self.display_position)
         new_layer.image_position = tuple(self.image_position)
@@ -218,7 +221,7 @@ class LayerText(Layer):
         }
 
     @staticmethod
-    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None, base_dir=None):
         """
         Recrée un LayerText à partir d'un dictionnaire sérialisé.
 
@@ -230,6 +233,7 @@ class LayerText(Layer):
             image_size (tuple): (largeur, hauteur) pour export.
             ratio (int): rapport export/canvas.
             name (str, optionnel): nom du calque.
+            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
 
         Returns:
             LayerText: un nouveau calque texte restauré.
@@ -247,7 +251,8 @@ class LayerText(Layer):
             canva_size,
             image_size,
             ratio,
-            name=default_name
+            name=default_name,
+            base_dir=base_dir
         )
         obj.display_position = tuple(dct.get("display_position", (0, 0)))
         obj.image_position = tuple(dct.get("image_position", (0, 0)))
@@ -260,7 +265,6 @@ class LayerText(Layer):
         obj.text.set(dct.get("text", fallback_text))
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
-        obj.font_name = obj.find_font_path(obj.sel_font['family']) or path.join(get_app_dir(),
-                                                                                "Fonts/Anton-Regular.ttf")
+        obj.font_name = obj.find_font_path(obj.sel_font['family']) or str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf")
         obj.pil_font = ImageFont.truetype(str(obj.font_name), obj.sel_font['size'])
         return obj

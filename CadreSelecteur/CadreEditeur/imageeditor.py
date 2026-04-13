@@ -25,19 +25,21 @@ class ImageEditor:
     et d'enregistrer la composition finale.
     """
 
-    def __init__(self, root, exclusion_zone):
+    def __init__(self, root, exclusion_zone, base_dir=None):
         """
         Initialise l'application ImageEditor avec une fenêtre tkinter racine.
 
         Paramètres :
             root (tk.Tk) : La fenêtre tkinter racine.
             Exclusion_zone : liste contenant les zone à garder en transparent
+            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
         """
         self.CANVA_W, self.CANVA_H = 600, 400
         # Dimension de l'image générée
         self.IMAGE_W, self.IMAGE_H = 1800, 1200
         self.RATIO = int(self.IMAGE_W // self.CANVA_W)
         self.exclusion_zone = exclusion_zone
+        self.base_dir = base_dir
         self.imported_image_path = None
         self.display_imported_image = None
         self.image_imported_image = None
@@ -156,7 +158,8 @@ class ImageEditor:
                            (self.CANVA_W, self.CANVA_H),
                            (self.IMAGE_W, self.IMAGE_H),
                            self.RATIO,
-                           name=f"Image {n}")
+                           name=f"Image {n}",
+                           base_dir=self.base_dir)
         if layer.import_image():
             if self.add_layer(layer):
                 self.active_layer_idx = len(self.layers)-1
@@ -181,7 +184,8 @@ class ImageEditor:
                           (self.CANVA_W, self.CANVA_H),
                           (self.IMAGE_W, self.IMAGE_H),
                           self.RATIO,
-                          name=name)
+                          name=name,
+                          base_dir=self.base_dir)
         if self.add_layer(layer):
             self.active_layer_idx = len(self.layers) - 1
         self.refresh_listbox()

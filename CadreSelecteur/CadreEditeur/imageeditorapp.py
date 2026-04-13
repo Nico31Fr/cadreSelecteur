@@ -66,6 +66,10 @@ class ImageEditorApp:
             self.template = template
             self.destination = destination
             self.standalone = standalone
+
+            # Calculer base_dir (répertoire courant)
+            self.base_dir = Path.cwd()
+
             # Dimension de la fenêtre
             self.prj_name = 'cadre_x'
             self.tk_root = root
@@ -118,7 +122,7 @@ class ImageEditorApp:
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app1_frame.grid(column=0, row=1, padx=5, pady=5)
-            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0])
+            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], base_dir=self.base_dir)
 
             # bouton synchronisation droite gauche
             self.arrow_frame = tk.Frame(self.main_frame)
@@ -152,7 +156,7 @@ class ImageEditorApp:
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app4_frame.grid(column=2, row=1, padx=10, pady=10)
-            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1])
+            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], base_dir=self.base_dir)
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')

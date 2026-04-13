@@ -17,18 +17,20 @@ class LayerImage(Layer):
     Calque image importée, redimensionnable et positionable.
     """
 
-    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name='Image'):
+    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name='Image', base_dir=None):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
-            canva_size (tuple): Dimensions du canvas d’édition.
-            image_size (tuple): Dimensions de l’image export.
+            canva_size (tuple): Dimensions du canvas d'édition.
+            image_size (tuple): Dimensions de l'image export.
             ratio (int): rapport image/canvas.
             name (str): Nom du calque.
+            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
         """
         super().__init__(name, canva_size, image_size, ratio)
         self.tk_parent = tk_parent
         self.parent = parent
+        self.base_dir = base_dir
         self.layer_type = 'Image'
         self.imported_image_path = None
         self.original_image = None
@@ -41,16 +43,36 @@ class LayerImage(Layer):
     def import_image(self):
         """
         Ouvre un dialogue pour importer une image locale.
-        Met à jour la miniature de prévisualisation et l’image exportable.
+        Met à jour la miniature de prévisualisation et l'image exportable.
+        Stocke le chemin en relatif si base_dir est défini.
 
         Returns :
             bool : True si import OK, False sinon.
         """
-        self.imported_image_path = filedialog.askopenfilename(parent=self.tk_parent)
-        if not self.imported_image_path:
+        from pathlib import Path
+
+        imported_path = filedialog.askopenfilename(parent=self.tk_parent)
+        if not imported_path:
             return False
+
+        # Convertir en chemin relatif si base_dir est disponible
+        if self.base_dir:
+            try:
+                abs_path = Path(imported_path)
+                base = Path(self.base_dir)
+                rel_path = abs_path.relative_to(base)
+                self.imported_image_path = str(rel_path).replace('\\', '/')
+            except (ValueError, Exception) as e:
+                # Si la conversion relative échoue, utiliser le chemin absolu
+                logger = __import__('logging').getLogger(__name__)
+                logger.warning(f"Impossible de convertir chemin en relatif: {imported_path}, {e}")
+                self.imported_image_path = imported_path
+        else:
+            # Si base_dir n'est pas défini, utiliser le chemin absolu
+            self.imported_image_path = imported_path
+
         try:
-            self.original_image = Image.open(self.imported_image_path).convert('RGBA')
+            self.original_image = Image.open(imported_path).convert('RGBA')
         except UnidentifiedImageError:
             messagebox.showerror("Erreur d'image", "Image corrompue ou illisible.", parent=self.tk_parent)
             return False
@@ -122,7 +144,8 @@ class LayerImage(Layer):
             (self.CANVA_W, self.CANVA_H),
             (self.IMAGE_W, self.IMAGE_H),
             self.RATIO,
-            name=self.name + "_copie"
+            name=self.name + "_copie",
+            base_dir=self.base_dir
         )
         new_layer.display_position = tuple(self.display_position)
         new_layer.image_position = tuple(self.image_position)
@@ -159,7 +182,7 @@ class LayerImage(Layer):
         }
 
     @staticmethod
-    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None, base_dir=None):
         """
         Recrée un LayerImage à partir d'un dictionnaire sérialisé.
 
@@ -171,6 +194,7 @@ class LayerImage(Layer):
             image_size (tuple): (largeur, hauteur) pour export.
             ratio (int): rapport export/canvas.
             name (str, optionnel): nom du calque.
+            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
 
         Returns:
             LayerImage: un nouveau calque image restauré.
@@ -180,7 +204,8 @@ class LayerImage(Layer):
                          canva_size,
                          image_size,
                          ratio,
-                         name=dct.get("name", name or "Image"))
+                         name=dct.get("name", name or "Image"),
+                         base_dir=base_dir)
         obj.display_position = tuple(dct.get("display_position", (0, 0)))
         obj.image_position = tuple(dct.get("image_position", (0, 0)))
         obj.visible = dct.get("visible", True)
