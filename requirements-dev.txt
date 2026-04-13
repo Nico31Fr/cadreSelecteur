@@ -1,0 +1,18 @@
+# Development & Testing Dependencies
+# Inclut toutes les dépendances de production
+-r requirements.txt
+# Testing
+pytest==9.0.2
+pluggy==1.6.0
+# Linting & Code Quality
+flake8==7.3.0
+pycodestyle==2.14.0
+pyflakes==3.4.0
+mccabe==0.7.0
+# Build & Distribution
+setuptools==80.9.0
+wheel==0.45.1
+PyInstaller==6.17.0
+pyinstaller-hooks-contrib==2025.10
+# Utilities
+Pygments==2.19.2

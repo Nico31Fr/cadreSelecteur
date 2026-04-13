@@ -1,0 +1,169 @@
+{
+  "app1": {
+    "layers": [
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          0,
+          0
+        ],
+        "image_position": [
+          0,
+          0
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            20.0,
+            20.0,
+            560.0,
+            300.0
+          ]
+        ]
+      },
+      {
+        "class": "LayerImage",
+        "layer_type": "Image",
+        "name": "Image 1",
+        "display_position": [
+          -34,
+          220
+        ],
+        "image_position": [
+          -102,
+          660
+        ],
+        "visible": true,
+        "locked": false,
+        "imported_image_path": "/home/nicolas/Images/coeur.png",
+        "display_imported_image_size": [
+          400,
+          400
+        ],
+        "image_imported_image_size": [
+          1200,
+          1200
+        ]
+      },
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          216,
+          345
+        ],
+        "image_position": [
+          648,
+          1035
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne Soirée",
+        "font_color": "#000000",
+        "sel_font": {
+          "family": "adelia",
+          "size": 46
+        },
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/CadreEditeur/../Fonts/adelia.ttf"
+      }
+    ],
+    "background_couleur": "#9cc4d9"
+  },
+  "app4": {
+    "layers": [
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          -56,
+          -12
+        ],
+        "image_position": [
+          -168,
+          -36
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            20.0,
+            20.0,
+            270.0,
+            140.0
+          ],
+          [
+            310.0,
+            20.0,
+            270.0,
+            140.0
+          ],
+          [
+            20.0,
+            180.0,
+            270.0,
+            140.0
+          ],
+          [
+            310.0,
+            180.0,
+            270.0,
+            140.0
+          ]
+        ]
+      },
+      {
+        "class": "LayerImage",
+        "layer_type": "Image",
+        "name": "Image 1",
+        "display_position": [
+          -34,
+          220
+        ],
+        "image_position": [
+          -102,
+          660
+        ],
+        "visible": true,
+        "locked": false,
+        "imported_image_path": "/home/nicolas/Images/coeur.png",
+        "display_imported_image_size": [
+          400,
+          400
+        ],
+        "image_imported_image_size": [
+          1200,
+          1200
+        ]
+      },
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          216,
+          345
+        ],
+        "image_position": [
+          648,
+          1035
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne Soirée",
+        "font_color": "#000000",
+        "sel_font": {
+          "family": "adelia",
+          "size": 46
+        },
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/CadreEditeur/../Fonts/adelia.ttf"
+      }
+    ],
+    "background_couleur": "#9cc4d9"
+  },
+  "template": "template_1.xml"
+}

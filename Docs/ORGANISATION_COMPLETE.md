@@ -28,12 +28,7 @@ cadreSelecteur/
 │       ├── EditorModel.md               ← API documentation
 │       ├── SelectorModel.md             ← API documentation
 │       └── EXAMPLES.md                  ← Examples d'usage
-│
-└── [anciens documents]                    ← Encore à la racine
-    ├── DECOUPLING_STRATEGY.md
-    ├── INTEGRATION_GUIDE_PHASE2.md
-    ├── REFACTORING_MVP_REPORT.md
-    └── [etc]
+
 ```
 ---
 ## 🎯 Points d'Entrée Recommandés
