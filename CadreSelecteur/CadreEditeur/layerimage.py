@@ -8,8 +8,12 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from .layer import Layer
 from os.path import basename
+import shutil
+import logging
 # Import du traducteur
 from ..i18n import t
+
+logger = logging.getLogger(__name__)
 
 
 class LayerImage(Layer):
@@ -43,8 +47,8 @@ class LayerImage(Layer):
     def import_image(self):
         """
         Ouvre un dialogue pour importer une image locale.
+        Copie l'image dans {base_dir}/Images/ et stocke le chemin relatif.
         Met à jour la miniature de prévisualisation et l'image exportable.
-        Stocke le chemin en relatif si base_dir est défini.
 
         Returns :
             bool : True si import OK, False sinon.
@@ -55,23 +59,8 @@ class LayerImage(Layer):
         if not imported_path:
             return False
 
-        # Convertir en chemin relatif si base_dir est disponible
-        if self.base_dir:
-            try:
-                abs_path = Path(imported_path)
-                base = Path(self.base_dir)
-                rel_path = abs_path.relative_to(base)
-                self.imported_image_path = str(rel_path).replace('\\', '/')
-            except (ValueError, Exception) as e:
-                # Si la conversion relative échoue, utiliser le chemin absolu
-                logger = __import__('logging').getLogger(__name__)
-                logger.warning(f"Impossible de convertir chemin en relatif: {imported_path}, {e}")
-                self.imported_image_path = imported_path
-        else:
-            # Si base_dir n'est pas défini, utiliser le chemin absolu
-            self.imported_image_path = imported_path
-
         try:
+            # Valider l'image avant de la copier
             self.original_image = Image.open(imported_path).convert('RGBA')
         except UnidentifiedImageError:
             messagebox.showerror("Erreur d'image", "Image corrompue ou illisible.", parent=self.tk_parent)
@@ -79,6 +68,33 @@ class LayerImage(Layer):
         except Exception as e:
             messagebox.showerror("Erreur d'image", str(e), parent=self.tk_parent)
             return False
+
+        # Copier l'image dans {base_dir}/Images/ si base_dir est défini
+        if self.base_dir:
+            try:
+                base_dir_path = Path(self.base_dir)
+                images_dir = base_dir_path / "Images"
+                images_dir.mkdir(parents=True, exist_ok=True)
+
+                # Obtenir le nom du fichier
+                filename = Path(imported_path).name
+                destination_path = images_dir / filename
+
+                # Copier le fichier
+                shutil.copy2(imported_path, destination_path)
+
+                # Stocker le chemin relatif
+                self.imported_image_path = f"Images/{filename}"
+                logger.info(f"Image copiée dans {destination_path}")
+            except Exception as e:
+                logger.warning(f"Erreur lors de la copie de l'image: {e}")
+                # Fallback: utiliser le chemin absolu
+                self.imported_image_path = imported_path
+        else:
+            # Si base_dir n'est pas défini, utiliser le chemin absolu
+            self.imported_image_path = imported_path
+
+        # Recalculer les dimensions
         w0, h0 = self.original_image.size
         aspect = w0 / h0
         desired_w = self.CANVA_W
@@ -217,19 +233,22 @@ class LayerImage(Layer):
         # Recharge l’image si chemin présent
         if obj.imported_image_path:
             try:
-                obj.original_image = Image.open(obj.imported_image_path).convert('RGBA')
+                from pathlib import Path
+                # Résoudre le chemin relatif en chemin absolu si base_dir est défini
+                image_path = obj.imported_image_path
+                if base_dir and not Path(image_path).is_absolute():
+                    image_path = str(Path(base_dir) / image_path)
+
+                obj.original_image = Image.open(image_path).convert('RGBA')
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)
                 obj.image_imported_image = obj.original_image.resize(obj.image_imported_image_size)
             except FileNotFoundError:
-                logger = __import__('logging').getLogger(__name__)
                 logger.warning(f"Fichier non trouvé: {obj.imported_image_path}")
                 obj.original_image = None
             except UnidentifiedImageError:
-                logger = __import__('logging').getLogger(__name__)
                 logger.warning(f"Erreur d'identification de l'image: {obj.imported_image_path}")
                 obj.original_image = None
             except IOError:
-                logger = __import__('logging').getLogger(__name__)
                 logger.warning(f"Erreur E/S: {obj.imported_image_path}")
                 obj.original_image = None
 
