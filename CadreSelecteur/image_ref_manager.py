@@ -88,4 +88,3 @@ class ImageRefManager:
 
 
 __all__ = ['ImageRefManager']
-

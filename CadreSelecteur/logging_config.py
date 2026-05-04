@@ -1,7 +1,6 @@
 from pathlib import Path
 import logging
 from logging import FileHandler, Formatter
-import sys
 import tempfile
 
 from .path_resolver import resolve_resources_dir, PathResolver

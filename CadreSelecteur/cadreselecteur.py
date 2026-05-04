@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ sélecteur de cadre pour pibooth """
 
-from os import path, listdir, remove
+from os import path, listdir
 import tkinter as tk
 from tkinter import Tk, Scrollbar, Canvas, Frame, Toplevel
 from tkinter import messagebox, Label, Button, Radiobutton, StringVar
@@ -29,14 +29,15 @@ from .config_loader import (
     CADRE_NAME_4,
     RESOURCES_DIR,
 )
-from .exceptions import FileOperationError, ImageProcessingError, UIError
-from .error_handler import handle_exception, ErrorContext
+from .exceptions import FileOperationError
+from .error_handler import handle_exception
 from .image_ref_manager import ImageRefManager
 
 # Import du traducteur (API publique du package i18n)
 from .i18n import t, set_language, get_language
 
 logger = logging.getLogger(__name__)
+
 
 def get_base_path() -> str:
     if getattr(sys, 'frozen', False):
@@ -45,6 +46,7 @@ def get_base_path() -> str:
     else:
         # Exécution depuis le code source (PyCharm)
         return path.dirname(path.abspath(__file__))
+
 
 def resource_path(relative_path: str) -> str:
     """
@@ -58,6 +60,7 @@ def resource_path(relative_path: str) -> str:
         return path.join(meipass, relative_path)
     return path.join(path.dirname(path.abspath(__file__)), relative_path)
 
+
 BASE_PATH = get_base_path()
 # repertoire avec tous les cadres / templates disponibles
 template_path = Path(BASE_PATH) / "Templates"
@@ -65,6 +68,7 @@ template_path = Path(BASE_PATH) / "Templates"
 destination_path = Path(BASE_PATH) / "Cadres"
 # repertoire avec les resources scripts
 resources_path = Path(resource_path("resources"))
+
 
 def check_mandatory_path():
     """
@@ -93,6 +97,7 @@ def check_mandatory_path():
     if message_error != '':
         messagebox.showerror(title=t('selector.msg.error.no_selection_title'), message=message_error)
         quit()
+
 
 # configure un logger par défaut si aucune configuration n'est présente
 if not logging.getLogger().hasHandlers():
@@ -333,7 +338,7 @@ class CadreSelecteur:
                 # IMPORTANT: Garder les références DANS le canvas (pattern Tkinter)
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
-                
+
                 # Garder aussi les références via le manager pour éviter le GC
                 self.image_ref_manager.add_ref(thumbnail_img_1, 'dest_canvas')
                 self.image_ref_manager.add_ref(thumbnail_img_4, 'dest_canvas')
@@ -349,7 +354,7 @@ class CadreSelecteur:
         except (tk.TclError, RuntimeError) as e:
             # Erreurs UI - log avec contexte
             handle_exception(e, operation="display_destination_thumbnails",
-                           show_messagebox=False, log_level='warning')
+                             show_messagebox=False, log_level='warning')
 
     def create_src_thumbnail(self, project_dir_name):
         """
@@ -455,24 +460,24 @@ class CadreSelecteur:
                     # Créer le bouton avec l'image
                     if icon_edit:
                         button_edit = Button(item_frame,
-                                            command=lambda d=project_dir_name: self.edit_border(d),
-                                            image=icon_edit)
+                                             command=lambda d=project_dir_name: self.edit_border(d),
+                                             image=icon_edit)
                     else:
                         button_edit = Button(item_frame,
-                                            command=lambda d=project_dir_name: self.edit_border(d),
-                                            text=t('image.button.edit'))
+                                             command=lambda d=project_dir_name: self.edit_border(d),
+                                             text=t('image.button.edit'))
 
                     button_edit.pack(side='right')
 
                 # Créer le bouton avec l'image poubelle
                 if icon_trash:
                     bouton_supprimer = Button(item_frame,
-                                             command=lambda d=project_dir_name: self.del_border(d),
-                                             image=icon_trash)
+                                              command=lambda d=project_dir_name: self.del_border(d),
+                                              image=icon_trash)
                 else:
                     bouton_supprimer = Button(item_frame,
-                                             command=lambda d=project_dir_name: self.del_border(d),
-                                             text=t('image.button.delete'))
+                                              command=lambda d=project_dir_name: self.del_border(d),
+                                              text=t('image.button.delete'))
 
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
@@ -483,7 +488,7 @@ class CadreSelecteur:
             logger.debug(f"Image processing for {project_dir_name}: {type(e).__name__}")
         except (tk.TclError, RuntimeError) as e:
             handle_exception(e, operation=f"create_thumbnail_{project_dir_name}",
-                           show_messagebox=False, log_level='warning')
+                             show_messagebox=False, log_level='warning')
 
     def create_action_buttons(self):
         """
@@ -600,7 +605,7 @@ class CadreSelecteur:
             if not file_path_1 or not file_path_4:
                 messagebox.showerror(
                     t('selector.msg.error.no_selection_title'),
-                    f"Projet incomplet: fichiers _1.png ou _4.png manquants"
+                    "Projet incomplet: fichiers _1.png ou _4.png manquants"
                 )
                 logger.warning(f"Incomplete project: {selected_project}")
                 return
@@ -616,8 +621,8 @@ class CadreSelecteur:
                 logger.info("Frame files copied successfully")
             except OSError as e:
                 handle_exception(e, operation="copy_frame_files",
-                               context={'source': file_path_1, 'dest': dest_file_1},
-                               log_level='exception')
+                                 context={'source': file_path_1, 'dest': dest_file_1},
+                                 log_level='exception')
                 return
 
             # Copier le fichier template
@@ -635,10 +640,9 @@ class CadreSelecteur:
                     logger.info("Standard template copied")
             except OSError as e:
                 handle_exception(e, operation="copy_template",
-                               context={'source': file_path_xml or source_file_tpl, 'dest': dest_file_tpl},
-                               log_level='exception')
+                                 context={'source': file_path_xml or source_file_tpl, 'dest': dest_file_tpl},
+                                 log_level='exception')
                 return
-
 
             # rafraichie l'image dans dest
             self.create_dest_thumbnail()

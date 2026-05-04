@@ -13,7 +13,7 @@ Cette centralisation évite la duplication de logique path dans 5+ fichiers.
 import sys
 import logging
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class PathResolver:
                     cls._cache[cache_key] = candidate
                     return candidate
 
-            logger.warning(f"No resources directory found in PyInstaller paths. Using package default.")
+            logger.warning("No resources directory found in PyInstaller paths. Using package default.")
 
         # Mode développement: utiliser le chemin du package
         resources_dir = cls._BASE_DIR / 'resources'
@@ -222,4 +222,3 @@ __all__ = [
     'resolve_file_in_package',
     'resolve_i18n_file',
 ]
-

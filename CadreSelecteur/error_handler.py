@@ -12,6 +12,7 @@ import logging
 import tkinter as tk
 from tkinter import messagebox
 from typing import Optional, Callable
+from CadreSelecteur.exceptions import UIError
 
 from .exceptions import (
     CadreSelecteurError,
@@ -40,29 +41,29 @@ def exception_to_domain(exc: Exception, fallback_domain: str = 'file') -> CadreS
     context = {'original_exception': type(exc).__name__, 'message': str(exc)}
 
     if isinstance(exc, FileNotFoundError):
-        return FileOperationError(f"errors.file_operation.not_found", context)
+        return FileOperationError("errors.file_operation.not_found", context)
     elif isinstance(exc, PermissionError):
-        return FileOperationError(f"errors.file_operation.permission_denied", context)
+        return FileOperationError("errors.file_operation.permission_denied", context)
     elif isinstance(exc, IsADirectoryError):
-        return FileOperationError(f"errors.file_operation.is_directory", context)
+        return FileOperationError("errors.file_operation.is_directory", context)
     elif isinstance(exc, OSError):
-        return FileOperationError(f"errors.file_operation.io_error", context)
+        return FileOperationError("errors.file_operation.io_error", context)
     elif isinstance(exc, ValueError):
-        return ValidationError(f"errors.validation.invalid_value", context)
+        return ValidationError("errors.validation.invalid_value", context)
     elif isinstance(exc, (KeyError, AttributeError)):
-        return ProjectError(f"errors.project.malformed_data", context)
+        return ProjectError("errors.project.malformed_data", context)
     elif isinstance(exc, tk.TclError):
-        return UIError(f"errors.ui.tkinter_error", context)
+        return UIError("errors.ui.tkinter_error", context)
     else:
         # Fallback: créer exception du domaine demandé
         if fallback_domain == 'image':
-            return ImageProcessingError(f"errors.image_processing.unknown", context)
+            return ImageProcessingError("errors.image_processing.unknown", context)
         elif fallback_domain == 'project':
-            return ProjectError(f"errors.project.unknown", context)
+            return ProjectError("errors.project.unknown", context)
         elif fallback_domain == 'config':
-            return ConfigurationError(f"errors.configuration.unknown", context)
+            return ConfigurationError("errors.configuration.unknown", context)
         else:
-            return FileOperationError(f"errors.file_operation.unknown", context)
+            return FileOperationError("errors.file_operation.unknown", context)
 
 
 def handle_exception(
@@ -163,5 +164,3 @@ __all__ = [
     'handle_exception',
     'ErrorContext',
 ]
-
-

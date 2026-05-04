@@ -2,7 +2,6 @@
 """ Module d'édition de cadre pour PiBooth
     |→ classe de gestion des calques image  """
 
-
 from PIL import Image, UnidentifiedImageError
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -144,10 +143,10 @@ class LayerImage(Layer):
             widget.destroy()
 
         info = t('layerimage.label.info',
-                  name=self.name,
-                  filename=(basename(self.imported_image_path) if self.imported_image_path else ''),
-                  position=self.image_position,
-                  size=self.image_imported_image_size)
+                 name=self.name,
+                 filename=(basename(self.imported_image_path) if self.imported_image_path else ''),
+                 position=self.image_position,
+                 size=self.image_imported_image_size)
         tk.Label(frame, justify="left", text=info).pack(anchor='nw')
 
     def clone(self, tk_parent, parent):

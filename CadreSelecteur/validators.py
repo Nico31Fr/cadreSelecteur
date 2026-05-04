@@ -13,7 +13,7 @@ Valide les données utilisateur et les inputs avant traitement :
 import logging
 import re
 from pathlib import Path
-from typing import Any, Union, Optional
+from typing import Any, Union
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +28,10 @@ class Validators:
 
     # Regex pour nom de fichier sûr (pas de chemin traversal)
     SAFE_FILENAME_REGEX = re.compile(r'^[a-zA-Z0-9_\-. ]+$')
-    
+
     # Regex pour couleur hex
     HEX_COLOR_REGEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
-    
+
     # Caractères interdits dans les noms de fichiers
     FORBIDDEN_CHARS = {'/', '\\', ':', '*', '?', '"', '<', '>', '|', '\0'}
 
@@ -65,7 +65,7 @@ class Validators:
             raise ValidationError(f"Path traversal detected in filename: {filename}")
 
         # Vérifier les caractères interdits
-        forbidden = Validators.FORBIDDEN_CHARS - ({'/'}  if allow_subdirs else set())
+        forbidden = Validators.FORBIDDEN_CHARS - ({'/'} if allow_subdirs else set())
         for char in forbidden:
             if char in filename:
                 raise ValidationError(f"Forbidden character in filename: {repr(char)}")
@@ -116,10 +116,10 @@ class Validators:
     def is_valid_hex_color(color: str) -> bool:
         """
         Vérifie si une couleur hex est valide (sans lever d'exception).
-        
+
         Args:
             color: couleur en format hex
-            
+
         Returns:
             True si valide, False sinon
         """
@@ -128,7 +128,7 @@ class Validators:
         return bool(Validators.HEX_COLOR_REGEX.match(color.strip().upper()))
 
     @staticmethod
-    def validate_positive_number(value: Union[int, float], 
+    def validate_positive_number(value: Union[int, float],
                                  name: str = "value",
                                  allow_zero: bool = False) -> Union[int, float]:
         """
@@ -174,8 +174,8 @@ class Validators:
         return (x_val, y_val)
 
     @staticmethod
-    def validate_size(width: Union[int, float], height: Union[int, float], 
-                     min_size: int = 1) -> tuple:
+    def validate_size(width: Union[int, float], height: Union[int, float],
+                      min_size: int = 1) -> tuple:
         """
         Valide une taille (width, height).
 
@@ -258,7 +258,7 @@ class Validators:
         # Utiliser le validateur filename mais sans '.png' etc
         name = name.strip()
         if len(name) > 100:
-            raise ValidationError(f"Project name too long (max 100 chars)")
+            raise ValidationError("Project name too long (max 100 chars)")
 
         # Caractères valides pour nom de projet
         if not re.match(r'^[a-zA-Z0-9_\-. ]+$', name):
@@ -297,13 +297,13 @@ class Validators:
 
         name = layer_dict.get('name')
         if not isinstance(name, str) or not name:
-            raise ValidationError(f"Layer name must be non-empty string")
+            raise ValidationError("Layer name must be non-empty string")
 
         if not isinstance(layer_dict.get('visible'), bool):
-            raise ValidationError(f"visible must be boolean")
+            raise ValidationError("visible must be boolean")
 
         if not isinstance(layer_dict.get('locked'), bool):
-            raise ValidationError(f"locked must be boolean")
+            raise ValidationError("locked must be boolean")
 
         logger.debug(f"Layer data validated: {layer_type} '{name}'")
         return layer_dict
@@ -333,31 +333,30 @@ class Validators:
     def validate_project_filename(filepath: str) -> str:
         """
         Valide un chemin de fichier de projet (.json).
-        
+
         Args:
             filepath: chemin du fichier
-            
+
         Returns:
             Chemin validé
-            
+
         Raises:
             ValidationError: si invalide
         """
         if not filepath:
             raise ValidationError("Project filepath cannot be empty")
-        
+
         p = Path(filepath)
-        
+
         # Vérifier extension
         if p.suffix.lower() != '.json':
             raise ValidationError(f"Project file must be .json, got {p.suffix}")
-        
+
         # Valider nom
         Validators.validate_filename(p.name)
-        
+
         logger.debug(f"Project filename validated: {filepath}")
         return filepath
 
 
 __all__ = ['Validators', 'ValidationError']
-

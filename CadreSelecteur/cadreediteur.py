@@ -13,4 +13,3 @@ def start_cadre_editeur():
     tk_root = tk.Tk()
     ImageEditorApp(tk_root)
     return tk_root
-

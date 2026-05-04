@@ -63,4 +63,3 @@ class ValidationError(CadreSelecteurError):
     """Erreur de validation de données (chemin traversal, type invalide, etc.)."""
 
     pass
-

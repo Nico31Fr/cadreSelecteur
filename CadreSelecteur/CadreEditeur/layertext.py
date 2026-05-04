@@ -265,6 +265,7 @@ class LayerText(Layer):
         obj.text.set(dct.get("text", fallback_text))
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
-        obj.font_name = obj.find_font_path(obj.sel_font['family']) or str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf")
+        obj.font_name = (obj.find_font_path(obj.sel_font['family']) or
+                         str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf"))
         obj.pil_font = ImageFont.truetype(str(obj.font_name), obj.sel_font['size'])
         return obj

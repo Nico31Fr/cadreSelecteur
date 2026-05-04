@@ -14,18 +14,18 @@ logger = logging.getLogger(__name__)
 def splash(timeout_ms: int = 5000) -> None:
     """
     Affiche un écran de splash avec timeout.
-    
+
     IMPORTANT: Cette fonction NE DOIT PAS appeler mainloop() indéfiniment
     car elle bloquerait le processus parent. À la place, elle affiche
     la fenêtre et attend avec un timeout.
-    
+
     Args:
         timeout_ms: Timeout en millisecondes avant fermeture automatique
     """
     root = tk.Tk()
     root.overrideredirect(True)
     root.geometry("500x250+600+300")
-    
+
     try:
         image = Image.open(path.join(RESOURCES_DIR, 'cadreSelecteur.png'))
         photo = ImageTk.PhotoImage(image)
@@ -35,28 +35,28 @@ def splash(timeout_ms: int = 5000) -> None:
     except Exception as e:
         logger.error(f'Erreur de chargement image : {e}')
         pass
-    
+
     tk.Label(
         root,
         text="Cadre Selecteur / Cadre Editeur",
         font=("Arial", 15)
     ).pack(padx=5, pady=5)
-    
+
     tk.Label(
         root,
         text="Chargement en cours...\nVeuillez patienter...",
         font=("Arial", 12)
     ).pack(padx=5, pady=5)
-    
+
     # Afficher la fenêtre
     root.update()
     logger.debug(f"Splash: fenêtre affichée, timeout={timeout_ms}ms")
-    
+
     # Attendre avec timeout et traiter les événements
     # Cela permet au process parent de nous terminer via signal
     elapsed = 0
     step = 100  # ms par itération
-    
+
     while elapsed < timeout_ms:
         try:
             # Traiter les événements Tkinter
@@ -65,11 +65,11 @@ def splash(timeout_ms: int = 5000) -> None:
             # Fenêtre fermée par le parent
             logger.debug("Splash: fenêtre fermée")
             return
-        
+
         # Attendre un peu avant la prochaine itération
         root.after(step)
         elapsed += step
-    
+
     # Timeout atteint, fermer proprement
     logger.debug("Splash: timeout atteint, fermeture")
     try:
@@ -80,5 +80,3 @@ def splash(timeout_ms: int = 5000) -> None:
 
 if __name__ == "__main__":
     splash()
-
-

@@ -17,12 +17,10 @@ from .layertext import LayerText
 from .layerimage import LayerImage
 from CadreSelecteur import __version__
 from CadreSelecteur.ttk_theme import apply_clam_theme
-from CadreSelecteur.exceptions import ProjectError, FileOperationError
+from CadreSelecteur.exceptions import FileOperationError
 from CadreSelecteur.error_handler import handle_exception
-from CadreSelecteur.validators import Validators, ValidationError
 # Import du traducteur
 from ..i18n.translator import _t
-
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
@@ -54,6 +52,7 @@ class ImageEditorApp:
         + sauvegarde restore
         + export
     """
+
     def __init__(self,
                  root,
                  template="../Templates/",
@@ -201,7 +200,7 @@ class ImageEditorApp:
 
         except Exception as e:
             handle_exception(e, operation="initialize_editor",
-                           log_level='exception')
+                             log_level='exception')
 
     # export du set de cadre (2 .png + XML)
     def gen_images(self, app_1, app_4):
@@ -238,12 +237,12 @@ class ImageEditorApp:
             logger.info(f"Template XML copied to {dest_xml}")
         except FileNotFoundError as e:
             handle_exception(e, operation="copy_template_xml",
-                           context={'source': path_to_xml},
-                           log_level='warning')
+                             context={'source': path_to_xml},
+                             log_level='warning')
         except (OSError, Error) as e:
             handle_exception(e, operation="copy_template_xml",
-                           context={'source': path_to_xml, 'dest': dest_xml},
-                           log_level='exception')
+                             context={'source': path_to_xml, 'dest': dest_xml},
+                             log_level='exception')
 
         # sauvegarde le projet JSON
         try:
@@ -272,6 +271,7 @@ class ImageEditorApp:
     # section pour la sauvegarde recharge d'un projet
     def save_project(self, file_path=None):
         """Sauvegarde l'état actuel du projet dans un fichier JSON."""
+
         try:
             interactive = file_path is None
             if interactive:
@@ -308,12 +308,12 @@ class ImageEditorApp:
 
         except (OSError, IOError) as e:
             handle_exception(e, operation="save_project",
-                           context={'file': file_path},
-                           log_level='exception')
+                             context={'file': file_path},
+                             log_level='exception')
             return None
         except (TypeError, ValueError) as e:
             handle_exception(e, operation="serialize_project_data",
-                           log_level='exception')
+                             log_level='exception')
             return None
         except Exception as e:
             handle_exception(e, operation="save_project", log_level='exception')
@@ -374,11 +374,11 @@ class ImageEditorApp:
 
         except FileNotFoundError as e:
             handle_exception(e, operation="load_project",
-                           context={'file': file_path},
-                           log_level='warning')
+                             context={'file': file_path},
+                             log_level='warning')
         except (KeyError, ValueError) as e:
             handle_exception(e, operation="parse_project_data",
-                           log_level='exception')
+                             log_level='exception')
         except Exception as e:
             handle_exception(e, operation="load_project", log_level='exception')
 
@@ -467,8 +467,8 @@ class ImageEditorApp:
             logger.warning(f"Invalid copy_conf parameters: {e}")
         except Exception as e:
             handle_exception(e, operation="copy_configuration",
-                           context={'layer': layer, 'direction': direction},
-                           log_level='warning')
+                             context={'layer': layer, 'direction': direction},
+                             log_level='warning')
 
     # gestion des templates
     def load_default_template(self):
@@ -476,6 +476,7 @@ class ImageEditorApp:
         appelé à l'initialisation pour charger le template par défaut
         charge le xml et met à jour les zones d'exclusion
         """
+
         try:
             # Charger et analyser le fichier XML
             path_to_xml = path.join(self.template, self.selected_template.get())
@@ -513,17 +514,17 @@ class ImageEditorApp:
             return [new_exc_zone1, new_exc_zone4]
 
         except FileNotFoundError as e:
-            logger.debug(f"Template file not found: {path_to_xml}")
+            logger.debug(f"Template file not found: {path_to_xml} - {e}")
             messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
             return [[], []]
         except Et.ParseError as e:
             handle_exception(e, operation="parse_template_xml",
-                           context={'file': path_to_xml},
-                           log_level='warning')
+                             context={'file': path_to_xml},
+                             log_level='warning')
             return [[], []]
         except (ValueError, AttributeError) as e:
             handle_exception(e, operation="extract_template_coordinates",
-                           log_level='warning')
+                             log_level='warning')
             return [[], []]
         except Exception as e:
             handle_exception(e, operation="load_default_template", log_level='exception')
@@ -535,6 +536,7 @@ class ImageEditorApp:
         appelé lors du changement de template
         charge le xml et met à jour les zones d'exclusion
         """
+
         try:
             # Charger et analyser le fichier XML
             path_to_xml = path.join(self.template, self.selected_template.get())
@@ -578,14 +580,14 @@ class ImageEditorApp:
             self.app4.update_canvas()
             logger.debug(f"Template changed to {self.selected_template.get()}")
         except FileNotFoundError as e:
-            logger.debug(f"Template file not found: {path_to_xml}")
+            logger.debug(f"Template file not found: {path_to_xml} - {e}")
         except Et.ParseError as e:
             handle_exception(e, operation="parse_template_xml_on_change",
-                           context={'file': path_to_xml},
-                           log_level='warning')
+                             context={'file': path_to_xml},
+                             log_level='warning')
         except (ValueError, AttributeError) as e:
             handle_exception(e, operation="extract_template_coordinates_on_change",
-                           log_level='warning')
+                             log_level='warning')
         except Exception as e:
             handle_exception(e, operation="on_template_change", log_level='warning')
 
