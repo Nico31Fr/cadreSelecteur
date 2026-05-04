@@ -420,9 +420,8 @@ class CadreSelecteur:
                         icon_trash = None
 
                 # check if json config file are present
-                json_file = path.join(self.source_directory,
-                                      filename.replace('_1.png', '.json'))
-                if path.exists(json_file):
+                json_file = self.find_json_file(filename)
+                if json_file:
                     icon_edit = None
                     if self.edit_icon:
                         icon_edit = self.edit_icon
@@ -742,8 +741,7 @@ class CadreSelecteur:
         # Lier la fonction on_closing à l'événement de fermeture de la fenêtre
         self.tk_editor.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        json_file = path.join(self.source_directory,
-                              filename.replace('_1.png', '.json'))
+        json_file = self.find_json_file(filename)
 
         ImageEditorApp(self.tk_editor,
                        template=template_path,
@@ -767,6 +765,19 @@ class CadreSelecteur:
                 # Errors from Tk internals when running headless or no display.
                 logger.exception("Failed to create PhotoImage (even without master)", exc_info=e2)
                 return None
+
+    def find_json_file(self, filename):
+        """
+        Trouve le fichier JSON correspondant au fichier PNG donné.
+        Normalise les noms en remplaçant '_' par '-' et en mettant en minuscule.
+        """
+        base_name = filename.replace('_1.png', '').replace('_', '-').lower()
+        for f in listdir(self.source_directory):
+            if f.endswith('.json'):
+                f_base = f.replace('.json', '').replace('_', '-').lower()
+                if f_base == base_name:
+                    return path.join(self.source_directory, f)
+        return None
 
 
 if __name__ == "__main__":
