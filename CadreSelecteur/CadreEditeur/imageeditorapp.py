@@ -169,13 +169,13 @@ class ImageEditorApp:
             self.export_frame.columnconfigure(1, weight=2)
             self.export_frame.columnconfigure(2, weight=2)
 
-            # charger / sauvegarder le projet
-            button_load = tk.Button(self.export_frame, text=_t('editor.button.load'),
-                                    command=lambda: self.load_project())
-            button_save = tk.Button(self.export_frame, text=_t('editor.button.save'),
-                                    command=lambda: self.save_project())
-            button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
-            button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
+            # # charger / sauvegarder le projet
+            # button_load = tk.Button(self.export_frame, text=_t('editor.button.load'),
+            #                         command=lambda: self.load_project())
+            # button_save = tk.Button(self.export_frame, text=_t('editor.button.save'),
+            #                         command=lambda: self.save_project())
+            # button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+            # button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
             # export / nom du projet
             self.prj_label = tk.Label(self.export_frame,
@@ -209,12 +209,20 @@ class ImageEditorApp:
         lance l'enregistrement des deux fichiers
         """
         try:
-            path_im = self.select_directory()
-            if path_im is not None:
-                # exporte les images
-                app_1.save_image(path_im)
-                app_4.save_image(path_im)
-                logger.info(f"Frame images exported to {path_im}")
+            # Obtenir le nom du projet
+            project_name = self.prj_name_var.get().strip()
+            if not project_name:
+                project_name = self.prj_name
+
+            # Créer le répertoire du projet dans Templates/
+            project_dir = Path(self.template) / project_name
+            project_dir.mkdir(parents=True, exist_ok=True)
+
+            # exporte les images avec le nom du projet
+            base_image_path = project_dir / project_name
+            app_1.save_image(str(base_image_path))
+            app_4.save_image(str(base_image_path))
+            logger.info(f"Frame images exported to {project_dir}")
         except FileOperationError as e:
             handle_exception(e, operation="export_images", log_level='exception')
             return
@@ -225,10 +233,9 @@ class ImageEditorApp:
         # copie et renomme le XML de template
         try:
             path_to_xml = path.join(self.template, self.selected_template.get())
-            dest_xml = path_im + '.xml'
+            dest_xml = project_dir / f"{project_name}.xml"
             copy(path_to_xml, dest_xml)
             logger.info(f"Template XML copied to {dest_xml}")
-            messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
         except FileNotFoundError as e:
             handle_exception(e, operation="copy_template_xml",
                            context={'source': path_to_xml},
@@ -238,54 +245,39 @@ class ImageEditorApp:
                            context={'source': path_to_xml, 'dest': dest_xml},
                            log_level='exception')
 
-    def select_directory(self):
-        """
-        sélectionne le repertoire de sortie
-        et construction du path de sortie avec le nom du projet
-        """
+        # sauvegarde le projet JSON
         try:
-            tmp_prj_name = self.prj_name_var.get()
-            if tmp_prj_name == "":
-                messagebox.showerror(title=_t('editor.msg.error.no_project_name_title'),
-                                     message=_t('editor.msg.error.no_project_name_message'))
-                return None
-
-            # Valider le nom du projet (prévention chemin traversal)
-            try:
-                tmp_prj_name = Validators.validate_project_name(tmp_prj_name)
-            except ValidationError as e:
-                messagebox.showerror(title=_t('editor.msg.error.no_project_name_title'),
-                                   message=f"Nom de projet invalide: {str(e)}")
-                return None
-
-            if self.standalone:
-                # Ouvre la boîte de dialogue pour la sélection du répertoire
-                selected_dir = filedialog.askdirectory()
-            else:
-                selected_dir = self.template
-
-            path_prj_name = path.join(selected_dir, tmp_prj_name)
-
-            if selected_dir:  # Vérifie si l'utilisateur à sélectionner un répertoire
-                return path_prj_name
-            else:
-                messagebox.showerror(title=_t('editor.msg.error.no_dir_title'),
-                                     message=_t('editor.msg.error.no_dir_message'))
-                return None
-        except tk.TclError as e:
-            handle_exception(e, operation="select_directory", log_level='warning')
-            return None
+            json_path = project_dir / f"{project_name}.json"
+            self.save_project(str(json_path))
         except Exception as e:
-            handle_exception(e, operation="select_directory", log_level='exception')
-            return None
+            handle_exception(e, operation="save_project_on_export", log_level='exception')
+
+        # Copier les images utilisées dans les calques
+        try:
+            for app in [app_1, app_4]:
+                for layer in app.layers:
+                    if hasattr(layer, 'imported_image_path') and layer.imported_image_path:
+                        image_path = layer.imported_image_path
+                        if self.base_dir and not Path(image_path).is_absolute():
+                            image_path = str(Path(self.base_dir) / image_path)
+                        if Path(image_path).exists():
+                            dest_path = project_dir / Path(image_path).name
+                            copy(image_path, dest_path)
+                            logger.info(f"Image copied to {dest_path}")
+        except Exception as e:
+            handle_exception(e, operation="copy_used_images", log_level='exception')
+
+        messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
 
     # section pour la sauvegarde recharge d'un projet
-    def save_project(self):
+    def save_project(self, file_path=None):
         """Sauvegarde l'état actuel du projet dans un fichier JSON."""
         try:
-            file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
-            if not file_path:
-                return
+            interactive = file_path is None
+            if interactive:
+                file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+                if not file_path:
+                    return
             app1_layer_tmp = []
             app4_layer_tmp = []
 
@@ -311,7 +303,8 @@ class ImageEditorApp:
             with open(file_path, 'w', encoding='utf-8') as file:
                 dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
             logger.info(f"Project saved to {file_path}")
-            messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
+            if interactive:  # Only show message if interactive save
+                messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
 
         except (OSError, IOError) as e:
             handle_exception(e, operation="save_project",

@@ -1,0 +1,121 @@
+{
+  "app1": {
+    "layers": [
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          -9,
+          297
+        ],
+        "image_position": [
+          -27,
+          891
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne Soirée",
+        "font_color": "#000000",
+        "sel_font": {
+          "family": "Bowtaris",
+          "size": 120
+        },
+        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\Bowtaris.ttf"
+      },
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          0,
+          0
+        ],
+        "image_position": [
+          0,
+          0
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            20.0,
+            20.0,
+            560.0,
+            300.0
+          ]
+        ]
+      }
+    ],
+    "background_couleur": "#ffffff"
+  },
+  "app4": {
+    "layers": [
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          -4,
+          296
+        ],
+        "image_position": [
+          -12,
+          888
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne Soirée",
+        "font_color": "#000000",
+        "sel_font": {
+          "family": "Bowtaris",
+          "size": 120
+        },
+        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\Bowtaris.ttf"
+      },
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          13,
+          16
+        ],
+        "image_position": [
+          39,
+          48
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            20.0,
+            20.0,
+            270.0,
+            140.0
+          ],
+          [
+            310.0,
+            20.0,
+            270.0,
+            140.0
+          ],
+          [
+            20.0,
+            180.0,
+            270.0,
+            140.0
+          ],
+          [
+            310.0,
+            180.0,
+            270.0,
+            140.0
+          ]
+        ]
+      }
+    ],
+    "background_couleur": "#ffffff"
+  },
+  "template": "template_1.xml"
+}

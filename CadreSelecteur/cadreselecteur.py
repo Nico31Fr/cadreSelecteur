@@ -8,7 +8,7 @@ from tkinter import messagebox, Label, Button, Radiobutton, StringVar
 from PIL import Image, ImageTk
 from PIL import UnidentifiedImageError
 from PIL.ImageTk import PhotoImage
-from shutil import copy
+from shutil import copy, rmtree
 from platform import system
 from pathlib import Path
 import sys
@@ -261,7 +261,7 @@ class CadreSelecteur:
 
     def list_files_and_generate_thumbnails(self):
         """
-        Parcourt le répertoire source et génère les vignettes pour les images.
+        Parcourt le répertoire source et génère les vignettes pour les répertoires de projets.
         Met à jour la zone de défilement une fois les éléments ajoutés.
         """
 
@@ -282,9 +282,11 @@ class CadreSelecteur:
             logger.error(f"Source directory not found: {self.source_directory}")
             return
 
-        for filename in sorted(listdir(self.source_directory)):
-            if filename.lower().endswith('_1.png'):
-                self.create_src_thumbnail(filename)
+        # Parcourir les répertoires au lieu des fichiers
+        for project_dir in sorted(listdir(self.source_directory)):
+            project_path = path.join(self.source_directory, project_dir)
+            if path.isdir(project_path):
+                self.create_src_thumbnail(project_dir)
 
         # Update the scroll region to encompass all content
         self.list_frameSrc.update_idletasks()
@@ -349,17 +351,30 @@ class CadreSelecteur:
             handle_exception(e, operation="display_destination_thumbnails",
                            show_messagebox=False, log_level='warning')
 
-    def create_src_thumbnail(self, filename):
+    def create_src_thumbnail(self, project_dir_name):
         """
-        Génère la vignette pour le fichier source `filename` et crée
+        Génère la vignette pour le répertoire du projet et crée
         l'élément UI associé (radio, vignettes, étiquette et bouton supprimer).
 
-        :param filename: nom du fichier image source.
+        :param project_dir_name: nom du répertoire du projet
         """
         try:
-            file_path_1 = path.join(self.source_directory, filename)
-            file_path_4 = path.join(self.source_directory,
-                                    filename.replace('_1.png', '_4.png'))
+            project_path = path.join(self.source_directory, project_dir_name)
+
+            # Chercher les fichiers _1.png et _4.png dans le répertoire
+            file_path_1 = None
+            file_path_4 = None
+
+            for filename in listdir(project_path):
+                if filename.endswith('_1.png'):
+                    file_path_1 = path.join(project_path, filename)
+                elif filename.endswith('_4.png'):
+                    file_path_4 = path.join(project_path, filename)
+
+            # Ignorer le répertoire s'il n'a pas les fichiers requis
+            if not file_path_1 or not file_path_4:
+                logger.debug(f"Skipping project {project_dir_name}: missing _1.png or _4.png")
+                return
 
             with Image.open(file_path_1) as img:
                 img.thumbnail((THUMBNAIL_H, THUMBNAIL_L))  # Thumbnail size
@@ -380,7 +395,7 @@ class CadreSelecteur:
 
                 radio_button = Radiobutton(item_frame,
                                            variable=self.selected_image,
-                                           value=filename)
+                                           value=project_dir_name)
                 radio_button.pack(side="left", padx=5)
 
                 # Créer les labels avec les thumbnails (Tkinter gère le type automatiquement)
@@ -416,11 +431,11 @@ class CadreSelecteur:
                             icon_trash = self._photoimage_from_pil(img2)
                             self.image_ref_manager.add_ref(icon_trash, 'icons_fallback')
                     except (FileNotFoundError, UnidentifiedImageError, OSError):
-                        logger.debug(f"Fallback trash icon failed for {filename}")
+                        logger.debug(f"Fallback trash icon failed for {project_dir_name}")
                         icon_trash = None
 
                 # check if json config file are present
-                json_file = self.find_json_file(filename)
+                json_file = self.find_json_file_in_project(project_dir_name)
                 if json_file:
                     icon_edit = None
                     if self.edit_icon:
@@ -434,17 +449,17 @@ class CadreSelecteur:
                                 icon_edit = self._photoimage_from_pil(img2)
                                 self.image_ref_manager.add_ref(icon_edit, 'icons_fallback')
                         except (FileNotFoundError, UnidentifiedImageError, OSError):
-                            logger.debug(f"Fallback edit icon failed for {filename}")
+                            logger.debug(f"Fallback edit icon failed for {project_dir_name}")
                             icon_edit = None
 
                     # Créer le bouton avec l'image
                     if icon_edit:
                         button_edit = Button(item_frame,
-                                            command=lambda f=filename: self.edit_border(f),
+                                            command=lambda d=project_dir_name: self.edit_border(d),
                                             image=icon_edit)
                     else:
                         button_edit = Button(item_frame,
-                                            command=lambda f=filename: self.edit_border(f),
+                                            command=lambda d=project_dir_name: self.edit_border(d),
                                             text=t('image.button.edit'))
 
                     button_edit.pack(side='right')
@@ -452,23 +467,22 @@ class CadreSelecteur:
                 # Créer le bouton avec l'image poubelle
                 if icon_trash:
                     bouton_supprimer = Button(item_frame,
-                                             command=lambda f=filename: self.del_border(f),
+                                             command=lambda d=project_dir_name: self.del_border(d),
                                              image=icon_trash)
                 else:
                     bouton_supprimer = Button(item_frame,
-                                             command=lambda f=filename: self.del_border(f),
+                                             command=lambda d=project_dir_name: self.del_border(d),
                                              text=t('image.button.delete'))
 
                 bouton_supprimer.pack(side='right', padx=20, pady=20)
 
-
-                text_label = Label(item_frame, text=filename.replace('_1.png', ''))
+                text_label = Label(item_frame, text=project_dir_name)
                 text_label.pack(side='left', padx=5)
 
         except (FileNotFoundError, UnidentifiedImageError, OSError) as e:
-            logger.debug(f"Image processing for {filename}: {type(e).__name__}")
+            logger.debug(f"Image processing for {project_dir_name}: {type(e).__name__}")
         except (tk.TclError, RuntimeError) as e:
-            handle_exception(e, operation=f"create_thumbnail_{filename}",
+            handle_exception(e, operation=f"create_thumbnail_{project_dir_name}",
                            show_messagebox=False, log_level='warning')
 
     def create_action_buttons(self):
@@ -561,38 +575,58 @@ class CadreSelecteur:
     def apply_selection(self):
         """
         Applique le cadre sélectionné : copie les fichiers _1 et _4 ainsi que
-        le template associé dans le dossier de destination et rafraîchit l'affichage.
+        le template associé depuis le répertoire du projet dans le dossier de
+        destination et rafraîchit l'affichage.
         """
-        selected_file = self.selected_image.get()
-        if selected_file:
-            logger.info(f"Selected frame: {selected_file}")
+        selected_project = self.selected_image.get()
+        if selected_project:
+            logger.info(f"Selected frame: {selected_project}")
 
-            source_file_1 = path.join(self.source_directory, selected_file)
+            project_path = path.join(self.source_directory, selected_project)
+
+            # Chercher les fichiers _1.png et _4.png dans le répertoire
+            file_path_1 = None
+            file_path_4 = None
+            file_path_xml = None
+
+            for filename in listdir(project_path):
+                if filename.endswith('_1.png'):
+                    file_path_1 = path.join(project_path, filename)
+                elif filename.endswith('_4.png'):
+                    file_path_4 = path.join(project_path, filename)
+                elif filename.endswith('.xml'):
+                    file_path_xml = path.join(project_path, filename)
+
+            if not file_path_1 or not file_path_4:
+                messagebox.showerror(
+                    t('selector.msg.error.no_selection_title'),
+                    f"Projet incomplet: fichiers _1.png ou _4.png manquants"
+                )
+                logger.warning(f"Incomplete project: {selected_project}")
+                return
+
             dest_file_1 = path.join(self.destination_directory, CADRE_NAME_1)
-            source_file_4 = path.join(self.source_directory,
-                                      selected_file.replace('_1.png', '_4.png'))
             dest_file_4 = path.join(self.destination_directory, CADRE_NAME_4)
 
-            # Copier le fichier cadre
-            logger.debug(f"Copying frames: {source_file_1} & {source_file_4} → {dest_file_1} & {dest_file_4}")
+            # Copier les fichiers cadre
+            logger.debug(f"Copying frames: {file_path_1} & {file_path_4} → {dest_file_1} & {dest_file_4}")
             try:
-                copy(source_file_1, dest_file_1)
-                copy(source_file_4, dest_file_4)
+                copy(file_path_1, dest_file_1)
+                copy(file_path_4, dest_file_4)
                 logger.info("Frame files copied successfully")
             except OSError as e:
                 handle_exception(e, operation="copy_frame_files",
-                               context={'source': source_file_1, 'dest': dest_file_1},
+                               context={'source': file_path_1, 'dest': dest_file_1},
                                log_level='exception')
                 return
 
             # Copier le fichier template
-            source_file_tpl = source_file_1.replace('_1.png', '.xml')
             dest_file_tpl = path.join(self.destination_directory, TEMPLATE_NAME)
 
             try:
-                if path.exists(source_file_tpl):
-                    logger.debug(f"Copying custom template: {source_file_tpl} → {dest_file_tpl}")
-                    copy(source_file_tpl, dest_file_tpl)
+                if file_path_xml and path.exists(file_path_xml):
+                    logger.debug(f"Copying custom template: {file_path_xml} → {dest_file_tpl}")
+                    copy(file_path_xml, dest_file_tpl)
                     logger.info("Custom template copied")
                 else:
                     source_file_tpl = path.join(self.source_directory, TEMPLATE_NAME_STD)
@@ -601,7 +635,7 @@ class CadreSelecteur:
                     logger.info("Standard template copied")
             except OSError as e:
                 handle_exception(e, operation="copy_template",
-                               context={'source': source_file_tpl, 'dest': dest_file_tpl},
+                               context={'source': file_path_xml or source_file_tpl, 'dest': dest_file_tpl},
                                log_level='exception')
                 return
 
@@ -666,30 +700,19 @@ class CadreSelecteur:
         # List and generate image thumbnails
         self.list_files_and_generate_thumbnails()
 
-    def del_border(self, filename):
+    def del_border(self, project_dir_name):
         """
-        Supprime le cadre (fichiers _1.png, _4.png, .xml) du dossier Templates.
+        Supprime le répertoire du projet (contenant tous les fichiers du cadre).
         Refuse la suppression si c'est le dernier cadre disponible et
         affiche un message de confirmation avant suppression.
         Rafraîchir ensuite la liste.
         """
 
-        file_1 = path.join(self.source_directory, filename)
-        file_4 = path.join(
-            self.source_directory,
-            filename.replace('_1.png', '_4.png')
-        )
-        file_xml = path.join(
-            self.source_directory,
-            filename.replace('_1.png', '.xml')
-        )
-
-        files_to_remove = [file_1, file_4, file_xml]
-        errors = []
+        project_path = path.join(self.source_directory, project_dir_name)
 
         # Compte le nombre de cadres disponibles
-        nb_cadres = len([f for f in listdir(self.source_directory)
-                         if f.lower().endswith('_1.png')])
+        nb_cadres = len([d for d in listdir(self.source_directory)
+                         if path.isdir(path.join(self.source_directory, d))])
         if nb_cadres <= 1:
             messagebox.showwarning(
                 t('selector.msg.warn.delete_impossible_title'),
@@ -700,36 +723,27 @@ class CadreSelecteur:
         # Confirmation suppression
         if not messagebox.askyesno(
                 t('selector.msg.confirm.delete_title'),
-                t('selector.msg.confirm.delete_message', name=filename.replace('_1.png', ''))
+                t('selector.msg.confirm.delete_message', name=project_dir_name)
         ):
             return  # abandon si non
 
-        for file in files_to_remove:
-            if path.exists(file):
-                try:
-                    remove(file)
-                    logger.debug(f"Deleted file: {file}")
-                except (OSError, PermissionError) as e:
-                    logger.warning(f"Failed to delete {file}: {type(e).__name__}")
-                    errors.append(f"{path.basename(file)}: {str(e)}")
-
-        if errors:
-            error_msg = "\n".join(errors)
+        try:
+            rmtree(project_path)
+            logger.info(f"Project directory deleted successfully: {project_dir_name}")
+            messagebox.showinfo(t('selector.msg.info.deleted_title'), t('selector.msg.info.deleted_message'))
+        except (OSError, PermissionError) as e:
+            logger.warning(f"Failed to delete project {project_dir_name}: {type(e).__name__}")
             handle_exception(
-                FileOperationError(f"errors.file_operation.io_error",
-                                  {'files': error_msg}),
-                operation="delete_frame",
+                FileOperationError(f"Failed to delete project directory: {str(e)}"),
+                operation="delete_project",
                 show_messagebox=True,
                 log_level='warning'
             )
-        else:
-            logger.info(f"Frame deleted successfully: {filename}")
-            messagebox.showinfo(t('selector.msg.info.deleted_title'), t('selector.msg.info.deleted_message'))
 
         # Rafraîchir la liste
         self.list_files_and_generate_thumbnails()
 
-    def edit_border(self, filename):
+    def edit_border(self, project_dir_name):
         """
         Lance l'éditeur de cadres en ouvrant le projet et
         minimise la fenêtre principale pendant l'édition.
@@ -741,7 +755,7 @@ class CadreSelecteur:
         # Lier la fonction on_closing à l'événement de fermeture de la fenêtre
         self.tk_editor.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        json_file = self.find_json_file(filename)
+        json_file = self.find_json_file_in_project(project_dir_name)
 
         ImageEditorApp(self.tk_editor,
                        template=template_path,
@@ -765,6 +779,22 @@ class CadreSelecteur:
                 # Errors from Tk internals when running headless or no display.
                 logger.exception("Failed to create PhotoImage (even without master)", exc_info=e2)
                 return None
+
+    def find_json_file_in_project(self, project_dir_name):
+        """
+        Trouve le fichier JSON dans le répertoire du projet.
+        Retourne le chemin complet du fichier JSON ou None s'il n'existe pas.
+        """
+        project_path = path.join(self.source_directory, project_dir_name)
+
+        try:
+            for filename in listdir(project_path):
+                if filename.endswith('.json'):
+                    return path.join(project_path, filename)
+        except (OSError, FileNotFoundError):
+            logger.debug(f"Could not read project directory {project_path}")
+
+        return None
 
     def find_json_file(self, filename):
         """
