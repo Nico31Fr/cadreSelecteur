@@ -44,6 +44,7 @@
     "button": {
       "load": "load",
       "save": "Save",
+      "export": "Export",
       "generate": "Generate frames"
     },
     "msg": {
@@ -56,6 +57,10 @@
         "no_project_name_message": "please enter the project name",
         "no_dir_title": "directory error",
         "no_dir_message": "please select an output directory"
+      },
+      "warning": {
+        "no_project_title": "No project loaded",
+        "no_project_message": "Please load a project before saving."
       },
       "info": {
         "export_ok_title": "export success",

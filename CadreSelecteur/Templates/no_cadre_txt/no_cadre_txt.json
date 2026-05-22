@@ -1,0 +1,121 @@
+{
+  "app1": {
+    "layers": [
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          330,
+          347
+        ],
+        "image_position": [
+          990,
+          1041
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne soirée",
+        "font_color": "#5144d9",
+        "sel_font": {
+          "family": "Scintilla",
+          "size": 42
+        },
+        "font_name": "/home/rdo/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/Scintilla.ttf"
+      },
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          0,
+          0
+        ],
+        "image_position": [
+          0,
+          0
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            0.0,
+            0.0,
+            600.0,
+            400.0
+          ]
+        ]
+      }
+    ],
+    "background_couleur": "#FFFFFF"
+  },
+  "app4": {
+    "layers": [
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          330,
+          347
+        ],
+        "image_position": [
+          990,
+          1041
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne soirée",
+        "font_color": "#5144d9",
+        "sel_font": {
+          "family": "Scintilla",
+          "size": 42
+        },
+        "font_name": "/home/rdo/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/Scintilla.ttf"
+      },
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          0,
+          0
+        ],
+        "image_position": [
+          0,
+          0
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            0.0,
+            0.0,
+            150.0,
+            400.0
+          ],
+          [
+            150.0,
+            0.0,
+            150.0,
+            400.0
+          ],
+          [
+            300.0,
+            0.0,
+            150.0,
+            400.0
+          ],
+          [
+            450.0,
+            0.0,
+            150.0,
+            400.0
+          ]
+        ]
+      }
+    ],
+    "background_couleur": "#FFFFFF"
+  },
+  "template": "template_fullbleed.xml"
+}

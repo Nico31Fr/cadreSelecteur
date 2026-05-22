@@ -44,6 +44,7 @@
     "button": {
       "load": "charger",
       "save": "Sauvegarder",
+      "export": "Exporter",
       "generate": "Générer les cadres"
     },
     "msg": {
@@ -56,6 +57,10 @@
         "no_project_name_message": "saisir le nom du projet",
         "no_dir_title": "erreur repertoire",
         "no_dir_message": "sélectionner un repertoire de sortie"
+      },
+      "warning": {
+        "no_project_title": "Aucun projet chargé",
+        "no_project_message": "Charger un projet avant de sauvegarder."
       },
       "info": {
         "export_ok_title": "export réussie",

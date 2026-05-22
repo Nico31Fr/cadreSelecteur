@@ -71,6 +71,7 @@ class ImageEditorApp:
 
             # Dimension de la fenêtre
             self.prj_name = 'cadre_x'
+            self.project_file_path = None  # Chemin du fichier projet actuellement ouvert
             self.tk_root = root
 
             # Apply ttk clam theme
@@ -176,6 +177,18 @@ class ImageEditorApp:
             # button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
             # button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
+            # Bouton sauvegarder
+            button_save = tk.Button(self.export_frame,
+                                    text=_t('editor.button.save'),
+                                    command=lambda: self.save_project_current())
+            button_save.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+
+            # Bouton exporter
+            button_export_as = tk.Button(self.export_frame,
+                                         text=_t('editor.button.export'),
+                                         command=lambda: self.export_project())
+            button_export_as.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
+
             # export / nom du projet
             self.prj_label = tk.Label(self.export_frame,
                                       text=_t('editor.label.template').replace('template : ',
@@ -269,12 +282,30 @@ class ImageEditorApp:
         messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
 
     # section pour la sauvegarde recharge d'un projet
-    def save_project(self, file_path=None):
-        """Sauvegarde l'état actuel du projet dans un fichier JSON."""
+    def save_project_current(self):
+        """Sauvegarde l'état actuel du projet dans le fichier ouvert (sans dialogue)."""
+        if not self.project_file_path:
+            messagebox.showwarning(_t('editor.msg.warning.no_project_title'),
+                                   _t('editor.msg.warning.no_project_message'))
+            return
+        self.save_project(self.project_file_path, update_current=True)
+
+    def export_project(self):
+        """Exporte le projet dans un nouveau fichier avec dialogue."""
+        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
+        if file_path:
+            self.save_project(file_path, update_current=False)
+
+    def save_project(self, file_path=None, update_current=False):
+        """Sauvegarde l'état actuel du projet dans un fichier JSON.
+        
+        Args:
+            file_path: Chemin du fichier à sauvegarder (si None, ouvre un dialogue)
+            update_current: Si True, met à jour self.project_file_path avec file_path
+        """
 
         try:
-            interactive = file_path is None
-            if interactive:
+            if file_path is None:
                 file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
                 if not file_path:
                     return
@@ -369,8 +400,13 @@ class ImageEditorApp:
             template_name = project_data["template"]
             self.selected_template.set(template_name)
 
-            logger.info(f"Project loaded from {file_path}")
-            messagebox.showinfo(_t('editor.msg.info.load_ok_title'), _t('editor.msg.info.load_ok_message'))
+            # Mise à jour du nom du projet
+            project_name = Path(file_path).stem  # Extrait le nom du fichier sans extension
+            self.prj_name = project_name
+            self.prj_name_var.set(project_name)
+            self.project_file_path = file_path  # Sauvegarder le chemin du fichier ouvert
+            logger.debug(f"Project name updated to: {project_name}")
+            logger.debug(f"Project file path set to: {file_path}")
 
         except FileNotFoundError as e:
             handle_exception(e, operation="load_project",

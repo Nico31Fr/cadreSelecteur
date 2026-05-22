@@ -1,0 +1,77 @@
+{
+  "app1": {
+    "layers": [
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          0,
+          0
+        ],
+        "image_position": [
+          0,
+          0
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            0.0,
+            0.0,
+            600.0,
+            400.0
+          ]
+        ]
+      }
+    ],
+    "background_couleur": "#FFFFFF"
+  },
+  "app4": {
+    "layers": [
+      {
+        "class": "LayerExcluZone",
+        "layer_type": "ZoneEx",
+        "name": "Zones insertion photos",
+        "display_position": [
+          0,
+          0
+        ],
+        "image_position": [
+          0,
+          0
+        ],
+        "visible": true,
+        "locked": false,
+        "exclusion_zone": [
+          [
+            0.0,
+            0.0,
+            150.0,
+            400.0
+          ],
+          [
+            150.0,
+            0.0,
+            150.0,
+            400.0
+          ],
+          [
+            300.0,
+            0.0,
+            150.0,
+            400.0
+          ],
+          [
+            450.0,
+            0.0,
+            150.0,
+            400.0
+          ]
+        ]
+      }
+    ],
+    "background_couleur": "#d980d9"
+  },
+  "template": "template_fullbleed.xml"
+}
