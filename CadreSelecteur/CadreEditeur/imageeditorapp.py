@@ -305,6 +305,8 @@ class ImageEditorApp:
         """
 
         try:
+            interactive = file_path is None  # Déterminer si c'est une sauvegarde interactive
+            
             if file_path is None:
                 file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
                 if not file_path:
@@ -334,6 +336,12 @@ class ImageEditorApp:
             with open(file_path, 'w', encoding='utf-8') as file:
                 dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
             logger.info(f"Project saved to {file_path}")
+            messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
+            
+            # Mettre à jour le chemin du projet ouvert
+            if update_current:
+                self.project_file_path = file_path
+            
             if interactive:  # Only show message if interactive save
                 messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
 
