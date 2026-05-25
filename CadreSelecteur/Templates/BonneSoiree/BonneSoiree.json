@@ -21,7 +21,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "/home/rdo/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -49,18 +49,18 @@
       {
         "class": "LayerImage",
         "layer_type": "Image",
-        "name": "Image 1",
+        "name": "Image 2",
         "display_position": [
-          -76,
-          56
+          -139,
+          52
         ],
         "image_position": [
-          -228,
-          168
+          -417,
+          156
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Templates/Images/coeur.png",
+        "imported_image_path": "Images/coeur.png",
         "display_imported_image_size": [
           600,
           600
@@ -80,12 +80,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          175,
-          327
+          173,
+          329
         ],
         "image_position": [
-          525,
-          981
+          519,
+          987
         ],
         "visible": true,
         "locked": false,
@@ -95,7 +95,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "/home/rdo/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -141,18 +141,18 @@
       {
         "class": "LayerImage",
         "layer_type": "Image",
-        "name": "Image 1",
+        "name": "Image 2",
         "display_position": [
-          -76,
-          56
+          -139,
+          52
         ],
         "image_position": [
-          -228,
-          168
+          -417,
+          156
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Templates/Images/coeur.png",
+        "imported_image_path": "Images/coeur.png",
         "display_imported_image_size": [
           600,
           600

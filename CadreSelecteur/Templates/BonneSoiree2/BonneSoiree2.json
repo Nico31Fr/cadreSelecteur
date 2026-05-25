@@ -6,22 +6,22 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          187,
-          326
+          173,
+          329
         ],
         "image_position": [
-          561,
-          978
+          519,
+          987
         ],
         "visible": true,
         "locked": false,
-        "text": "40 ans Audrey",
+        "text": "Bonne Soirée",
         "font_color": "#000000",
         "sel_font": {
           "family": "adelia",
-          "size": 45
+          "size": 52
         },
-        "font_name": "/Users/audrey/Downloads/cadreSelecteur-main/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -41,26 +41,26 @@
           [
             20.0,
             20.0,
-            560.0,
-            300.0
+            520.0,
+            282.0
           ]
         ]
       },
       {
         "class": "LayerImage",
         "layer_type": "Image",
-        "name": "Image 1",
+        "name": "Image 2",
         "display_position": [
-          -99,
-          300
+          -139,
+          52
         ],
         "image_position": [
-          -297,
-          900
+          -417,
+          156
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Templates/Images/coeur.png",
+        "imported_image_path": "Images/coeur.png",
         "display_imported_image_size": [
           600,
           600
@@ -69,33 +69,9 @@
           1800,
           1800
         ]
-      },
-      {
-        "class": "LayerImage",
-        "layer_type": "Image",
-        "name": "Image 2",
-        "display_position": [
-          0,
-          0
-        ],
-        "image_position": [
-          0,
-          0
-        ],
-        "visible": true,
-        "locked": false,
-        "imported_image_path": "/Users/audrey/Downloads/oiseaux.png",
-        "display_imported_image_size": [
-          600,
-          400
-        ],
-        "image_imported_image_size": [
-          1800,
-          1200
-        ]
       }
     ],
-    "background_couleur": "#f6C543"
+    "background_couleur": "#74aecd"
   },
   "app4": {
     "layers": [
@@ -104,22 +80,22 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          187,
-          326
+          15,
+          259
         ],
         "image_position": [
-          561,
-          978
+          45,
+          777
         ],
         "visible": true,
         "locked": false,
-        "text": "40 ans Audrey",
+        "text": "Bonne Soirée",
         "font_color": "#000000",
         "sel_font": {
           "family": "adelia",
-          "size": 45
+          "size": 52
         },
-        "font_name": "/Users/audrey/Downloads/cadreSelecteur-main/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -139,44 +115,44 @@
           [
             20.0,
             20.0,
-            270.0,
-            140.0
+            355.89,
+            193.0
           ],
           [
-            310.0,
-            20.0,
-            270.0,
-            140.0
+            390.0,
+            37.0,
+            200.0,
+            106.23
           ],
           [
-            20.0,
-            180.0,
-            270.0,
-            140.0
+            390.0,
+            160.0,
+            200.0,
+            106.23
           ],
           [
-            310.0,
-            180.0,
-            270.0,
-            140.0
+            390.0,
+            280.0,
+            200.0,
+            106.23
           ]
         ]
       },
       {
         "class": "LayerImage",
         "layer_type": "Image",
-        "name": "Image 1",
+        "name": "Image 2",
         "display_position": [
-          -99,
-          300
+          -139,
+          52
         ],
         "image_position": [
-          -297,
-          900
+          -417,
+          156
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Templates/Images/coeur.png",
+        "imported_image_path": "Images/coeur.png",
         "display_imported_image_size": [
           600,
           600
@@ -187,31 +163,29 @@
         ]
       },
       {
-        "class": "LayerImage",
-        "layer_type": "Image",
-        "name": "Image 2",
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 2",
         "display_position": [
-          0,
-          0
+          237,
+          342
         ],
         "image_position": [
-          0,
-          0
+          711,
+          1026
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "/Users/audrey/Downloads/oiseaux.png",
-        "display_imported_image_size": [
-          600,
-          400
-        ],
-        "image_imported_image_size": [
-          1800,
-          1200
-        ]
+        "text": "01/01/2026",
+        "font_color": "#000000",
+        "sel_font": {
+          "family": "Bowtaris",
+          "size": 18
+        },
+        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/Bowtaris.ttf"
       }
     ],
-    "background_couleur": "#f6C543"
+    "background_couleur": "#74aecd"
   },
-  "template": "template_1.xml"
+  "template": "template_3.xml"
 }
