@@ -287,7 +287,7 @@ class CadreSelecteur:
             logger.error(f"Source directory not found: {self.source_directory}")
             return
 
-        # Parcourir les répertoires au lieu des fichiers
+        # Parcourir les répertoires
         for project_dir in sorted(listdir(self.source_directory)):
             project_path = path.join(self.source_directory, project_dir)
             if path.isdir(project_path):
@@ -338,6 +338,10 @@ class CadreSelecteur:
                 # IMPORTANT: Garder les références DANS le canvas (pattern Tkinter)
                 self.canvasDest.image_1 = thumbnail_img_1
                 self.canvasDest.image_4 = thumbnail_img_4
+
+                # ajoute le cadre noir
+                self.canvasDest.create_rectangle(2, 2, THUMBNAIL_H, THUMBNAIL_L, outline="black")
+                self.canvasDest.create_rectangle(THUMBNAIL_H + 20, 2, 2 * THUMBNAIL_H + 20, THUMBNAIL_L, outline="black")
 
                 # Garder aussi les références via le manager pour éviter le GC
                 self.image_ref_manager.add_ref(thumbnail_img_1, 'dest_canvas')
@@ -404,8 +408,19 @@ class CadreSelecteur:
                 radio_button.pack(side="left", padx=5)
 
                 # Créer les labels avec les thumbnails (Tkinter gère le type automatiquement)
-                thumbnail_label_1 = Label(item_frame, image=thumbnail_img_1)
-                thumbnail_label_4 = Label(item_frame, image=thumbnail_img_4)
+                thumbnail_label_1 = Label(
+                    item_frame,
+                    image=thumbnail_img_1,
+                    borderwidth=1,
+                    relief="solid"
+                )
+
+                thumbnail_label_4 = Label(
+                    item_frame,
+                    image=thumbnail_img_4,
+                    borderwidth=1,
+                    relief="solid"
+                )
 
                 # IMPORTANT: Garder les références DANS les labels (pattern Tkinter)
                 thumbnail_label_1.image = thumbnail_img_1
