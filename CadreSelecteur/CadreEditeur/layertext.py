@@ -12,7 +12,7 @@ from .layer import Layer
 from .text import ask_font
 from ..path_resolver import resolve_file_in_package
 # Import du traducteur
-from ..i18n.translator import _t
+from ..i18n.translator import t
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class LayerText(Layer):
 
         # Variables texte
         try:
-            default_text = _t('layertext.default_text')
+            default_text = t('layertext.default_text')
         except Exception:
             default_text = 'Texte'
         self.text = tk.StringVar(value=default_text)
@@ -62,17 +62,8 @@ class LayerText(Layer):
         """Modifie le texte du calque.
         Assure que l'on met à jour le StringVar au lieu d'écraser l'attribut.
         """
-        # Avant : self.text = value  (écrasait le StringVar)
-        try:
-            # si self.text est un StringVar, utiliser .set
-            if hasattr(self, 'text') and hasattr(self.text, 'set'):
-                self.text.set(value)
-            else:
-                # fallback si changement d'implémentation
-                self.text = value
-        except Exception:
-            # ne faire remonter aucune exception UI dans ce setter
-            self.text = value
+        self.text.set(value)
+
 
     def resize_font(self, delta):
         """Redimensionne la police utilisée dans le calque."""
@@ -95,14 +86,14 @@ class LayerText(Layer):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        tk.Label(frame, text=_t('layertext.label.layer', name=self.name)).pack(anchor='nw')
+        tk.Label(frame, text=t('layertext.label.layer', name=self.name)).pack(anchor='nw')
         tk.Entry(frame,
                  textvariable=self.text, width=40).pack(padx=5, pady=5, anchor='nw')
         tk.Button(frame,
-                  text=_t('layertext.button.color'),
+                  text=t('layertext.button.color'),
                   command=lambda: self.choisir_couleur()).pack(padx=5, pady=5, side='top', anchor='nw')
         tk.Button(frame,
-                  text=_t('layertext.button.font'),
+                  text=t('layertext.button.font'),
                   command=self.callback_font).pack(padx=5, pady=5, side='top', anchor='nw')
         self.text.trace_add("write", self.on_text_change)
 
@@ -115,7 +106,7 @@ class LayerText(Layer):
         try:
             font_selected = ask_font(self.tk_parent,
                                      text=self.text.get(),
-                                     title=_t('layertext.msg.fontchooser.title'),
+                                     title=t('layertext.msg.fontchooser.title'),
                                      family=self.sel_font['family'],
                                      size=self.sel_font['size'])
 
@@ -129,8 +120,8 @@ class LayerText(Layer):
                     self.font_name = font_name_found
                     self.pil_font = ImageFont.truetype(self.font_name, self.sel_font['size'])
                 else:
-                    messagebox.showwarning(_t('layertext.msg.warn.font_not_found_title'),
-                                           _t('layertext.msg.warn.font_not_found_message', family=family))
+                    messagebox.showwarning(t('layertext.msg.warn.font_not_found_title'),
+                                           t('layertext.msg.warn.font_not_found_message', family=family))
                     self.font_name = str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf")
 
             self.parent.update_canvas()
@@ -165,13 +156,13 @@ class LayerText(Layer):
     def choisir_couleur(self):
         """Ouvre une boîte de dialogue de sélection de couleur."""
         try:
-            couleur = colorchooser.askcolor(title=_t('image.colorchooser.title'))
+            couleur = colorchooser.askcolor(title=t('image.colorchooser.title'))
             # couleur peut être (None, None) si annulation => vérifier
             if couleur and couleur[1]:
                 self.font_color = couleur[1]
                 self.parent.update_canvas()
         except Exception as e:
-            messagebox.showerror(_t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
+            messagebox.showerror(t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     def on_text_change(self, *args):
         """Met à jour le texte sur le canvas quand il change."""
@@ -242,7 +233,7 @@ class LayerText(Layer):
         default_name = dct.get("name") or name
         if not default_name:
             try:
-                default_name = _t('layertext.default_name').replace('{n}', '')
+                default_name = t('layertext.default_name').replace('{n}', '')
             except Exception:
                 default_name = name or 'Texte'
 
@@ -260,7 +251,7 @@ class LayerText(Layer):
         obj.visible = dct.get("visible", True)
         obj.locked = dct.get("locked", False)
         try:
-            fallback_text = _t('layertext.default_text')
+            fallback_text = t('layertext.default_text')
         except Exception:
             fallback_text = 'Texte'
         obj.text.set(dct.get("text", fallback_text))

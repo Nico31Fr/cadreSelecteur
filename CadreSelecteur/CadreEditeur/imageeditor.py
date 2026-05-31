@@ -13,7 +13,7 @@ from .layerimage import LayerImage
 from .layertext import LayerText
 from .layerexcluzone import LayerExcluZone
 # Import du traducteur
-from ..i18n.translator import _t
+from ..i18n.translator import t
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class ImageEditor:
         self.CANVA_W, self.CANVA_H = 600, 400
         # Dimension de l'image générée
         self.IMAGE_W, self.IMAGE_H = 1800, 1200
-        self.RATIO = int(self.IMAGE_W // self.CANVA_W)
+        self.RATIO = self.IMAGE_W // self.CANVA_W
         self.exclusion_zone = exclusion_zone
         self.base_dir = base_dir
         self.frame_dir = frame_dir
@@ -74,21 +74,21 @@ class ImageEditor:
         # — Boutons de gestion pile —
         button_frame = tk.Frame(self.layers_frame)
         button_frame.pack()
-        tk.Button(button_frame, text=_t('image.button.add_image'),
+        tk.Button(button_frame, text=t('image.button.add_image'),
                   command=self.add_image_layer).grid(row=0, column=0)
-        tk.Button(button_frame, text=_t('image.button.add_text'),
+        tk.Button(button_frame, text=t('image.button.add_text'),
                   command=self.add_text_layer).grid(row=0, column=1)
-        tk.Button(button_frame, text=_t('image.button.delete'),
+        tk.Button(button_frame, text=t('image.button.delete'),
                   command=self.delete_layer).grid(row=0, column=2)
-        tk.Button(button_frame, text=_t('image.button.move_up'),
+        tk.Button(button_frame, text=t('image.button.move_up'),
                   command=lambda: self.move_layer(-1)).grid(row=0, column=3)
-        tk.Button(button_frame, text=_t('image.button.move_down'),
+        tk.Button(button_frame, text=t('image.button.move_down'),
                   command=lambda: self.move_layer(1)).grid(row=0, column=4)
 
         # — Boutons de gestion couleur de fond —
         fond_frame = tk.Frame(self.layers_frame)
         fond_frame.pack(pady=(10, 0))
-        tk.Label(fond_frame, text=_t('image.label.bg_color')).pack(side="left", anchor='s', padx=5, pady=10)
+        tk.Label(fond_frame, text=t('image.label.bg_color')).pack(side="left", anchor='s', padx=5, pady=10)
         self.texte_background = tk.Entry(fond_frame, textvariable=self.texte_background_value, width=8)
         self.texte_background.pack(side="left", padx=5)
         self.label_couleur = tk.Label(fond_frame, text="                  ",
@@ -176,7 +176,7 @@ class ImageEditor:
         n = len([layer for layer in self.layers if layer.layer_type == 'Texte']) + 1
         # nom traduit par défaut
         try:
-            name_template = _t('layertext.default_name')
+            name_template = t('layertext.default_name')
             name = name_template.replace('{n}', str(n))
         except Exception:
             name = f"Texte {n}"
@@ -197,7 +197,7 @@ class ImageEditor:
         met à jour les zone d'exclusions
         """
         try:
-            name = _t('layer.exclusion_name')
+            name = t('layer.exclusion_name')
         except Exception:
             name = "Zones insertion photos"
         layer = LayerExcluZone(self.root,
@@ -339,12 +339,12 @@ class ImageEditor:
     def select_background_color(self):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
         try:
-            couleur = colorchooser.askcolor(title=_t('image.colorchooser.title'))
+            couleur = colorchooser.askcolor(title=t('image.colorchooser.title'))
             if couleur[1]:
                 self.background_couleur = couleur[1]
                 self.update_canvas()
         except Exception as e:
-            messagebox.showerror(_t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
+            messagebox.showerror(t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     def on_color_entry_change(self, *args):
         """
@@ -358,7 +358,7 @@ class ImageEditor:
                     self.background_couleur = color_code
                     self.update_canvas()
         except Exception as e:
-            messagebox.showerror(_t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
+            messagebox.showerror(t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     # export de l'image
     def save_image(self, out_path: str):
@@ -385,7 +385,7 @@ class ImageEditor:
             image_export.save(out_path)
 
         except Exception as e:
-            messagebox.showerror(_t('image.msg.error.save'), f"Exception inattendue : {str(e)}")
+            messagebox.showerror(t('image.msg.error.save'), f"Exception inattendue : {str(e)}")
 
     def update_canvas(self):
         """
@@ -406,8 +406,13 @@ class ImageEditor:
         temp_image = display_image.copy()
 
         # superpose les calques dans l'image
-        for layer in reversed(self.layers):
-            layer.draw_on_image(temp_image, export=False)
+        try:
+            for layer in reversed(self.layers):
+                layer.draw_on_image(temp_image, export=False)
+        except Exception as e:
+            messagebox.showerror(t('image.msg.error.render'),
+                                 f"Exception inattendue lors du rendu de l'image : {str(e)}")
+            return
 
         self.tk_image = ImageTk.PhotoImage(temp_image)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.tk_image)

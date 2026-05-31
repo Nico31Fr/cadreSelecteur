@@ -112,5 +112,5 @@ class LayerExcluZone(Layer):
         obj.image_position = tuple(dct.get('image_position', (0, 0)))
         obj.visible = dct.get('visible', True)
         obj.locked = dct.get('locked', False)
-        obj.exclusion_zone = dct.get('exclusion_zone', False)
+        obj.exclusion_zone = dct.get('exclusion_zone', [(0,0,0,0)])
         return obj

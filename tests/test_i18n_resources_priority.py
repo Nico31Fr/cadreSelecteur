@@ -38,7 +38,7 @@ def test_resources_have_priority_over_i18n():
         assert ok is True
 
         # La traduction doit provenir du fichier resources/fr.json
-        assert translator._t('selector.button.quit') == 'RESOURCE_QUIT'
+        assert translator.t('selector.button.quit') == 'RESOURCE_QUIT'
 
     finally:
         # Restauration des fichiers originaux

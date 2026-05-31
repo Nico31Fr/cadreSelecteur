@@ -22,7 +22,7 @@ from .exceptions import (
     ConfigurationError,
     ValidationError,
 )
-from .i18n.translator import _t
+from .i18n.translator import t
 
 logger = logging.getLogger(__name__)
 
@@ -113,8 +113,8 @@ def handle_exception(
     if show_messagebox and isinstance(cadre_exc, CadreSelecteurError):
         try:
             # Tenter de traiter la clé i18n
-            user_message = _t(cadre_exc.message)
-            error_title = _t('errors.general.title', operation=operation)
+            user_message = t(cadre_exc.message)
+            error_title = t('errors.general.title', operation=operation)
         except Exception:
             # Fallback si traduction échoue
             user_message = f"{operation}: {str(exc)}"

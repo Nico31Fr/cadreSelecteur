@@ -95,7 +95,7 @@ def set_language(lang: str) -> bool:
         return False
 
 
-def _t(key: str, **kwargs) -> str:
+def t(key: str, **kwargs) -> str:
     """Retourne la traduction pour la clé. Si non trouvé, retourne la clé.
 
     Supporte le formatage Python via str.format(**kwargs).
@@ -136,4 +136,4 @@ except Exception:
     _load_translations('fr')
 
 
-__all__ = ["_t", "set_language", "get_language"]
+__all__ = ["t", "set_language", "get_language"]

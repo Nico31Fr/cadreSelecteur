@@ -3,7 +3,7 @@
     |-> fenêtre principale de l'IHM  """
 
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import messagebox
 from tkinter.simpledialog import askstring
 from os import path
 from json import dump, load
@@ -22,7 +22,7 @@ from CadreSelecteur.ttk_theme import apply_clam_theme
 from CadreSelecteur.exceptions import FileOperationError
 from CadreSelecteur.error_handler import handle_exception
 # Import du traducteur
-from ..i18n.translator import _t
+from ..i18n.translator import t
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
@@ -30,21 +30,6 @@ logger.setLevel(logging.DEBUG)
 # Ne pas ajouter de FileHandler local : la configuration centrale (logging_config)
 # ajoute déjà un FileHandler vers resources/image_editor.log. Éviter d'ajouter
 # un handler relatif ici pour prévenir les fichiers vides quand le cwd diffère.
-
-
-def clean_all_layer(app):
-    """ efface tous les calques """
-    app.active_layer_idx = 0
-    app.layers = []
-
-
-def clean_editable_layer(app):
-    """ efface tous les calques """
-    for i in reversed(range(len(app.layers))):
-        layer = app.layers[i]
-        if layer.layer_type != 'ZoneEx':
-            app.active_layer_idx = i
-            app.delete_layer()
 
 
 class ImageEditorApp:
@@ -55,16 +40,17 @@ class ImageEditorApp:
         + export
     """
 
+    class Mode(Enum):
+        NONE = auto()
+        EDIT = auto()
+        CREATION = auto()
+
+
     def __init__(self,
                  root,
                  template="../Templates/",
                  destination='../Cadres/',
                  project=None):
-
-        class Etat(Enum):
-            NONE = auto()
-            EDIT = auto()
-            CREATION = auto()
 
         try:
             # recuperation des paramètres
@@ -72,37 +58,37 @@ class ImageEditorApp:
             self.destination = destination
             self.frame_name = None
             self.frame_dir = None
-            self.mode = Etat.NONE
+            self.mode = self.Mode.NONE
 
             # Calculer base_dir (répertoire courant)
             self.base_dir = Path.cwd()
 
-            if project == None:
+            if project is None:
                 # Demander le nom du cadre à l'utilisateur
 
                 root.withdraw()  # Masquer la fenêtre principale temporairement
 
                 self.prj_name = askstring(
-                    _t('editor.dialog.frame_name_title'),
-                    _t('editor.dialog.frame_name_message')
+                    t('editor.dialog.frame_name_title'),
+                    t('editor.dialog.frame_name_message')
                 )
                 root.deiconify()  # Restaurer la fenêtre principale
 
                 if not self.prj_name:
                     # L'utilisateur a annulé le dialogue
                     messagebox.showerror(
-                        _t('editor.msg.error.frame_name_required_title'),
-                        _t('editor.msg.error.frame_name_required_message')
+                        t('editor.msg.error.frame_name_required_title'),
+                        t('editor.msg.error.frame_name_required_message')
                     )
                     raise ValueError("Frame name is required")
 
                 # Créer le répertoire du cadre si nécessaire
                 self.frame_dir = Path(self.template) / self.prj_name
-                self.mode = Etat.CREATION
+                self.mode = self.Mode.CREATION
             else:
                 self.prj_name = project.split(".")[0]
                 self.frame_dir = Path(self.template) / Path(self.prj_name)
-                self.mode = Etat.EDIT
+                self.mode = self.Mode.EDIT
 
             # Dimension de la fenêtre
             self.project_file_path = None  # Chemin du fichier projet actuellement ouvert
@@ -113,7 +99,7 @@ class ImageEditorApp:
 
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
-            self.tk_root.title(_t('editor.title', version=__version__))
+            self.tk_root.title(t('editor.title', version=__version__))
 
             # Création de frame parent
             self.main_frame = tk.Frame(self.tk_root)
@@ -132,8 +118,8 @@ class ImageEditorApp:
 
             # Gérer le cas où aucun template n'est trouvé
             if not options:
-                messagebox.showerror(_t('editor.msg.error.no_template_title'),
-                                     _t('editor.msg.error.no_template_message', path=self.template))
+                messagebox.showerror(t('editor.msg.error.no_template_title'),
+                                     t('editor.msg.error.no_template_message', path=self.template))
                 # Pour éviter un crash ultérieur, ajouter un template fictif
                 options = ["template_1.xml"]
 
@@ -142,7 +128,7 @@ class ImageEditorApp:
             self.selected_template.set(options[0])  # Définir la valeur par défaut
 
             # Étiquette pour afficher l'option sélectionnée
-            label = tk.Label(self.main_frame, text=_t('editor.label.template'))
+            label = tk.Label(self.main_frame, text=t('editor.label.template'))
             label.grid(column=0, row=0, sticky=tk.E, padx=5, pady=5)
 
             # Créer le menu déroulant
@@ -151,7 +137,7 @@ class ImageEditorApp:
             # Ajouter un traceur pour appeler la fonction lors du changement d'état
             self.selected_template.trace_add("write", self.on_template_change)
 
-            self.exclusion_zones = self.load_default_template()
+            self.exclusion_zones = self.load_template()
 
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
@@ -205,11 +191,11 @@ class ImageEditorApp:
 
             # Bouton sauvegarder
             button_save = tk.Button(self.export_frame,
-                                    text=_t('editor.button.save'),
+                                    text=t('editor.button.save'),
                                     command=lambda: self.save_project())
             button_save.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
 
-            if self.mode == Etat.EDIT:
+            if self.mode == self.Mode.EDIT:
                 self.load_project(self.frame_dir)
 
         except Exception as e:
@@ -325,7 +311,7 @@ class ImageEditorApp:
             return None
 
         self.gen_images()
-        messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
+        messagebox.showinfo(t('editor.msg.info.save_ok_title'), t('editor.msg.info.save_ok_message'))
 
     def load_project(self, project=None):
         """Charge un projet depuis un fichier JSON."""
@@ -334,17 +320,14 @@ class ImageEditorApp:
             if project:
                 file_path = project.with_suffix(".json")
             else:
-                file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
-
-            if not file_path:
                 return
 
             with open(file_path, 'r', encoding='utf-8') as file:
                 project_data = load(file)
 
             # Clean tous les layers (hors ZoneEx !)
-            clean_all_layer(self.app1)
-            clean_all_layer(self.app4)
+            self.clean_all_layer(1)
+            self.clean_all_layer(4)
 
             # Grammaire des Layer : type => class
             type2class = {
@@ -384,10 +367,6 @@ class ImageEditorApp:
             logger.debug(f"Project name updated to: {project_name}")
             logger.debug(f"Project file path set to: {file_path}")
 
-        except FileNotFoundError as e:
-            handle_exception(e, operation="load_project",
-                             context={'file': file_path},
-                             log_level='warning')
         except (KeyError, ValueError) as e:
             handle_exception(e, operation="parse_project_data",
                              log_level='exception')
@@ -431,7 +410,7 @@ class ImageEditorApp:
                     raise ValueError(f'Invalid direction: {direction}')
             if layer == 'all':
                 if direction == '1_4':
-                    clean_editable_layer(self.app4)
+                    self.clean_all_layer(1)
                     for layer_obj in self.app1.layers:
                         if layer_obj is None:
                             continue
@@ -446,7 +425,7 @@ class ImageEditorApp:
                                 logger.warning(f"Exception while adding new_layer to app4 in all-copy: {e}")
                     self.app4.background_couleur = self.app1.background_couleur
                 elif direction == '4_1':
-                    clean_editable_layer(self.app1)
+                    self.clean_editable_layer(1)
                     for layer_obj in self.app4.layers:
                         if layer_obj is None:
                             continue
@@ -483,9 +462,9 @@ class ImageEditorApp:
                              log_level='warning')
 
     # gestion des templates
-    def load_default_template(self):
+    def load_template(self):
         """
-        appelé à l'initialisation pour charger le template par défaut
+        appelé à pour charger le template sélectionné
         charge le xml et met à jour les zones d'exclusion
         """
 
@@ -527,7 +506,7 @@ class ImageEditorApp:
 
         except FileNotFoundError as e:
             logger.debug(f"Template file not found: {path_to_xml} - {e}")
-            messagebox.showerror(_t('editor.msg.error.file'), _t('editor.msg.error.file'))
+            messagebox.showerror(t('editor.msg.error.file'), t('editor.msg.error.file'))
             return [[], []]
         except Et.ParseError as e:
             handle_exception(e, operation="parse_template_xml",
@@ -542,6 +521,7 @@ class ImageEditorApp:
             handle_exception(e, operation="load_default_template", log_level='exception')
             return [[], []]
 
+
     # gestion des templates
     def on_template_change(self, *_args):
         """
@@ -549,59 +529,43 @@ class ImageEditorApp:
         charge le xml et met à jour les zones d'exclusion
         """
 
-        try:
-            # Charger et analyser le fichier XML
-            path_to_xml = path.join(self.template, self.selected_template.get())
-            tree = Et.parse(path_to_xml)
-            root_xml = tree.getroot()
-            new_exc_zone1 = []
-            new_exc_zone4 = []
+        new_exc_zone1, new_exc_zone4 = self.load_template()
 
-            # Trouver l'élément mxGeometry
-            for elem in root_xml.iter():
-                if 'diagram' not in elem.tag:
-                    continue
-                for diagram in elem.iter():
-                    if diagram.get('name') == 'Page-5':
-                        for item in diagram.iter():
-                            if 'mxGeometry' in item.tag:
-                                x = float(item.get('x'))
-                                y = float(item.get('y'))
-                                width = float(item.get('width'))
-                                height = float(item.get('height'))
-                                new_exc_zone1 = [(x, y, width, height)]
-                                break
-                    if diagram.get('name') == 'Page-8':
-                        number_of_coord = 1
-                        for item in diagram.iter():
-                            if 'mxGeometry' in item.tag:
-                                x = float(item.get('x'))
-                                y = float(item.get('y'))
-                                width = float(item.get('width'))
-                                height = float(item.get('height'))
-                                new_exc_zone4.append((x, y, width, height))
-                                number_of_coord += 1
-                                if number_of_coord >= 5:
-                                    break
+        self.app1.exclusion_zone = new_exc_zone1
+        self.app1.update_zone_exclu_layer(new_exc_zone1)
+        self.app4.exclusion_zone = new_exc_zone4
+        self.app4.update_zone_exclu_layer(new_exc_zone4)
+        self.app1.update_canvas()
+        self.app4.update_canvas()
+        logger.debug(f"Template changed to {self.selected_template.get()}")
 
-            self.app1.exclusion_zone = new_exc_zone1
-            self.app1.update_zone_exclu_layer(new_exc_zone1)
-            self.app4.exclusion_zone = new_exc_zone4
-            self.app4.update_zone_exclu_layer(new_exc_zone4)
-            self.app1.update_canvas()
-            self.app4.update_canvas()
-            logger.debug(f"Template changed to {self.selected_template.get()}")
-        except FileNotFoundError as e:
-            logger.debug(f"Template file not found: {path_to_xml} - {e}")
-        except Et.ParseError as e:
-            handle_exception(e, operation="parse_template_xml_on_change",
-                             context={'file': path_to_xml},
-                             log_level='warning')
-        except (ValueError, AttributeError) as e:
-            handle_exception(e, operation="extract_template_coordinates_on_change",
-                             log_level='warning')
-        except Exception as e:
-            handle_exception(e, operation="on_template_change", log_level='warning')
+
+    def clean_all_layer(self, layer_nb) -> None:
+        """ efface tous les calques """
+        if layer_nb == 1:
+            app = self.app1
+        elif layer_nb == 4:
+            app = self.app4
+        else:
+            raise ValueError(f"Invalid layer number: {layer_nb}")
+        app.active_layer_idx = 0
+        app.layers = []
+
+
+    def clean_editable_layer(self, layer_nb) -> None:
+        """ efface tous les calques """
+        if layer_nb == 1:
+            app = self.app1
+        elif layer_nb == 4:
+            app = self.app4
+        else:
+            raise ValueError(f"Invalid layer number: {layer_nb}")
+
+        for i in reversed(range(len(app.layers))):
+            layer = app.layers[i]
+            if layer.layer_type != 'ZoneEx':
+                app.active_layer_idx = i
+                app.delete_layer()
 
 
 if __name__ == "__main__":

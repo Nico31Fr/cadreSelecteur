@@ -8,7 +8,7 @@ Public API:
 - set_language(lang)
 - get_language()
 """
-from .translator import _t as _translator_t
+from .translator import t as _translator_t
 from .translator import set_language as set_language
 from .translator import get_language as get_language
 

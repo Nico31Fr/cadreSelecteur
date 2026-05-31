@@ -88,9 +88,6 @@ class LayerImage(Layer):
             except Exception as e:
                 logger.warning(f"Erreur lors de l'import' de l'image: {e}")
                 self.imported_image_path = imported_path
-            except Exception as e:
-                logger.warning(f"Erreur lors de l'import de l'image: {e}")
-                self.imported_image_path = imported_path
         else:
             # Si aucun répertoire n'est défini, utiliser le chemin absolu
             self.imported_image_path = imported_path
