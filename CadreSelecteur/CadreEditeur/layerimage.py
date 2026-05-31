@@ -228,7 +228,7 @@ class LayerImage(Layer):
         if obj.imported_image_path:
             try:
                 image_name = obj.imported_image_path
-                image_path = str(parent.frame_dir / ".." / image_name)
+                image_path = str(parent.frame_dir / image_name)
 
                 obj.original_image = Image.open(image_path).convert('RGBA')
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)

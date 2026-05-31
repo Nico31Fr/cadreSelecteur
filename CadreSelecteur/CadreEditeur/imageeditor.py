@@ -25,7 +25,7 @@ class ImageEditor:
     et d'enregistrer la composition finale.
     """
 
-    def __init__(self, root, exclusion_zone, base_dir=None, frame_dir=None):
+    def __init__(self, root, exclusion_zone, base_dir=None, frame_dir=None, prj_name=None):
         """
         Initialise l'application ImageEditor avec une fenêtre tkinter racine.
 
@@ -42,6 +42,7 @@ class ImageEditor:
         self.exclusion_zone = exclusion_zone
         self.base_dir = base_dir
         self.frame_dir = frame_dir
+        self.prj_name = prj_name
         self.imported_image_path = None
         self.display_imported_image = None
         self.image_imported_image = None
@@ -361,7 +362,7 @@ class ImageEditor:
             messagebox.showerror(t('image.msg.error.color'), f"Exception inattendue : {str(e)}")
 
     # export de l'image
-    def save_image(self, out_path: str):
+    def save_image(self):
         """
         Ouvre une boîte de dialogue pour enregistrer l'image courante dans un fichier.
         """
@@ -381,7 +382,7 @@ class ImageEditor:
 
             # Enregistre le fichier image.
             extension = str('_' + str(len(self.exclusion_zone)) + '.png')
-            out_path = out_path + extension
+            out_path = str(self.frame_dir / (self.prj_name + extension))
             image_export.save(out_path)
 
         except Exception as e:

@@ -86,8 +86,8 @@ class ImageEditorApp:
                 self.frame_dir = Path(self.template) / self.prj_name
                 self.mode = self.Mode.CREATION
             else:
-                self.prj_name = project.split(".")[0]
-                self.frame_dir = Path(self.template) / Path(self.prj_name)
+                self.frame_dir = Path(project).parent
+                self.prj_name = Path(project).stem
                 self.mode = self.Mode.EDIT
 
             # Dimension de la fenêtre
@@ -99,7 +99,7 @@ class ImageEditorApp:
 
             # Optionnel : Empêcher le redimensionnement de la fenêtre
             self.tk_root.resizable(False, False)
-            self.tk_root.title(t('editor.title', version=__version__))
+            self.tk_root.title(t('editor.title', version=__version__)+' ( '+self.prj_name+' )')
 
             # Création de frame parent
             self.main_frame = tk.Frame(self.tk_root)
@@ -142,7 +142,11 @@ class ImageEditorApp:
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app1_frame.grid(column=0, row=1, padx=5, pady=5)
-            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], base_dir=self.base_dir, frame_dir=self.frame_dir)
+            self.app1 = ImageEditor(self.app1_frame,
+                                    self.exclusion_zones[0],
+                                    base_dir=self.base_dir,
+                                    frame_dir=self.frame_dir,
+                                    prj_name=self.prj_name)
 
             # bouton synchronisation droite gauche
             self.arrow_frame = tk.Frame(self.main_frame)
@@ -176,7 +180,11 @@ class ImageEditorApp:
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app4_frame.grid(column=2, row=1, padx=10, pady=10)
-            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], base_dir=self.base_dir, frame_dir=self.frame_dir)
+            self.app4 = ImageEditor(self.app4_frame,
+                                    self.exclusion_zones[1],
+                                    base_dir=self.base_dir,
+                                    frame_dir=self.frame_dir,
+                                    prj_name=self.prj_name)
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
@@ -196,7 +204,7 @@ class ImageEditorApp:
             button_save.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
 
             if self.mode == self.Mode.EDIT:
-                self.load_project(self.frame_dir)
+                self.load_project()
 
         except Exception as e:
             handle_exception(e, operation="initialize_editor",
@@ -208,15 +216,10 @@ class ImageEditorApp:
         lance l'enregistrement des deux fichiers
         """
         try:
-            # Créer le répertoire du projet dans Templates/
-            project_dir = Path(self.template) / self.prj_name
-            project_dir.mkdir(parents=True, exist_ok=True)
-
             # exporte les images avec le nom du projet
-            base_image_path = project_dir / self.prj_name
-            self.app1.save_image(str(base_image_path))
-            self.app4.save_image(str(base_image_path))
-            logger.info(f"Frame images exported to {project_dir}")
+            self.app1.save_image()
+            self.app4.save_image()
+            logger.info(f"Frame images exported to {self.frame_dir}")
         except FileOperationError as e:
             handle_exception(e, operation="export_images", log_level='exception')
             return
@@ -227,7 +230,7 @@ class ImageEditorApp:
         # copie et renomme le XML de template
         try:
             path_to_xml = path.join(self.template, self.selected_template.get())
-            dest_xml = project_dir / f"{self.prj_name}.xml"
+            dest_xml = self.frame_dir / f"{self.prj_name}.xml"
             copy(path_to_xml, dest_xml)
             logger.info(f"Template XML copied to {dest_xml}")
         except FileNotFoundError as e:
@@ -236,7 +239,7 @@ class ImageEditorApp:
                              log_level='warning')
         except (OSError, Error) as e:
             handle_exception(e, operation="copy_template_xml",
-                             context={'source': path_to_xml, 'dest': dest_xml},
+                             context={'source': path_to_xml, 'dest': self.base_dir},
                              log_level='exception')
 
         # Copier les images utilisées dans les calques
@@ -248,9 +251,8 @@ class ImageEditorApp:
                         if self.base_dir and not Path(image_path).is_absolute():
                             image_path = str(Path(self.base_dir) / image_path)
                         if Path(image_path).exists():
-                            dest_path = project_dir / Path(image_path).name
-                            copy(image_path, dest_path)
-                            logger.info(f"Image copied to {dest_path}")
+                            copy(image_path, self.base_dir)
+                            logger.info(f"Image copied to {self.base_dir}")
         except Exception as e:
             handle_exception(e, operation="copy_used_images", log_level='exception')
 
@@ -266,7 +268,7 @@ class ImageEditorApp:
 
             # crée le repêrtoire projet s'il n'existe pas
             if file_path is None:
-                project_dir = Path(self.template) / self.prj_name
+                project_dir = self.base_dir
                 project_dir.mkdir(parents=True, exist_ok=True)
                 file_path = project_dir / f"{self.prj_name}.json"
                 self.project_file_path = file_path  # sauvegarder le chemin du fichier projet
@@ -313,14 +315,11 @@ class ImageEditorApp:
         self.gen_images()
         messagebox.showinfo(t('editor.msg.info.save_ok_title'), t('editor.msg.info.save_ok_message'))
 
-    def load_project(self, project=None):
+    def load_project(self):
         """Charge un projet depuis un fichier JSON."""
 
         try:
-            if project:
-                file_path = project.with_suffix(".json")
-            else:
-                return
+            file_path = self.frame_dir / f"{self.prj_name}.json"
 
             with open(file_path, 'r', encoding='utf-8') as file:
                 project_data = load(file)
