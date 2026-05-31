@@ -72,7 +72,6 @@ class ImageEditorApp:
                     t('editor.dialog.frame_name_title'),
                     t('editor.dialog.frame_name_message')
                 )
-                root.deiconify()  # Restaurer la fenêtre principale
 
                 if not self.prj_name:
                     # L'utilisateur a annulé le dialogue
@@ -80,7 +79,14 @@ class ImageEditorApp:
                         t('editor.msg.error.frame_name_required_title'),
                         t('editor.msg.error.frame_name_required_message')
                     )
-                    raise ValueError("Frame name is required")
+                    try:
+                        root.master.deiconify()  # restaure la fenêtre parente (CadreSelecteur)
+                    except Exception:
+                        pass
+                    root.destroy()
+                    return
+
+                root.deiconify()  # Restaurer la fenêtre principale
 
                 # Créer le répertoire du cadre si nécessaire
                 self.frame_dir = Path(self.template) / self.prj_name
@@ -92,8 +98,6 @@ class ImageEditorApp:
 
             # Dimension de la fenêtre
             self.tk_root = root
-
-            # Apply ttk clam theme
             apply_clam_theme(self.tk_root)
 
             # Optionnel : Empêcher le redimensionnement de la fenêtre
@@ -201,6 +205,12 @@ class ImageEditorApp:
                                     text=t('editor.button.save'),
                                     command=lambda: self.save_project())
             button_save.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
+
+            # Bouton quitter
+            button_quit = tk.Button(self.export_frame,
+                                    text=t('editor.button.quit'),
+                                    command=self.tk_root.destroy)
+            button_quit.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
             if self.mode == self.Mode.EDIT:
                 self.load_project()
