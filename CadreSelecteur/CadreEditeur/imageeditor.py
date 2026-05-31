@@ -13,7 +13,7 @@ from .layerimage import LayerImage
 from .layertext import LayerText
 from .layerexcluzone import LayerExcluZone
 # Import du traducteur
-from ..i18n.translator import t
+from ..i18n import t
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ from .layer import Layer
 from .text import ask_font
 from ..path_resolver import resolve_file_in_package
 # Import du traducteur
-from ..i18n.translator import t
+from ..i18n import t
 
 logger = logging.getLogger(__name__)
 

@@ -22,7 +22,7 @@ from .exceptions import (
     ConfigurationError,
     ValidationError,
 )
-from .i18n.translator import t
+from .i18n import t
 
 logger = logging.getLogger(__name__)
 

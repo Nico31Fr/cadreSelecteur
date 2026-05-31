@@ -22,7 +22,7 @@ from CadreSelecteur.ttk_theme import apply_clam_theme
 from CadreSelecteur.exceptions import FileOperationError
 from CadreSelecteur.error_handler import handle_exception
 # Import du traducteur
-from ..i18n.translator import t
+from ..i18n import t
 
 # Configuration du logger
 logger = logging.getLogger(__name__)
