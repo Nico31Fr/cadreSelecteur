@@ -6,12 +6,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          -3,
-          294
+          19,
+          302
         ],
         "image_position": [
-          -9,
-          882
+          57,
+          906
         ],
         "visible": true,
         "locked": false,
@@ -19,7 +19,7 @@
         "font_color": "#000000",
         "sel_font": {
           "family": "Bowtaris",
-          "size": 120
+          "size": 110
         },
         "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\Bowtaris.ttf"
       },
@@ -56,12 +56,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          -4,
-          296
+          19,
+          302
         ],
         "image_position": [
-          -12,
-          888
+          57,
+          906
         ],
         "visible": true,
         "locked": false,
@@ -69,7 +69,7 @@
         "font_color": "#000000",
         "sel_font": {
           "family": "Bowtaris",
-          "size": 120
+          "size": 110
         },
         "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\Bowtaris.ttf"
       },

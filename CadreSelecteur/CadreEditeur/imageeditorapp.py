@@ -91,7 +91,6 @@ class ImageEditorApp:
                 self.mode = self.Mode.EDIT
 
             # Dimension de la fenêtre
-            self.project_file_path = None  # Chemin du fichier projet actuellement ouvert
             self.tk_root = root
 
             # Apply ttk clam theme
@@ -219,7 +218,7 @@ class ImageEditorApp:
             # exporte les images avec le nom du projet
             self.app1.save_image()
             self.app4.save_image()
-            logger.info(f"Frame images exported to {self.frame_dir}")
+            logger.debug(f"Frame images exported to {self.frame_dir}")
         except FileOperationError as e:
             handle_exception(e, operation="export_images", log_level='exception')
             return
@@ -232,7 +231,7 @@ class ImageEditorApp:
             path_to_xml = path.join(self.template, self.selected_template.get())
             dest_xml = self.frame_dir / f"{self.prj_name}.xml"
             copy(path_to_xml, dest_xml)
-            logger.info(f"Template XML copied to {dest_xml}")
+            logger.debug(f"Template XML copied to {dest_xml}")
         except FileNotFoundError as e:
             handle_exception(e, operation="copy_template_xml",
                              context={'source': path_to_xml},
@@ -258,20 +257,15 @@ class ImageEditorApp:
 
 
     def save_project(self):
-        """Sauvegarde l'état actuel du projet dans un fichier JSON.
+        """sauvegarde l'état actuel du projet dans un fichier JSON.
 
         """
 
         try:
 
-            file_path = self.project_file_path
-
             # crée le repêrtoire projet s'il n'existe pas
-            if file_path is None:
-                project_dir = self.base_dir
-                project_dir.mkdir(parents=True, exist_ok=True)
-                file_path = project_dir / f"{self.prj_name}.json"
-                self.project_file_path = file_path  # sauvegarder le chemin du fichier projet
+            self.frame_dir.mkdir(parents=True, exist_ok=True)
+            file_path = self.frame_dir / f"{self.prj_name}.json"
 
             app1_layer_tmp = []
             app4_layer_tmp = []
@@ -297,7 +291,7 @@ class ImageEditorApp:
 
             with open(file_path, 'w', encoding='utf-8') as file:
                 dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
-            logger.info(f"Project saved to {file_path}")
+            logger.debug(f"Project saved to {file_path}")
 
         except (OSError, IOError) as e:
             handle_exception(e, operation="save_project",
@@ -362,7 +356,6 @@ class ImageEditorApp:
             # Mise à jour du nom du projet
             project_name = Path(file_path).stem  # Extrait le nom du fichier sans extension
             self.prj_name = project_name
-            self.project_file_path = file_path  # sauvegarder le chemin du fichier ouvert
             logger.debug(f"Project name updated to: {project_name}")
             logger.debug(f"Project file path set to: {file_path}")
 
@@ -409,7 +402,7 @@ class ImageEditorApp:
                     raise ValueError(f'Invalid direction: {direction}')
             if layer == 'all':
                 if direction == '1_4':
-                    self.clean_all_layer(1)
+                    self.clean_editable_layer(4)
                     for layer_obj in self.app1.layers:
                         if layer_obj is None:
                             continue

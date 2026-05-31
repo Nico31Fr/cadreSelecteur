@@ -28,12 +28,12 @@
         "layer_type": "ZoneEx",
         "name": "Zones insertion photos",
         "display_position": [
-          0,
-          0
+          96,
+          16
         ],
         "image_position": [
-          0,
-          0
+          288,
+          48
         ],
         "visible": true,
         "locked": false,
@@ -51,12 +51,12 @@
         "layer_type": "Image",
         "name": "Image 1",
         "display_position": [
-          -81,
-          95
+          -126,
+          111
         ],
         "image_position": [
-          -243,
-          285
+          -378,
+          333
         ],
         "visible": true,
         "locked": false,
@@ -143,12 +143,12 @@
         "layer_type": "Image",
         "name": "Image 1",
         "display_position": [
-          -81,
-          95
+          -126,
+          111
         ],
         "image_position": [
-          -243,
-          285
+          -378,
+          333
         ],
         "visible": true,
         "locked": false,
