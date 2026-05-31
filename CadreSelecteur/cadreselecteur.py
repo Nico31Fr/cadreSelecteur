@@ -426,10 +426,6 @@ class CadreSelecteur:
                 thumbnail_label_1.image = thumbnail_img_1
                 thumbnail_label_4.image = thumbnail_img_4
 
-                # Garder aussi les références via le manager
-                self.image_ref_manager.add_ref(thumbnail_img_1, 'thumbnails')
-                self.image_ref_manager.add_ref(thumbnail_img_4, 'thumbnails')
-
                 # Afficher les labels
                 thumbnail_label_1.pack(side='left', padx=5)
                 thumbnail_label_4.pack(side='left', padx=5)
@@ -775,11 +771,14 @@ class CadreSelecteur:
         self.tk_editor.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         json_file = self.find_json_file_in_project(project_dir_name)
-
-        ImageEditorApp(self.tk_editor,
-                       template=template_path,
-                       destination=destination_path,
-                       project=json_file)
+        if not json_file:
+            logger.debug(f"Could not find json file in : {project_dir_name}")
+            return
+        else:
+            ImageEditorApp(self.tk_editor,
+                           template=template_path,
+                           destination=destination_path,
+                           project=json_file)
 
     def _photoimage_from_pil(self, pil_image):
         """
@@ -813,19 +812,6 @@ class CadreSelecteur:
         except (OSError, FileNotFoundError):
             logger.debug(f"Could not read project directory {project_path}")
 
-        return None
-
-    def find_json_file(self, filename):
-        """
-        Trouve le fichier JSON correspondant au fichier PNG donné.
-        Normalise les noms en remplaçant '_' par '-' et en mettant en minuscule.
-        """
-        base_name = filename.replace('_1.png', '').replace('_', '-').lower()
-        for f in listdir(self.source_directory):
-            if f.endswith('.json'):
-                f_base = f.replace('.json', '').replace('_', '-').lower()
-                if f_base == base_name:
-                    return path.join(self.source_directory, f)
         return None
 
 

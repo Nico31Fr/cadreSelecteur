@@ -110,7 +110,7 @@ def handle_exception(
         logger.debug(f"Debug during {operation}: {cadre_exc.message}")
 
     # Messagebox utilisateur (si applicable)
-    if show_messagebox and isinstance(cadre_exc, CadreSelecteurError):
+    if show_messagebox:
         try:
             # Tenter de traiter la clé i18n
             user_message = t(cadre_exc.message)

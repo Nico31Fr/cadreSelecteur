@@ -2,6 +2,7 @@
 """ splash screen """
 
 from os import path
+from time import sleep
 import tkinter as tk
 from PIL import Image, ImageTk
 import logging
@@ -67,7 +68,8 @@ def splash(timeout_ms: int = 5000) -> None:
             return
 
         # Attendre un peu avant la prochaine itération
-        root.after(step)
+        # root.after(step)
+        sleep(step / 1000)
         elapsed += step
 
     # Timeout atteint, fermer proprement
