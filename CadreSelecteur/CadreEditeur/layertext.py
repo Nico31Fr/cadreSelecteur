@@ -7,6 +7,7 @@ import tkinter as tk
 from tkinter import messagebox, colorchooser
 from os import path, listdir
 import logging
+from pathlib import Path
 
 from .layer import Layer
 from .text import ask_font
@@ -208,7 +209,7 @@ class LayerText(Layer):
             "text": self.text.get(),
             "font_color": self.font_color,
             "sel_font": self.sel_font,
-            "font_name": self.font_name,
+            "font_name": Path(self.font_name).name,
         }
 
     @staticmethod
@@ -257,7 +258,19 @@ class LayerText(Layer):
         obj.text.set(dct.get("text", fallback_text))
         obj.font_color = dct.get("font_color", "#000000")
         obj.sel_font = dict(dct.get("sel_font", {"family": "arial", "size": 32}))
-        obj.font_name = (obj.find_font_path(obj.sel_font['family']) or
-                         str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf"))
+
+        saved_font_filename = dct.get("font_name", "")
+        if saved_font_filename:
+            candidate = Path(obj.fonts_dir) / saved_font_filename
+            if candidate.exists():
+                obj.font_name = str(candidate)
+            else:
+                # fichier renommé ou absent : retenter via la famille
+                obj.font_name = (obj.find_font_path(obj.sel_font['family']) or
+                                 str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf"))
+        else:
+            obj.font_name = (obj.find_font_path(obj.sel_font['family']) or
+                             str(resolve_file_in_package('Fonts') / "Anton-Regular.ttf"))
+
         obj.pil_font = ImageFont.truetype(str(obj.font_name), obj.sel_font['size'])
         return obj

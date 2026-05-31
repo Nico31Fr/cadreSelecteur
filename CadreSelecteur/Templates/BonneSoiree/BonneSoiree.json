@@ -21,7 +21,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\adelia.ttf"
+        "font_name": "adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -95,7 +95,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\adelia.ttf"
+        "font_name": "adelia.ttf"
       },
       {
         "class": "LayerExcluZone",

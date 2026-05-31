@@ -21,7 +21,7 @@
           "family": "Scintilla",
           "size": 42
         },
-        "font_name": "/home/rdo/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/Scintilla.ttf"
+        "font_name": "Scintilla.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -71,7 +71,7 @@
           "family": "Scintilla",
           "size": 42
         },
-        "font_name": "/home/rdo/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/Scintilla.ttf"
+        "font_name": "Scintilla.ttf"
       },
       {
         "class": "LayerExcluZone",

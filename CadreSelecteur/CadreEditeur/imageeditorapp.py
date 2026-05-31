@@ -258,7 +258,6 @@ class ImageEditorApp:
 
     def save_project(self):
         """sauvegarde l'état actuel du projet dans un fichier JSON.
-
         """
 
         try:

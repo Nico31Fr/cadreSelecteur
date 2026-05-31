@@ -21,7 +21,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -95,7 +95,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -182,7 +182,7 @@
           "family": "Bowtaris",
           "size": 18
         },
-        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/Bowtaris.ttf"
+        "font_name": "Bowtaris.ttf"
       }
     ],
     "background_couleur": "#74aecd"

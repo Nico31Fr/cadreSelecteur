@@ -21,7 +21,7 @@
           "family": "Bowtaris",
           "size": 110
         },
-        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\Bowtaris.ttf"
+        "font_name": "Bowtaris.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -71,7 +71,7 @@
           "family": "Bowtaris",
           "size": 110
         },
-        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\Bowtaris.ttf"
+        "font_name": "Bowtaris.ttf"
       },
       {
         "class": "LayerExcluZone",
