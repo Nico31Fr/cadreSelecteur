@@ -42,6 +42,7 @@ class LayerText(Layer):
         except Exception:
             default_text = 'Texte'
         self.text = tk.StringVar(value=default_text)
+        self.text.trace_add("write", self.on_text_change)
         self.font_color = '#000000'
         self.sel_font = {'family': "arial", 'size': 32}
 
@@ -95,7 +96,6 @@ class LayerText(Layer):
         tk.Button(frame,
                   text=t('layertext.button.font'),
                   command=self.callback_font).pack(padx=5, pady=5, side='top', anchor='nw')
-        self.text.trace_add("write", self.on_text_change)
 
     def callback_font(self):
         """
