@@ -60,7 +60,7 @@
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Images/coeur.png",
+        "imported_image_path": "coeur.png",
         "display_imported_image_size": [
           600,
           600
@@ -152,7 +152,7 @@
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Images/coeur.png",
+        "imported_image_path": "coeur.png",
         "display_imported_image_size": [
           600,
           600

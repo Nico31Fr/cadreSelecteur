@@ -84,7 +84,7 @@ class LayerExcluZone(Layer):
         }
 
     @staticmethod
-    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None, base_dir=None, frame_dir=None):
         """
         Recrée un LayerExcluZone à partir d'un dictionnaire sérialisé.
 
@@ -96,6 +96,8 @@ class LayerExcluZone(Layer):
             image_size (tuple): (largeur, hauteur) pour export.
             ratio (int): rapport export/canvas.
             name (str, optionnel): nom du calque.
+            base_dir (str or Path): Répertoire de base (non utilisé pour zones d'exclusion).
+            frame_dir (str or Path): Répertoire du cadre (non utilisé pour zones d'exclusion).
 
         Returns:
             LayerExcluZone: un nouveau calque texte restauré.

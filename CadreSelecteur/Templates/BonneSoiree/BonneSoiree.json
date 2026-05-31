@@ -21,7 +21,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -49,25 +49,25 @@
       {
         "class": "LayerImage",
         "layer_type": "Image",
-        "name": "Image 2",
+        "name": "Image 1",
         "display_position": [
-          -139,
-          52
+          -81,
+          95
         ],
         "image_position": [
-          -417,
-          156
+          -243,
+          285
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Images/coeur.png",
+        "imported_image_path": "coeur.png",
         "display_imported_image_size": [
-          600,
-          600
+          520,
+          520
         ],
         "image_imported_image_size": [
-          1800,
-          1800
+          1560,
+          1560
         ]
       }
     ],
@@ -95,7 +95,7 @@
           "family": "adelia",
           "size": 52
         },
-        "font_name": "/home/nicolas/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts/adelia.ttf"
+        "font_name": "E:\\PycharmProjects\\cadreSelecteur\\CadreSelecteur\\Fonts\\adelia.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -141,25 +141,25 @@
       {
         "class": "LayerImage",
         "layer_type": "Image",
-        "name": "Image 2",
+        "name": "Image 1",
         "display_position": [
-          -139,
-          52
+          -81,
+          95
         ],
         "image_position": [
-          -417,
-          156
+          -243,
+          285
         ],
         "visible": true,
         "locked": false,
-        "imported_image_path": "Images/coeur.png",
+        "imported_image_path": "coeur.png",
         "display_imported_image_size": [
-          600,
-          600
+          520,
+          520
         ],
         "image_imported_image_size": [
-          1800,
-          1800
+          1560,
+          1560
         ]
       }
     ],

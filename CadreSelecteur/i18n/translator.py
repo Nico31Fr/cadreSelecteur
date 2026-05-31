@@ -62,7 +62,7 @@ def _load_translations(lang: str) -> None:
         if isinstance(data, dict):
             _translations = data
             _current_lang = lang
-            logger.info(f"Loaded translations for '{lang}' from: {lang_file}")
+            logger.debug(f"Loaded translations for '{lang}' from: {lang_file}")
         else:
             logger.warning(f"Translation file {lang_file} does not contain a JSON object. Using empty dict.")
             _translations = {}
@@ -72,7 +72,7 @@ def _load_translations(lang: str) -> None:
         logger.exception(f"Unexpected error loading translations for '{lang}': {e}")
         # Fallback à français en cas d'erreur inattendue
         if lang != 'fr':
-            logger.info(f"Falling back to 'fr' after error loading '{lang}'")
+            logger.debug(f"Falling back to 'fr' after error loading '{lang}'")
             _load_translations('fr')
         else:
             _translations = {}

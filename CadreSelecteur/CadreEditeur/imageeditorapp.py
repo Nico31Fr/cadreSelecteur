@@ -4,12 +4,14 @@
 
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from tkinter.simpledialog import askstring
 from os import path
 from json import dump, load
 import xml.etree.ElementTree as Et
 from shutil import copy, Error
 from pathlib import Path
 import logging
+from enum import Enum, auto
 
 from .imageeditor import ImageEditor
 from .layerexcluzone import LayerExcluZone
@@ -57,20 +59,52 @@ class ImageEditorApp:
                  root,
                  template="../Templates/",
                  destination='../Cadres/',
-                 standalone=True,
                  project=None):
+
+        class Etat(Enum):
+            NONE = auto()
+            EDIT = auto()
+            CREATION = auto()
 
         try:
             # recuperation des paramètres
             self.template = template
             self.destination = destination
-            self.standalone = standalone
+            self.frame_name = None
+            self.frame_dir = None
+            self.mode = Etat.NONE
 
             # Calculer base_dir (répertoire courant)
             self.base_dir = Path.cwd()
 
+            if project == None:
+                # Demander le nom du cadre à l'utilisateur
+
+                root.withdraw()  # Masquer la fenêtre principale temporairement
+
+                self.prj_name = askstring(
+                    _t('editor.dialog.frame_name_title'),
+                    _t('editor.dialog.frame_name_message')
+                )
+                root.deiconify()  # Restaurer la fenêtre principale
+
+                if not self.prj_name:
+                    # L'utilisateur a annulé le dialogue
+                    messagebox.showerror(
+                        _t('editor.msg.error.frame_name_required_title'),
+                        _t('editor.msg.error.frame_name_required_message')
+                    )
+                    raise ValueError("Frame name is required")
+
+                # Créer le répertoire du cadre si nécessaire
+                self.frame_dir = Path(self.template) / self.prj_name
+                self.mode = Etat.CREATION
+            else:
+                self.prj_name = project.split(".")[0]
+                self.frame_dir = Path(self.template) / Path(self.prj_name)
+                self.mode = Etat.EDIT
+
             # Dimension de la fenêtre
-            self.prj_name = 'cadre_x'
             self.project_file_path = None  # Chemin du fichier projet actuellement ouvert
             self.tk_root = root
 
@@ -122,7 +156,7 @@ class ImageEditorApp:
             # App1 frame
             self.app1_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app1_frame.grid(column=0, row=1, padx=5, pady=5)
-            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], base_dir=self.base_dir)
+            self.app1 = ImageEditor(self.app1_frame, self.exclusion_zones[0], base_dir=self.base_dir, frame_dir=self.frame_dir)
 
             # bouton synchronisation droite gauche
             self.arrow_frame = tk.Frame(self.main_frame)
@@ -156,7 +190,7 @@ class ImageEditorApp:
             # App4 frame
             self.app4_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
             self.app4_frame.grid(column=2, row=1, padx=10, pady=10)
-            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], base_dir=self.base_dir)
+            self.app4 = ImageEditor(self.app4_frame, self.exclusion_zones[1], base_dir=self.base_dir, frame_dir=self.frame_dir)
 
             # frame load save and export
             self.export_frame = tk.Frame(self.main_frame, borderwidth=2, relief='groove')
@@ -169,71 +203,33 @@ class ImageEditorApp:
             self.export_frame.columnconfigure(1, weight=2)
             self.export_frame.columnconfigure(2, weight=2)
 
-            # # charger / sauvegarder le projet
-            # button_load = tk.Button(self.export_frame, text=_t('editor.button.load'),
-            #                         command=lambda: self.load_project())
-            # button_save = tk.Button(self.export_frame, text=_t('editor.button.save'),
-            #                         command=lambda: self.save_project())
-            # button_load.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
-            # button_save.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
-
             # Bouton sauvegarder
             button_save = tk.Button(self.export_frame,
                                     text=_t('editor.button.save'),
-                                    command=lambda: self.save_project_current())
+                                    command=lambda: self.save_project())
             button_save.grid(column=1, row=0, sticky=tk.EW, padx=5, pady=5)
 
-            # Bouton exporter
-            button_export_as = tk.Button(self.export_frame,
-                                         text=_t('editor.button.export'),
-                                         command=lambda: self.export_project())
-            button_export_as.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
-
-            # export / nom du projet
-            self.prj_label = tk.Label(self.export_frame,
-                                      text=_t('editor.label.template').replace('template : ',
-                                                                               'Nom du set de cadre :'))
-            self.prj_label.grid(column=0,
-                                row=1,
-                                sticky=tk.EW,
-                                padx=5,
-                                pady=5)
-            self.prj_name_var = tk.StringVar()
-            self.texte_projet_name = tk.Entry(self.export_frame, textvariable=self.prj_name_var)
-            self.texte_projet_name.insert(0, self.prj_name)
-            self.texte_projet_name.grid(column=1, row=1, sticky=tk.EW, padx=5, pady=5)
-            # export / Bouton pour générer les cadres
-            button_export = tk.Button(self.export_frame,
-                                      text=_t('editor.button.generate'),
-                                      command=lambda: self.gen_images(self.app1, self.app4))
-            button_export.grid(column=2, row=1, sticky=tk.EW, padx=5, pady=5)
-
-            if project:
-                self.load_project(project)
+            if self.mode == Etat.EDIT:
+                self.load_project(self.frame_dir)
 
         except Exception as e:
             handle_exception(e, operation="initialize_editor",
                              log_level='exception')
 
     # export du set de cadre (2 .png + XML)
-    def gen_images(self, app_1, app_4):
+    def gen_images(self):
         """
         lance l'enregistrement des deux fichiers
         """
         try:
-            # Obtenir le nom du projet
-            project_name = self.prj_name_var.get().strip()
-            if not project_name:
-                project_name = self.prj_name
-
             # Créer le répertoire du projet dans Templates/
-            project_dir = Path(self.template) / project_name
+            project_dir = Path(self.template) / self.prj_name
             project_dir.mkdir(parents=True, exist_ok=True)
 
             # exporte les images avec le nom du projet
-            base_image_path = project_dir / project_name
-            app_1.save_image(str(base_image_path))
-            app_4.save_image(str(base_image_path))
+            base_image_path = project_dir / self.prj_name
+            self.app1.save_image(str(base_image_path))
+            self.app4.save_image(str(base_image_path))
             logger.info(f"Frame images exported to {project_dir}")
         except FileOperationError as e:
             handle_exception(e, operation="export_images", log_level='exception')
@@ -245,7 +241,7 @@ class ImageEditorApp:
         # copie et renomme le XML de template
         try:
             path_to_xml = path.join(self.template, self.selected_template.get())
-            dest_xml = project_dir / f"{project_name}.xml"
+            dest_xml = project_dir / f"{self.prj_name}.xml"
             copy(path_to_xml, dest_xml)
             logger.info(f"Template XML copied to {dest_xml}")
         except FileNotFoundError as e:
@@ -257,16 +253,9 @@ class ImageEditorApp:
                              context={'source': path_to_xml, 'dest': dest_xml},
                              log_level='exception')
 
-        # sauvegarde le projet JSON
-        try:
-            json_path = project_dir / f"{project_name}.json"
-            self.save_project(str(json_path))
-        except Exception as e:
-            handle_exception(e, operation="save_project_on_export", log_level='exception')
-
         # Copier les images utilisées dans les calques
         try:
-            for app in [app_1, app_4]:
+            for app in [self.app1, self.app4]:
                 for layer in app.layers:
                     if hasattr(layer, 'imported_image_path') and layer.imported_image_path:
                         image_path = layer.imported_image_path
@@ -279,38 +268,23 @@ class ImageEditorApp:
         except Exception as e:
             handle_exception(e, operation="copy_used_images", log_level='exception')
 
-        messagebox.showinfo(_t('editor.msg.info.export_ok_title'), _t('editor.msg.info.export_ok_message'))
 
-    # section pour la sauvegarde recharge d'un projet
-    def save_project_current(self):
-        """Sauvegarde l'état actuel du projet dans le fichier ouvert (sans dialogue)."""
-        if not self.project_file_path:
-            messagebox.showwarning(_t('editor.msg.warning.no_project_title'),
-                                   _t('editor.msg.warning.no_project_message'))
-            return
-        self.save_project(self.project_file_path, update_current=True)
-
-    def export_project(self):
-        """Exporte le projet dans un nouveau fichier avec dialogue."""
-        file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
-        if file_path:
-            self.save_project(file_path, update_current=False)
-
-    def save_project(self, file_path=None, update_current=False):
+    def save_project(self):
         """Sauvegarde l'état actuel du projet dans un fichier JSON.
-        
-        Args:
-            file_path: Chemin du fichier à sauvegarder (si None, ouvre un dialogue)
-            update_current: Si True, met à jour self.project_file_path avec file_path
+
         """
 
         try:
-            interactive = file_path is None  # Déterminer si c'est une sauvegarde interactive
-            
+
+            file_path = self.project_file_path
+
+            # crée le repêrtoire projet s'il n'existe pas
             if file_path is None:
-                file_path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files", "*.json")])
-                if not file_path:
-                    return
+                project_dir = Path(self.template) / self.prj_name
+                project_dir.mkdir(parents=True, exist_ok=True)
+                file_path = project_dir / f"{self.prj_name}.json"
+                self.project_file_path = file_path  # sauvegarder le chemin du fichier projet
+
             app1_layer_tmp = []
             app4_layer_tmp = []
 
@@ -336,14 +310,6 @@ class ImageEditorApp:
             with open(file_path, 'w', encoding='utf-8') as file:
                 dump(project_data, file, indent=2, ensure_ascii=False)  # pretty print
             logger.info(f"Project saved to {file_path}")
-            messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
-            
-            # Mettre à jour le chemin du projet ouvert
-            if update_current:
-                self.project_file_path = file_path
-            
-            if interactive:  # Only show message if interactive save
-                messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
 
         except (OSError, IOError) as e:
             handle_exception(e, operation="save_project",
@@ -358,12 +324,15 @@ class ImageEditorApp:
             handle_exception(e, operation="save_project", log_level='exception')
             return None
 
+        self.gen_images()
+        messagebox.showinfo(_t('editor.msg.info.save_ok_title'), _t('editor.msg.info.save_ok_message'))
+
     def load_project(self, project=None):
         """Charge un projet depuis un fichier JSON."""
 
         try:
             if project:
-                file_path = project
+                file_path = project.with_suffix(".json")
             else:
                 file_path = filedialog.askopenfilename(filetypes=[("JSON files", "*.json")])
 
@@ -411,8 +380,7 @@ class ImageEditorApp:
             # Mise à jour du nom du projet
             project_name = Path(file_path).stem  # Extrait le nom du fichier sans extension
             self.prj_name = project_name
-            self.prj_name_var.set(project_name)
-            self.project_file_path = file_path  # Sauvegarder le chemin du fichier ouvert
+            self.project_file_path = file_path  # sauvegarder le chemin du fichier ouvert
             logger.debug(f"Project name updated to: {project_name}")
             logger.debug(f"Project file path set to: {file_path}")
 

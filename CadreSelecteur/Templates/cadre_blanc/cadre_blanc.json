@@ -6,12 +6,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          -9,
-          297
+          -3,
+          294
         ],
         "image_position": [
-          -27,
-          891
+          -9,
+          882
         ],
         "visible": true,
         "locked": false,

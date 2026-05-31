@@ -3,8 +3,12 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/CadreSelecteur/CadreEditeur/build" />
+      <excludeFolder url="file://$MODULE_DIR$/CadreSelecteur/CadreEditeur/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.13 (cadreSelecteur)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (cadreSelecteur) (5)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

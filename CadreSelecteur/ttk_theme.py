@@ -41,7 +41,6 @@ def apply_clam_theme(root):
         # Appliquer le thème configuré s'il est disponible
         if TTK_THEME in available_themes:
             style.theme_use(TTK_THEME)
-            logger.info(f"Thème ttk '{TTK_THEME}' appliqué avec succès")
         else:
             # Fallback sur le premier thème disponible
             if available_themes:

@@ -5,12 +5,13 @@
 from PIL import Image, UnidentifiedImageError
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from .layer import Layer
+from pathlib import Path
 from os.path import basename
 import shutil
 import logging
-# Import du traducteur
+
 from ..i18n import t
+from .layer import Layer
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class LayerImage(Layer):
     Calque image importée, redimensionnable et positionable.
     """
 
-    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name='Image', base_dir=None):
+    def __init__(self, tk_parent, parent, canva_size, image_size, ratio, name='Image'):
         """
         Args:
             parent (object): Widget parent pour les boîtes de dialogue.
@@ -28,12 +29,12 @@ class LayerImage(Layer):
             image_size (tuple): Dimensions de l'image export.
             ratio (int): rapport image/canvas.
             name (str): Nom du calque.
-            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
+            frame_dir (str or Path): Répertoire du cadre (Templates/<nom_du_cadre>/) pour stocker les images.
         """
         super().__init__(name, canva_size, image_size, ratio)
         self.tk_parent = tk_parent
         self.parent = parent
-        self.base_dir = base_dir
+        self.frame_dir = parent.frame_dir
         self.layer_type = 'Image'
         self.imported_image_path = None
         self.original_image = None
@@ -46,8 +47,8 @@ class LayerImage(Layer):
     def import_image(self):
         """
         Ouvre un dialogue pour importer une image locale.
-        Copie l'image dans {base_dir}/Images/ et stocke le chemin relatif.
-        Met à jour la miniature de prévisualisation et l'image exportable.
+        Copie l'image dans {frame_dir}
+        Stocke le chemin relatif.
 
         Returns :
             bool : True si import OK, False sinon.
@@ -68,29 +69,30 @@ class LayerImage(Layer):
             messagebox.showerror("Erreur d'image", str(e), parent=self.tk_parent)
             return False
 
-        # Copier l'image dans {base_dir}/Images/ si base_dir est défini
-        if self.base_dir:
+        # Déterminer le répertoire de destination
+        if self.frame_dir:
             try:
-                base_dir_path = Path(self.base_dir)
-                images_dir = base_dir_path / "Images"
-                images_dir.mkdir(parents=True, exist_ok=True)
+                frame_dir_path = Path(self.frame_dir)
+                frame_dir_path.mkdir(parents=True, exist_ok=True)
 
                 # Obtenir le nom du fichier
                 filename = Path(imported_path).name
-                destination_path = images_dir / filename
+                destination_path = frame_dir_path / filename
 
                 # Copier le fichier
                 shutil.copy2(imported_path, destination_path)
 
-                # Stocker le chemin relatif
-                self.imported_image_path = f"Images/{filename}"
+                # Stocker le chemin relatif (juste le nom du fichier)
+                self.imported_image_path = filename
                 logger.info(f"Image copiée dans {destination_path}")
             except Exception as e:
-                logger.warning(f"Erreur lors de la copie de l'image: {e}")
-                # Fallback: utiliser le chemin absolu
+                logger.warning(f"Erreur lors de l'import' de l'image: {e}")
+                self.imported_image_path = imported_path
+            except Exception as e:
+                logger.warning(f"Erreur lors de l'import de l'image: {e}")
                 self.imported_image_path = imported_path
         else:
-            # Si base_dir n'est pas défini, utiliser le chemin absolu
+            # Si aucun répertoire n'est défini, utiliser le chemin absolu
             self.imported_image_path = imported_path
 
         # Recalculer les dimensions
@@ -106,7 +108,7 @@ class LayerImage(Layer):
 
     def resize(self, delta):
         """
-        Redimensionne l’image importée en conservant le ratio.
+        Redimensionne l'image importée en conservant le ratio.
 
         Args :
             delta (int) : Variation de la largeur du calque (en px).
@@ -130,7 +132,7 @@ class LayerImage(Layer):
 
         Args:
             image (PIL.Image): image PIL.
-            export (bool): True pour l’image export.
+            export (bool): True pour l'image export.
         """
         if not self.visible or not self.display_imported_image:
             return
@@ -160,7 +162,6 @@ class LayerImage(Layer):
             (self.IMAGE_W, self.IMAGE_H),
             self.RATIO,
             name=self.name + "_copie",
-            base_dir=self.base_dir
         )
         new_layer.display_position = tuple(self.display_position)
         new_layer.image_position = tuple(self.image_position)
@@ -178,11 +179,10 @@ class LayerImage(Layer):
             new_layer.image_imported_image = self.image_imported_image.copy()
         new_layer.image_imported_image_size = tuple(self.image_imported_image_size)
 
-        # Si tu utilises self.img_start_drag_pos (temporaire), à ne pas copier
         return new_layer
 
     def to_dict(self):
-        """Retourne un dict serializable décrivant l’état du calque."""
+        """Retourne un dict serializable décrivant l'état du calque."""
         return {
             "class": "LayerImage",
             "layer_type": self.layer_type,
@@ -197,7 +197,7 @@ class LayerImage(Layer):
         }
 
     @staticmethod
-    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None, base_dir=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None):
         """
         Recrée un LayerImage à partir d'un dictionnaire sérialisé.
 
@@ -209,7 +209,6 @@ class LayerImage(Layer):
             image_size (tuple): (largeur, hauteur) pour export.
             ratio (int): rapport export/canvas.
             name (str, optionnel): nom du calque.
-            base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
 
         Returns:
             LayerImage: un nouveau calque image restauré.
@@ -219,8 +218,7 @@ class LayerImage(Layer):
                          canva_size,
                          image_size,
                          ratio,
-                         name=dct.get("name", name or "Image"),
-                         base_dir=base_dir)
+                         name=dct.get("name", name or "Image"))
         obj.display_position = tuple(dct.get("display_position", (0, 0)))
         obj.image_position = tuple(dct.get("image_position", (0, 0)))
         obj.visible = dct.get("visible", True)
@@ -229,14 +227,11 @@ class LayerImage(Layer):
         obj.display_imported_image_size = tuple(dct.get("display_imported_image_size", (obj.CANVA_W, obj.CANVA_H)))
         obj.image_imported_image_size = tuple(dct.get("image_imported_image_size", (obj.IMAGE_W, obj.IMAGE_H)))
 
-        # Recharge l’image si chemin présent
+        # Recharge l'image si chemin présent
         if obj.imported_image_path:
             try:
-                from pathlib import Path
-                # Résoudre le chemin relatif en chemin absolu si base_dir est défini
-                image_path = obj.imported_image_path
-                if base_dir and not Path(image_path).is_absolute():
-                    image_path = str(Path(base_dir) / image_path)
+                image_name = obj.imported_image_path
+                image_path = str(parent.frame_dir / ".." / image_name)
 
                 obj.original_image = Image.open(image_path).convert('RGBA')
                 obj.display_imported_image = obj.original_image.resize(obj.display_imported_image_size)

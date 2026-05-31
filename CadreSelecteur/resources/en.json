@@ -41,6 +41,10 @@
     "label": {
       "template": "template: "
     },
+    "dialog": {
+      "frame_name_title": "Frame name",
+      "frame_name_message": "Enter the frame name:"
+    },
     "button": {
       "load": "load",
       "save": "Save",
@@ -56,7 +60,9 @@
         "no_project_name_title": "project name error",
         "no_project_name_message": "please enter the project name",
         "no_dir_title": "directory error",
-        "no_dir_message": "please select an output directory"
+        "no_dir_message": "please select an output directory",
+        "frame_name_required_title": "Error",
+        "frame_name_required_message": "The frame name is required."
       },
       "warning": {
         "no_project_title": "No project loaded",
@@ -64,7 +70,6 @@
       },
       "info": {
         "export_ok_title": "export success",
-        "export_ok_message": "Files were generated successfully.",
         "save_ok_title": "Save successful",
         "save_ok_message": "Project has been saved successfully.",
         "load_ok_title": "Load successful",

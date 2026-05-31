@@ -221,7 +221,7 @@ class LayerText(Layer):
         }
 
     @staticmethod
-    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None, base_dir=None):
+    def from_dict(dct, tk_parent, parent, canva_size, image_size, ratio, name=None, base_dir=None, frame_dir=None):
         """
         Recrée un LayerText à partir d'un dictionnaire sérialisé.
 
@@ -234,6 +234,7 @@ class LayerText(Layer):
             ratio (int): rapport export/canvas.
             name (str, optionnel): nom du calque.
             base_dir (str or Path): Répertoire de base pour les chemins relatifs (optionnel).
+            frame_dir (str or Path): Répertoire du cadre (non utilisé pour texte, pour compatibilité).
 
         Returns:
             LayerText: un nouveau calque texte restauré.
