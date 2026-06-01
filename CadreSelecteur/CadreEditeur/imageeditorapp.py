@@ -209,7 +209,7 @@ class ImageEditorApp:
             # Bouton quitter
             button_quit = tk.Button(self.export_frame,
                                     text=t('editor.button.quit'),
-                                    command=self.tk_root.destroy)
+                                    command=self._quit)
             button_quit.grid(column=2, row=0, sticky=tk.EW, padx=5, pady=5)
 
             if self.mode == self.Mode.EDIT:
@@ -568,6 +568,15 @@ class ImageEditorApp:
                 app.active_layer_idx = i
                 app.delete_layer()
 
+    def _quit(self):
+        """Ferme proprement en passant par le protocole WM_DELETE_WINDOW."""
+        handler = self.tk_root.protocol("WM_DELETE_WINDOW")
+        if handler:
+            # Appelle le handler enregistré par l'appelant (on_closing de CadreSelecteur)
+            self.tk_root.tk.call(handler)
+        else:
+            # Aucun handler enregistré (ex: lancement standalone depuis __main__)
+            self.tk_root.destroy()
 
 if __name__ == "__main__":
 
