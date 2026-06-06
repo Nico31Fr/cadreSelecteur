@@ -146,6 +146,13 @@ class PathResolver:
                 cls._cache[cache_key] = meipass_path
                 return meipass_path
 
+        # Mode PyInstaller: chercher dans le répertoire courant (cwd)
+        cwd_path = Path.cwd() / relative_path
+        if cwd_path.exists():
+            logger.debug(f"Found in cwd: {relative_path} → {cwd_path}")
+            cls._cache[cache_key] = cwd_path
+            return cwd_path
+
         logger.warning(f"Could not find package file: {relative_path}")
         # Retourner le chemin attendu même s'il n'existe pas (pour messages d'erreur clairs)
         cls._cache[cache_key] = package_path

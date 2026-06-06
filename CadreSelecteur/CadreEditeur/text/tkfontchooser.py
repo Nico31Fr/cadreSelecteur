@@ -14,16 +14,7 @@ from ...i18n.translator import t
 
 logger = logging.getLogger(__name__)
 
-
-def get_app_dir():
-    """Retourne le dossier contenant le script (mode normal)
-       ou le .exe PyInstaller (mode frozen)."""
-    if getattr(sys, 'frozen', False):
-        # chemin de l'exécutable
-        return path.dirname(sys.executable)
-    else:
-        # chemin du script .py
-        return path.join(path.dirname(path.abspath(__file__)), "..", "..")
+from ...path_resolver import resolve_file_in_package
 
 
 class FontChooser(Toplevel):
@@ -49,7 +40,7 @@ class FontChooser(Toplevel):
         self.configure(bg=bg)
 
         # --- Charger les polices du dossier Fonts
-        fonts_dir = path.join(get_app_dir(), "Fonts")
+        fonts_dir = str(resolve_file_in_package('Fonts'))
         self.fonts = []
         if path.isdir(fonts_dir):
             for f in listdir(str(fonts_dir)):
@@ -136,10 +127,10 @@ class FontChooser(Toplevel):
         except ValueError:
             size = 20
 
-        font_path = path.join(get_app_dir(), "Fonts", f"{family}.ttf")
+        fonts_dir = str(resolve_file_in_package('Fonts'))
+        font_path = path.join(fonts_dir, f"{family}.ttf")
         if not path.exists(font_path):
-            # fallback si non trouvé
-            font_path = path.join(get_app_dir(), "Fonts", f"{self.fonts[0]}.ttf")
+            font_path = path.join(fonts_dir, f"{self.fonts[0]}.ttf")
 
         try:
             font = ImageFont.truetype(font_path, size)
