@@ -6,22 +6,22 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          330,
-          347
+          225,
+          362
         ],
         "image_position": [
-          990,
-          1041
+          675,
+          1086
         ],
         "visible": true,
         "locked": false,
-        "text": "Bonne soirée",
-        "font_color": "#5144d9",
+        "text": "Bonne Soirée",
+        "font_color": "#4e4ef3",
         "sel_font": {
-          "family": "Scintilla",
-          "size": 42
+          "family": "Bowtaris",
+          "size": 32
         },
-        "font_name": "Scintilla.ttf"
+        "font_name": "Bowtaris.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -39,8 +39,8 @@
         "locked": false,
         "exclusion_zone": [
           [
-            0.0,
-            0.0,
+            0,
+            0,
             600.0,
             400.0
           ]
@@ -56,22 +56,22 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          330,
-          347
+          225,
+          362
         ],
         "image_position": [
-          990,
-          1041
+          675,
+          1086
         ],
         "visible": true,
         "locked": false,
-        "text": "Bonne soirée",
-        "font_color": "#5144d9",
+        "text": "Bonne Soirée",
+        "font_color": "#4e4ef3",
         "sel_font": {
-          "family": "Scintilla",
-          "size": 42
+          "family": "Bowtaris",
+          "size": 32
         },
-        "font_name": "Scintilla.ttf"
+        "font_name": "Bowtaris.ttf"
       },
       {
         "class": "LayerExcluZone",
@@ -89,33 +89,33 @@
         "locked": false,
         "exclusion_zone": [
           [
-            0.0,
-            0.0,
-            150.0,
-            400.0
-          ],
-          [
-            150.0,
-            0.0,
-            150.0,
-            400.0
+            0,
+            0,
+            300.0,
+            200.0
           ],
           [
             300.0,
-            0.0,
-            150.0,
-            400.0
+            0,
+            300.0,
+            200.0
           ],
           [
-            450.0,
-            0.0,
-            150.0,
-            400.0
+            0,
+            200.0,
+            300.0,
+            200.0
+          ],
+          [
+            300.0,
+            200.0,
+            300.0,
+            200.0
           ]
         ]
       }
     ],
     "background_couleur": "#FFFFFF"
   },
-  "template": "template_fullbleed.xml"
+  "template": "template_4.xml"
 }

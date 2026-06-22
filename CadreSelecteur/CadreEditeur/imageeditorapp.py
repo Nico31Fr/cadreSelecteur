@@ -485,8 +485,14 @@ class ImageEditorApp:
                     if diagram.get('name') == 'Page-5':
                         for item in diagram.iter():
                             if 'mxGeometry' in item.tag:
-                                x = float(item.get('x'))
-                                y = float(item.get('y'))
+                                try:
+                                    x = float(item.get('x'))
+                                except:
+                                    x = 0
+                                try:
+                                    y = float(item.get('y'))
+                                except:
+                                    y = 0
                                 width = float(item.get('width'))
                                 height = float(item.get('height'))
                                 new_exc_zone1 = [(x, y, width, height)]
@@ -495,8 +501,14 @@ class ImageEditorApp:
                         number_of_coord = 1
                         for item in diagram.iter():
                             if 'mxGeometry' in item.tag:
-                                x = float(item.get('x'))
-                                y = float(item.get('y'))
+                                try:
+                                    x = float(item.get('x'))
+                                except:
+                                    x = 0
+                                try:
+                                    y = float(item.get('y'))
+                                except:
+                                    y = 0
                                 width = float(item.get('width'))
                                 height = float(item.get('height'))
                                 new_exc_zone4.append((x, y, width, height))

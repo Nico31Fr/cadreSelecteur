@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="cadreSelecteur_env" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.14 (cadreSelecteur)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 virtualenv at C:\Tools\GitHub\cadreSelecteur\.venv" project-jdk-type="Python SDK" />
   <component name="PythonCompatibilityInspectionAdvertiser">
     <option name="version" value="3" />
   </component>
