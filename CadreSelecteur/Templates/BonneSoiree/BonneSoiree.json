@@ -6,12 +6,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          173,
-          329
+          169,
+          348
         ],
         "image_position": [
-          519,
-          987
+          507,
+          1044
         ],
         "visible": true,
         "locked": false,
@@ -39,10 +39,10 @@
         "locked": false,
         "exclusion_zone": [
           [
-            20.0,
-            20.0,
-            560.0,
-            300.0
+            60.0,
+            10.0,
+            480.0,
+            320.0
           ]
         ]
       },
@@ -80,12 +80,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          173,
-          329
+          172,
+          358
         ],
         "image_position": [
-          519,
-          987
+          516,
+          1074
         ],
         "visible": true,
         "locked": false,
@@ -93,7 +93,7 @@
         "font_color": "#000000",
         "sel_font": {
           "family": "adelia",
-          "size": 52
+          "size": 32
         },
         "font_name": "adelia.ttf"
       },
@@ -113,28 +113,28 @@
         "locked": false,
         "exclusion_zone": [
           [
-            20.0,
-            20.0,
-            270.0,
-            140.0
+            34.0,
+            10.0,
+            250.0,
+            166.67
           ],
           [
-            310.0,
-            20.0,
-            270.0,
-            140.0
+            316.5,
+            10.0,
+            250.0,
+            166.67
           ],
           [
-            20.0,
-            180.0,
-            270.0,
-            140.0
+            34.0,
+            195.0,
+            250.0,
+            166.67
           ],
           [
-            310.0,
-            180.0,
-            270.0,
-            140.0
+            316.5,
+            195.0,
+            250.0,
+            166.67
           ]
         ]
       },

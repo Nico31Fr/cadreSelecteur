@@ -6,12 +6,12 @@
         "layer_type": "Texte",
         "name": "Texte 1",
         "display_position": [
-          173,
-          329
+          18,
+          348
         ],
         "image_position": [
-          519,
-          987
+          54,
+          1044
         ],
         "visible": true,
         "locked": false,
@@ -19,7 +19,7 @@
         "font_color": "#000000",
         "sel_font": {
           "family": "adelia",
-          "size": 52
+          "size": 36
         },
         "font_name": "adelia.ttf"
       },
@@ -39,10 +39,11 @@
         "locked": false,
         "exclusion_zone": [
           [
-            20.0,
-            20.0,
-            520.0,
-            282.0
+            60.0,
+            38.33,
+            460.0,
+            306.67,
+            353.0
           ]
         ]
       },
@@ -51,23 +52,23 @@
         "layer_type": "Image",
         "name": "Image 2",
         "display_position": [
-          -139,
-          52
+          -74,
+          -104
         ],
         "image_position": [
-          -417,
-          156
+          -222,
+          -312
         ],
         "visible": true,
         "locked": false,
         "imported_image_path": "coeur.png",
         "display_imported_image_size": [
-          600,
-          600
+          780,
+          780
         ],
         "image_imported_image_size": [
-          1800,
-          1800
+          2340,
+          2340
         ]
       }
     ],
@@ -78,18 +79,40 @@
       {
         "class": "LayerText",
         "layer_type": "Texte",
-        "name": "Texte 1",
+        "name": "Texte 3",
         "display_position": [
-          15,
-          259
+          204,
+          320
         ],
         "image_position": [
-          45,
-          777
+          612,
+          960
         ],
         "visible": true,
         "locked": false,
-        "text": "Bonne Soirée",
+        "text": "Soirée",
+        "font_color": "#000000",
+        "sel_font": {
+          "family": "adelia",
+          "size": 50
+        },
+        "font_name": "adelia.ttf"
+      },
+      {
+        "class": "LayerText",
+        "layer_type": "Texte",
+        "name": "Texte 1",
+        "display_position": [
+          18,
+          283
+        ],
+        "image_position": [
+          54,
+          849
+        ],
+        "visible": true,
+        "locked": false,
+        "text": "Bonne",
         "font_color": "#000000",
         "sel_font": {
           "family": "adelia",
@@ -113,28 +136,32 @@
         "locked": false,
         "exclusion_zone": [
           [
-            20.0,
-            20.0,
-            355.89,
-            193.0
+            30.0,
+            43.33,
+            325.0,
+            216.67,
+            348.0
           ],
           [
-            390.0,
-            37.0,
-            200.0,
-            106.23
-          ],
-          [
-            390.0,
+            410.0,
+            10.0,
             160.0,
-            200.0,
-            106.23
+            120.0,
+            8.0
           ],
           [
-            390.0,
-            280.0,
-            200.0,
-            106.23
+            370.0,
+            140.0,
+            160.01,
+            120.0,
+            354.0
+          ],
+          [
+            410.0,
+            260.0,
+            160.0,
+            120.0,
+            4.0
           ]
         ]
       },
@@ -143,49 +170,27 @@
         "layer_type": "Image",
         "name": "Image 2",
         "display_position": [
-          -139,
-          52
+          -79,
+          -82
         ],
         "image_position": [
-          -417,
-          156
+          -237,
+          -246
         ],
         "visible": true,
         "locked": false,
         "imported_image_path": "coeur.png",
         "display_imported_image_size": [
-          600,
-          600
+          670,
+          670
         ],
         "image_imported_image_size": [
-          1800,
-          1800
+          2010,
+          2010
         ]
-      },
-      {
-        "class": "LayerText",
-        "layer_type": "Texte",
-        "name": "Texte 2",
-        "display_position": [
-          237,
-          342
-        ],
-        "image_position": [
-          711,
-          1026
-        ],
-        "visible": true,
-        "locked": false,
-        "text": "01/01/2026",
-        "font_color": "#000000",
-        "sel_font": {
-          "family": "Bowtaris",
-          "size": 18
-        },
-        "font_name": "Bowtaris.ttf"
       }
     ],
     "background_couleur": "#74aecd"
   },
-  "template": "template_3.xml"
+  "template": "template_6.xml"
 }

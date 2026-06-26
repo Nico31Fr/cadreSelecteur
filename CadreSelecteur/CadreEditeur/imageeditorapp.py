@@ -2,6 +2,7 @@
 """ Module d'édition de cadre pour PiBooth
     |-> fenêtre principale de l'IHM  """
 
+import re  # À ajouter en haut de votre fichier pour utiliser les expressions régulières
 import tkinter as tk
 from tkinter import messagebox
 from tkinter.simpledialog import askstring
@@ -465,57 +466,73 @@ class ImageEditorApp:
     # gestion des templates
     def load_template(self):
         """
-        appelé à pour charger le template sélectionné
-        charge le xml et met à jour les zones d'exclusion
+        Appelé pour charger le template sélectionné.
+        Charge le XML et met à jour les zones d'exclusion (avec gestion de la rotation).
         """
-
         try:
             # Charger et analyser le fichier XML
             path_to_xml = path.join(self.template, self.selected_template.get())
             tree = Et.parse(path_to_xml)
             root_xml = tree.getroot()
+
             new_exc_zone1 = []
             new_exc_zone4 = []
 
-            # Trouver l'élément mxGeometry
-            for elem in root_xml.iter():
-                if 'diagram' not in elem.tag:
-                    continue
-                for diagram in elem.iter():
-                    if diagram.get('name') == 'Page-5':
-                        for item in diagram.iter():
-                            if 'mxGeometry' in item.tag:
-                                try:
-                                    x = float(item.get('x'))
-                                except:
-                                    x = 0
-                                try:
-                                    y = float(item.get('y'))
-                                except:
-                                    y = 0
-                                width = float(item.get('width'))
-                                height = float(item.get('height'))
-                                new_exc_zone1 = [(x, y, width, height)]
+            for diagram in root_xml.iter('diagram'):
+                if diagram.get('name') == 'Page-5':
+                    # On parcourt les 'mxCell' car ils contiennent le style (rotation) ET la géométrie
+                    for cell in diagram.iter('mxCell'):
+                        style = cell.get('style', '')
+                        geom = cell.find('mxGeometry')
+
+                        # On ignore les cellules de texte pour ne garder que les vraies zones
+                        if geom is not None and 'text;' not in style:
+                            x = float(geom.get('x', 0))
+                            y = float(geom.get('y', 0))
+                            width = float(geom.get('width', 0))
+                            height = float(geom.get('height', 0))
+
+                            # Extraction de l'angle de rotation depuis la chaîne de style
+                            angle = 0
+                            match = re.search(r'rotation=(-?\d+\.?\d*)', style)
+                            if match:
+                                angle = float(match.group(1))
+
+                            # Création du tuple avec les 5 valeurs attendues par LayerExcluZone
+                            new_exc_zone1 = [(x, y, width, height, angle)]
+                            break  # On a trouvé l'unique zone pour la Page-5
+
+                elif diagram.get('name') == 'Page-8':
+                    number_of_coord = 0
+                    for cell in diagram.iter('mxCell'):
+                        style = cell.get('style', '')
+                        geom = cell.find('mxGeometry')
+
+                        if geom is not None and 'text;' not in style:
+                            x = float(geom.get('x', 0))
+                            y = float(geom.get('y', 0))
+                            width = float(geom.get('width', 0))
+                            height = float(geom.get('height', 0))
+
+                            # Extraction de l'angle
+                            angle = 0
+                            match = re.search(r'rotation=(-?\d+\.?\d*)', style)
+                            if match:
+                                angle = float(match.group(1))
+
+                            new_exc_zone4.append((x, y, width, height, angle))
+                            number_of_coord += 1
+
+                            # On s'arrête dès qu'on a trouvé nos 4 zones
+                            if number_of_coord >= 4:
                                 break
-                    if diagram.get('name') == 'Page-8':
-                        number_of_coord = 1
-                        for item in diagram.iter():
-                            if 'mxGeometry' in item.tag:
-                                try:
-                                    x = float(item.get('x'))
-                                except:
-                                    x = 0
-                                try:
-                                    y = float(item.get('y'))
-                                except:
-                                    y = 0
-                                width = float(item.get('width'))
-                                height = float(item.get('height'))
-                                new_exc_zone4.append((x, y, width, height))
-                                number_of_coord += 1
-                                if number_of_coord >= 5:
-                                    break
+
             return [new_exc_zone1, new_exc_zone4]
+
+        except Exception as e:
+            print(f"Erreur lors du chargement du template XML : {e}")
+            # En cas d'erreur, on retourne des listes vides pour éviter un crash plus loin
+            return [[], []]
 
         except FileNotFoundError as e:
             logger.debug(f"Template file not found: {path_to_xml} - {e}")

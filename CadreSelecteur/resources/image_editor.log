@@ -2199,3 +2199,645 @@ TypeError: float() argument must be a string or a real number, not 'NoneType'
 2026-06-26 13:23:22,615 - CadreSelecteur.cadreselecteur - INFO - Custom template copied
 2026-06-26 13:23:22,713 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 3)
 2026-06-26 13:23:22,713 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 4)
+2026-06-26 19:24:10,102 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,102 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,102 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:24:10,152 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,152 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,153 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:24:10,153 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,153 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,750 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,750 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,750 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:24:10,796 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,797 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,797 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:24:10,797 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,797 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,797 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,797 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:24:10,797 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,854 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:24:10,854 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,854 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:24:10,854 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:10,855 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:24:11,152 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:24:11,152 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:24:11,245 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 19:24:11,256 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 19:24:11,333 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 19:24:11,648 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:24:11,648 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:24:11,833 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:24:11,833 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:24:11,957 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:24:11,957 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:24:12,238 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:24:12,239 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:24:12,370 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:24:12,370 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:24:12,470 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:24:12,471 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:24:12,584 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:24:12,584 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:24:14,584 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:24:14,584 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:24:16,950 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 19:24:20,947 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_5.xml
+2026-06-26 19:24:20,948 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: GuiguiBorder
+2026-06-26 19:24:20,948 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\GuiguiBorder\GuiguiBorder.json
+2026-06-26 19:24:42,479 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 19:24:42,479 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 19:24:42,596 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:24:42,596 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:24:42,733 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:24:42,733 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:24:42,861 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:24:42,861 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:24:43,075 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:24:43,076 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:24:43,174 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:24:43,175 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:24:43,264 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:24:43,264 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:24:43,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:24:43,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:24:46,039 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:24:46,039 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:24:47,783 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 19:24:51,063 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 19:24:51,063 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-06-26 19:24:51,063 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.json
+2026-06-26 19:24:58,245 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 19:24:58,246 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 19:24:58,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:24:58,346 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:24:58,454 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:24:58,454 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:24:58,571 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:24:58,571 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:24:58,752 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:24:58,752 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:24:58,833 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:24:58,834 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:24:58,913 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:24:58,913 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:24:58,993 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:24:58,993 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:25:07,458 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:25:07,459 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:25:11,340 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 19:25:11,340 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: cadre_blanc
+2026-06-26 19:25:11,340 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\cadre_blanc\cadre_blanc.json
+2026-06-26 19:25:20,211 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_4.xml
+2026-06-26 19:25:47,173 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project saved to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\cadre_blanc\cadre_blanc.json
+2026-06-26 19:25:47,405 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Frame images exported to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\cadre_blanc
+2026-06-26 19:25:47,406 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template XML copied to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\cadre_blanc\cadre_blanc.xml
+2026-06-26 19:25:51,119 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 19:25:51,119 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 19:25:51,230 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:25:51,231 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:25:51,354 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:25:51,354 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:25:51,499 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:25:51,499 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:25:51,744 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:25:51,744 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:25:51,874 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:25:51,874 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:25:51,989 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:25:51,989 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:25:52,103 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:25:52,103 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:39:07,735 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:07,738 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:07,738 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:39:07,781 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:07,781 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:07,782 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:39:07,783 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:07,793 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,157 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:08,157 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:08,158 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:39:08,172 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:08,173 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:08,173 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:39:08,182 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:08,182 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,182 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:39:08,182 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,183 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,199 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:39:08,199 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,200 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:39:08,200 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,200 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:39:08,400 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:39:08,400 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:39:08,462 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 19:39:08,472 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 19:39:08,515 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 19:39:08,589 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:39:08,589 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:39:08,705 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:39:08,705 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:39:08,876 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:39:08,876 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:39:09,045 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:39:09,045 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:39:09,144 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:39:09,144 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:39:09,250 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:39:09,250 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:39:09,357 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:39:09,357 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:39:11,504 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:39:11,505 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:39:12,921 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 19:39:14,010 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 19:39:15,346 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 19:39:15,346 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-06-26 19:39:15,346 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.json
+2026-06-26 19:40:16,476 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project saved to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.json
+2026-06-26 19:40:16,697 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Frame images exported to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree
+2026-06-26 19:40:16,698 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template XML copied to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.xml
+2026-06-26 19:40:23,130 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 19:40:23,131 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 19:40:23,225 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:40:23,225 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:40:23,322 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:40:23,322 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:40:23,433 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:40:23,433 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:40:23,626 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:40:23,626 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:40:23,708 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:40:23,708 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:40:23,813 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:40:23,813 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:40:23,922 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:40:23,923 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:40:33,421 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:40:33,421 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:40:37,342 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_3.xml
+2026-06-26 19:40:37,342 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree2
+2026-06-26 19:40:37,342 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 19:40:41,712 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 19:40:49,904 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_3.xml
+2026-06-26 19:40:55,019 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 19:42:58,764 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project saved to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 19:42:59,027 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Frame images exported to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2
+2026-06-26 19:42:59,029 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template XML copied to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.xml
+2026-06-26 19:43:04,617 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 19:43:04,617 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 19:43:04,719 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:43:04,719 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:43:04,818 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:43:04,818 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:43:04,954 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:43:04,955 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:43:05,132 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:43:05,132 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:43:05,246 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:43:05,246 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:43:05,374 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:43:05,374 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:43:05,506 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:43:05,506 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:56:06,899 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:06,900 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:06,900 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:56:06,923 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:06,923 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:06,923 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:56:06,923 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:06,923 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,343 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:07,344 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:07,344 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:56:07,351 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:07,351 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:07,351 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 19:56:07,372 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:07,372 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,372 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:56:07,372 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,373 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,378 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 19:56:07,378 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,378 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 19:56:07,379 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,379 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 19:56:07,622 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:56:07,622 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:56:07,703 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 19:56:07,716 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 19:56:07,775 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 19:56:07,897 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:56:07,897 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:56:08,053 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:56:08,053 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:56:08,221 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:56:08,221 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:56:08,467 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:56:08,467 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:56:08,583 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:56:08,583 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:56:08,688 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:56:08,688 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:56:08,795 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:56:08,795 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 19:56:13,024 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 19:56:15,063 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 19:56:15,063 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 19:56:16,926 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 19:56:19,975 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 19:56:19,975 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree2
+2026-06-26 19:56:19,975 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 19:56:27,575 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 19:56:27,575 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 19:56:27,697 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 19:56:27,697 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 19:56:27,833 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 19:56:27,833 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 19:56:28,011 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 19:56:28,011 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 19:56:28,297 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 19:56:28,297 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 19:56:28,422 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 19:56:28,422 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 19:56:28,541 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 19:56:28,541 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 19:56:28,658 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 19:56:28,658 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:01:13,399 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,400 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,400 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:01:13,421 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,422 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,422 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:01:13,422 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,423 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,743 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,743 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,743 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:01:13,750 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,750 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,750 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:01:13,769 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,769 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,770 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:01:13,770 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,770 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,775 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:01:13,775 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,775 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:01:13,776 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,777 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:01:13,955 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:01:13,955 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:01:14,013 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 20:01:14,026 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 20:01:14,077 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 20:01:14,153 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:01:14,153 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:01:14,246 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:01:14,246 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:01:14,434 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:01:14,434 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:01:14,611 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:01:14,611 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:01:14,726 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:01:14,726 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:01:14,835 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:01:14,835 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:01:14,940 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:01:14,941 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:01:19,423 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 20:01:19,661 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:01:19,661 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:01:21,020 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 20:01:23,659 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 20:01:23,660 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree2
+2026-06-26 20:01:23,660 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 20:01:28,972 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_3.xml
+2026-06-26 20:01:49,042 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:01:49,042 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:01:49,137 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:01:49,137 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:01:49,235 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:01:49,235 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:01:49,350 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:01:49,351 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:01:49,527 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:01:49,527 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:01:49,611 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:01:49,611 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:01:49,691 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:01:49,691 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:01:49,770 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:01:49,770 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:01:58,255 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:01:58,255 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:02:01,685 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 20:02:01,685 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-06-26 20:02:01,685 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.json
+2026-06-26 20:02:06,243 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 20:02:11,074 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_3.xml
+2026-06-26 20:02:15,028 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_4.xml
+2026-06-26 20:02:18,901 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_5.xml
+2026-06-26 20:02:23,982 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 20:02:30,498 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:02:30,498 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:02:30,584 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:02:30,584 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:02:30,683 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:02:30,683 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:02:30,803 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:02:30,803 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:02:30,974 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:02:30,975 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:02:31,062 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:02:31,062 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:02:31,145 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:02:31,145 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:02:31,235 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:02:31,235 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:02:47,136 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:02:47,136 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:02:59,524 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 20:04:13,581 - CadreSelecteur.CadreEditeur.layerimage - INFO - Image copiée dans E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\logo__76a9t1xut.png
+2026-06-26 20:05:06,001 - CadreSelecteur.CadreEditeur.layerimage - INFO - Image copiée dans E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\logo-fronton-handball-transparent-small__rzla85.png
+2026-06-26 20:07:01,515 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Configuration synced: layer=all, direction=1_4
+2026-06-26 20:08:03,505 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project saved to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\FCHB.json
+2026-06-26 20:08:03,738 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Frame images exported to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB
+2026-06-26 20:08:03,739 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template XML copied to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\FCHB.xml
+2026-06-26 20:08:08,639 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 12 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:08:08,639 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:08:08,754 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:08:08,754 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:08:08,864 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:08:08,864 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:08:08,995 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:08:08,995 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:08:09,087 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:08:09,087 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:08:09,262 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:08:09,262 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:08:09,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:08:09,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:08:09,420 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:08:09,421 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:08:09,498 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:08:09,498 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:08:15,119 - CadreSelecteur.cadreselecteur - INFO - Selected frame: FCHB
+2026-06-26 20:08:15,120 - CadreSelecteur.cadreselecteur - DEBUG - Copying frames: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\FCHB_1.png & E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\FCHB_4.png → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Cadres\cadre_1.png & E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Cadres\cadre_4.png
+2026-06-26 20:08:15,124 - CadreSelecteur.cadreselecteur - INFO - Frame files copied successfully
+2026-06-26 20:08:15,124 - CadreSelecteur.cadreselecteur - DEBUG - Copying custom template: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\FCHB\FCHB.xml → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Cadres\template.xml
+2026-06-26 20:08:15,125 - CadreSelecteur.cadreselecteur - INFO - Custom template copied
+2026-06-26 20:08:15,214 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 3)
+2026-06-26 20:08:15,214 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 4)
+2026-06-26 20:12:03,387 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,387 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,387 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:12:03,408 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,408 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,408 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:12:03,408 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,409 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,699 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,699 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,700 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:12:03,711 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,711 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,711 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:12:03,721 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,721 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,721 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:12:03,721 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,723 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,735 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:12:03,735 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,735 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:12:03,735 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,736 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:12:03,903 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:12:03,903 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:12:03,960 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 20:12:03,973 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 20:12:04,007 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 20:12:04,090 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:12:04,090 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:12:04,184 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:12:04,184 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:12:04,317 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:12:04,317 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:12:04,407 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:12:04,408 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:12:04,576 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:12:04,576 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:12:04,660 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:12:04,660 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:12:04,741 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:12:04,741 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:12:04,820 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:12:04,820 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:12:09,169 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 20:12:11,067 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:12:11,067 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:12:12,402 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 20:12:14,996 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 20:12:14,996 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree2
+2026-06-26 20:12:14,996 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 20:12:20,117 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_6.xml
+2026-06-26 20:12:33,871 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 20:12:36,958 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 14 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:12:36,958 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:12:37,072 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:12:37,072 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:12:37,173 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:12:37,173 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:12:37,303 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:12:37,303 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:12:37,411 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:12:37,411 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:12:37,625 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:12:37,625 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:12:37,740 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:12:37,740 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:12:37,842 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:12:37,842 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:12:37,943 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:12:37,943 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:32:11,015 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,015 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,015 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:32:11,051 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,051 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,052 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:32:11,052 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,052 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,604 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,604 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,604 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:32:11,612 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,612 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,612 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:32:11,632 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,632 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,632 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:32:11,632 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,633 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,639 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:32:11,639 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,639 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:32:11,639 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,640 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:32:11,839 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:32:11,839 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:32:11,893 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 20:32:11,903 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 20:32:12,000 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 20:32:12,108 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:32:12,109 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:32:12,221 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:32:12,221 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:32:12,376 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:32:12,377 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:32:12,485 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:32:12,485 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:32:12,660 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:32:12,661 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:32:12,748 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:32:12,748 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:32:12,831 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:32:12,831 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:32:12,915 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:32:12,915 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:32:15,394 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:32:15,394 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:32:16,903 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 20:32:17,049 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 20:32:19,280 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 20:32:19,280 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-06-26 20:32:19,280 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.json
+2026-06-26 20:32:23,609 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_6.xml
+2026-06-26 20:32:28,300 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 14 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:32:28,300 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:32:28,450 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:32:28,450 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:32:28,584 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:32:28,585 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:32:28,740 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:32:28,740 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:32:28,855 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:32:28,855 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:32:29,121 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:32:29,121 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:32:29,243 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:32:29,243 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:32:29,357 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:32:29,357 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:32:29,469 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:32:29,470 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:43:57,906 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:57,906 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:57,906 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:43:59,025 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,026 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,026 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:43:59,026 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,027 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,657 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,657 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,657 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:43:59,685 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,685 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,685 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\config.json
+2026-06-26 20:43:59,691 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,691 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,691 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:43:59,691 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,692 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,718 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources
+2026-06-26 20:43:59,718 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,718 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-06-26 20:43:59,718 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,719 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\resources\fr.json
+2026-06-26 20:43:59,962 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:43:59,962 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:44:00,026 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-06-26 20:44:00,052 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-06-26 20:44:00,130 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-06-26 20:44:00,271 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:44:00,271 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:44:00,469 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:44:00,469 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:44:00,607 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:44:00,608 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:44:00,735 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:44:00,735 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:44:00,924 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:44:00,924 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:44:01,012 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:44:01,012 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:44:01,093 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:44:01,093 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:44:01,177 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:44:01,177 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:44:03,607 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:44:03,607 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:44:05,142 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Fonts
+2026-06-26 20:44:05,210 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-06-26 20:44:07,457 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-06-26 20:44:07,457 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-06-26 20:44:07,457 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree\BonneSoiree.json
+2026-06-26 20:44:13,871 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_6.xml
+2026-06-26 20:44:31,558 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 14 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:44:31,558 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:44:31,702 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:44:31,702 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:44:31,840 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:44:31,840 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:44:32,004 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:44:32,004 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:44:32,171 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:44:32,171 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:44:32,426 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:44:32,426 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:44:32,518 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:44:32,518 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:44:32,601 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:44:32,602 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:44:32,680 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:44:32,680 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
+2026-06-26 20:44:45,249 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
+2026-06-26 20:44:45,250 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-06-26 20:44:49,586 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_2.xml
+2026-06-26 20:44:49,586 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree2
+2026-06-26 20:44:49,586 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 20:44:54,810 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_6.xml
+2026-06-26 20:46:39,514 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project saved to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.json
+2026-06-26 20:46:39,809 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Frame images exported to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2
+2026-06-26 20:46:39,810 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template XML copied to E:\PycharmProjects\cadreSelecteur\CadreSelecteur\Templates\BonneSoiree2\BonneSoiree2.xml
+2026-06-26 20:46:44,384 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 14 PhotoImage refs from category 'thumbnails'
+2026-06-26 20:46:44,385 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-06-26 20:46:44,499 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-06-26 20:46:44,499 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-06-26 20:46:44,600 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-06-26 20:46:44,600 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-06-26 20:46:44,751 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-06-26 20:46:44,751 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-06-26 20:46:44,880 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-06-26 20:46:44,881 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-06-26 20:46:45,120 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-06-26 20:46:45,121 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-06-26 20:46:45,239 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-06-26 20:46:45,239 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-06-26 20:46:45,347 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 11)
+2026-06-26 20:46:45,347 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 12)
+2026-06-26 20:46:45,455 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 13)
+2026-06-26 20:46:45,455 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 14)
