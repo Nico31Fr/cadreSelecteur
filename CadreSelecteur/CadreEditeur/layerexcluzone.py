@@ -2,7 +2,7 @@
 """ Module d'édition de cadre pour PiBooth
     |→ classe de gestion des calques image  """
 
-
+import os
 from PIL import ImageDraw, Image
 import tkinter as tk
 from .layer import Layer
@@ -42,23 +42,41 @@ class LayerExcluZone(Layer):
 
     def draw_on_image(self, image: Image.Image, export=False):
         """
-        Dessine ce calque image sur une image PIL.
+        Dessine les zones d'exclusion et, en mode édition, les images de substitution.
 
         Args:
             image (PIL.Image): image PIL.
-            export (bool): True pour l’image export.
+            export (bool): True pour l’image export, False pour l’édition.
         """
         if not self.visible or not self.exclusion_zone:
             return
-        # insère les zones transparentes (Display et Image)
+
+        # Calcul des dimensions et positions
         draw_i = ImageDraw.Draw(image)
         local_ratio = self.RATIO if export else 1
-        for d_x, d_y, d_w, d_h in self.exclusion_zone:
-            i_x, i_y, i_w, i_h = (d_x * local_ratio,
-                                  d_y * local_ratio,
-                                  d_w * local_ratio,
-                                  d_h * local_ratio)
-            draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
+
+        # Répertoire des ressources (basé sur le dossier parent du module)
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        res_dir = os.path.join(base_dir, "resources")
+
+        for i, (d_x, d_y, d_w, d_h) in enumerate(self.exclusion_zone):
+            i_x, i_y, i_w, i_h = (d_x * local_ratio, d_y * local_ratio,
+                                  d_w * local_ratio, d_h * local_ratio)
+
+            # Insertion des images de substitution UNIQUEMENT si export est False
+            if not export:
+                img_path = os.path.join(res_dir, f"photo{i + 1}.png")
+                if os.path.exists(img_path):
+                    try:
+                        placeholder = Image.open(img_path).convert("RGBA")
+                        placeholder = placeholder.resize((int(i_w), int(i_h)))
+                        image.paste(placeholder, (int(i_x), int(i_y)), placeholder)
+                    except Exception as e:
+                        # Log de l'erreur sans bloquer l'application
+                        print(f"Erreur chargement image {img_path}: {e}")
+            else:
+                # Dessin du rectangle transparent (ou contour)
+                draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
 
     def update_param_zone(self, frame):
         for widget in frame.winfo_children():
