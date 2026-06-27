@@ -53,7 +53,6 @@ class LayerImage(Layer):
         Returns :
             bool : True si import OK, False sinon.
         """
-        from pathlib import Path
 
         imported_path = filedialog.askopenfilename(parent=self.tk_parent)
         if not imported_path:

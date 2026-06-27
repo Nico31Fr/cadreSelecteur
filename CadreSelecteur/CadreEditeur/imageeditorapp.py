@@ -496,7 +496,7 @@ class ImageEditorApp:
                             angle = 0
                             match = re.search(r'rotation=(-?\d+\.?\d*)', style)
                             if match:
-                                angle = float(match.group(1))
+                                angle = -float(match.group(1))
 
                             # Création du tuple avec les 5 valeurs attendues par LayerExcluZone
                             new_exc_zone1 = [(x, y, width, height, angle)]
@@ -518,7 +518,7 @@ class ImageEditorApp:
                             angle = 0
                             match = re.search(r'rotation=(-?\d+\.?\d*)', style)
                             if match:
-                                angle = float(match.group(1))
+                                angle = -float(match.group(1))
 
                             new_exc_zone4.append((x, y, width, height, angle))
                             number_of_coord += 1

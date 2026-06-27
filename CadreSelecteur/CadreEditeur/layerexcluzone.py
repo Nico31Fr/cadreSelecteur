@@ -2,13 +2,14 @@
 """ Module d'édition de cadre pour PiBooth
     |→ classe de gestion des calques image  """
 
-import os
-import math
-from PIL import ImageDraw, Image
+
 import tkinter as tk
+from math import radians, cos, sin
+from pathlib import Path
+from PIL import ImageDraw, Image
 from .layer import Layer
 from ..i18n import t
-
+from ..path_resolver import resolve_resources_dir
 
 class LayerExcluZone(Layer):
     """
@@ -38,8 +39,7 @@ class LayerExcluZone(Layer):
         draw_i = ImageDraw.Draw(image)
         local_ratio = self.RATIO if export else 1
 
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        res_dir = os.path.join(base_dir, "resources")
+        res_dir = resolve_resources_dir()
 
         for i, zone_data in enumerate(self.exclusion_zone):
             # Rétrocompatibilité : vérifie si l'angle est présent dans les données
@@ -58,8 +58,8 @@ class LayerExcluZone(Layer):
 
             if not export:
                 # --- MODE ÉDITION : Affichage de l'image de substitution ---
-                img_path = os.path.join(res_dir, f"photo{i + 1}.png")
-                if os.path.exists(img_path):
+                img_path = res_dir / f"photo{i + 1}.png"
+                if img_path.exists():
                     try:
                         placeholder = Image.open(img_path).convert("RGBA")
                         # 1. Mise à l'échelle
@@ -83,12 +83,12 @@ class LayerExcluZone(Layer):
                 if angle != 0:
                     # On utilise la trigonométrie pour calculer les 4 coins pivotés
                     # On inverse l'angle car l'axe Y est orienté vers le bas en traitement d'image
-                    rad = math.radians(-angle)
+                    rad = radians(-angle)
 
                     def rotate_pt(px, py):
                         dx, dy = px - c_x, py - c_y
-                        nx = dx * math.cos(rad) - dy * math.sin(rad)
-                        ny = dx * math.sin(rad) + dy * math.cos(rad)
+                        nx = dx * cos(rad) - dy * sin(rad)
+                        ny = dx * sin(rad) + dy * cos(rad)
                         return (nx + c_x, ny + c_y)
 
                     # Calcul des sommets du polygone (Haut-Gauche, Haut-Droit, Bas-Droit, Bas-Gauche)
