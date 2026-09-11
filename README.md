@@ -1,5 +1,5 @@
  ![IHM](CadreSelecteur/resources/cadreSelecteur.png)
-# PiBooth Cadre Sélecteur
+#  CadreSelecteur
 
 ---
 
@@ -40,7 +40,8 @@
 - **Cadre installé** : Prévisualisation du cadre actuellement utilisé dans `Cadres`.
 - **Boutons d'action** : `Appliquer` pour exécuter la sélection et `Quitter` pour fermer l'application.
 - **bouton poubelle** : permet de supprimer un jeux de cadre
-- 
+- **bouton edition** : permet de modifier un jeux de cadre existant
+  
 Pour modifier le cadre que pibooth va utiliser :
 
 1. **Sélection** :
@@ -61,7 +62,7 @@ Pour modifier le cadre que pibooth va utiliser :
 - **1 - Sélection de templates** : Choisissez parmi les templates disponibles pour définir les zones de cadre.
 - **2 - Cadres de composition** : Deux zones d'édition (app1 et app4) pour vos compositions d'image.
 - **3 - Synchronisation** : Options pour synchroniser les configurations entre les deux cadres.
-- **4 - Sauvegarde et export** : Sauvegarder et charger des projets, ainsi que générer et exporter des fichiers de cadre.
+- **4 - Sauvegarde et quitter** : Sauvegarder et génère le projet et les fichiers de cadre.
 
 #### Secteur de sélection de templates
 
@@ -75,10 +76,10 @@ La fenêtre principale affiche deux cadres que vous pouvez personnaliser individ
 
 Utilisez les boutons fléchés pour synchroniser les propriétés de texte, d'image, ou de fond entre les deux cadres. 
 
-### Sauvegarde et export
+### Sauvegarde
 
-- **Charger/Sauvegarder un projet** : Utilisez les boutons dédiés pour sauvegarder le projet actuel dans un fichier JSON ou pour le charger depuis un fichier existant.
-- **Exporter les cadres** : Sélectionnez un répertoire pour sauvegarder votre projet avec le bouton `Générer les cadres`. Cela exportera deux fichiers PNG et copiera le fichier XML de template.
+- **Sauvegarder** : Sauvegarde le projet actuel et génère les cadres.
+- **quitter** : ferme la fenêtre d'edition.
 
 ### Fonctionnement du Cadre de composition
 
