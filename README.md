@@ -1,41 +1,60 @@
  ![IHM](CadreSelecteur/resources/cadreSelecteur.png)
- # PiBooth Cadre Sélecteur
+# PiBooth Cadre Sélecteur
 
-## Introduction
+## ⚠️ Important : Installation sans Python requis !
 
-L'application cadre sélecteur pour PiBooth permet, via une interface graphique, de selectionner le cadre et le layout que l'on souhaite utiliser au prochain démarrage du photomaton.
-Il offre aussi la possibilité de créer un nouveau calque original.
+**Vous n'avez pas besoin d'installer Python** pour utiliser cette application !
+Un fichier exécutable est fourni qui fonctionne directement après extraction.
 
-## installation de l'executable 
-un executable Windows et Linux est disponible (cf.https://github.com/Nico31Fr/cadreSelecteur/releases)
+---
 
-téléchargez l'archive correspondante a votre OS décompressez et lancer l'executable.
+## 🖥️ Méthode Recommandée : Exécutable Windows (Aucune Installation Requise)
 
-## installation du package Python
+### Pour les utilisateurs de Windows qui ne connaissent pas GitHub
 
-pour installer CadreSelecteur en mode module python :
+**Étape 1 :** Téléchargez l'archive depuis [les releases](https://github.com/Nico31Fr/cadreSelecteur/releases)
 
-Installation des dépendances :
+**Étape 2 :** Extraiez le fichier ZIP dans un dossier de votre choix (par exemple : C:\CadreSelecteur ou sur votre bureau)
 
-- **Python** : Version 3.7 ou supérieure.
-- **Bibliothèques Python** : 
-  - Pillow>=11.3.0
-  - matplotlib>=3.10.6
-  - numpy>=2.3.3
-  - fontTools>=4.60.1
+**Étape 3 :** Double-cliquez sur l'executable `cadreSelecteur.exe` pour lancer l'application
 
-Les modules nécessaires peuvent être installés via pip :
+**Étape 4 :** Utilisez l'application comme vous le feriez avec n'importe quel programme Windows classique !
+
+### Comment utiliser l'application une fois lancée :
+
+1. L'application affiche les cadres disponibles à gauche et le cadre sélectionné à droite
+2. Cliquez sur un cadre pour le sélectionner
+3. Cliquez sur "Appliquer" pour valider le choix
+4. Le cadre sera utilisé lors du prochain lancement de PiBooth
+
+---
+
+## 🐧 Alternative : Mode Script Python (Pour utilisateurs avancés)
+
+**Cette méthode n'est utile que si :**
+- Vous êtes habitué à utiliser des scripts Python
+- Vous avez déjà Python installé sur votre système (Windows, Mac ou Linux)
+- Vous voulez exécuter l'application directement depuis le terminal sans executable
+
+### Installation des dépendances :
+
+Cette méthode nécessite d'avoir Python installé. Téléchargez Python depuis [python.org](https://www.python.org/downloads/) si vous ne l'avez pas.
+
 ```bash 
 pip install -r requirements.txt
 ```
 
-## Démarrage
+### Démarrage :
 
-dans le répertoire cadreSelecteur :
+Ouvrez un terminal dans le répertoire de l'application et exécutez :
 
 ```bash 
 python3 -m CadreSelecteur
 ```
+
+**Note :** Les deux méthodes (executable et script Python) fournissent les mêmes fonctionnalités. L'executable est recommandé pour la simplicité !
+
+
 ## Fonctionnalités
 
 ### Démarrage de l'application
