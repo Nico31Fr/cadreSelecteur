@@ -1,59 +1,19 @@
  ![IHM](CadreSelecteur/resources/cadreSelecteur.png)
 # PiBooth Cadre Sélecteur
 
-## ⚠️ Important : Installation sans Python requis !
-
-**Vous n'avez pas besoin d'installer Python** pour utiliser cette application !
-Un fichier exécutable est fourni qui fonctionne directement après extraction.
-
 ---
 
-## 🖥️ Méthode Recommandée : Exécutable Windows (Aucune Installation Requise)
+## 🖥Installation
 
-### Pour les utilisateurs de Windows qui ne connaissent pas GitHub
+### Méthode Recommandée : Exécutable Windows (Aucune Installation Requise)
 
 **Étape 1 :** Téléchargez l'archive depuis [les releases](https://github.com/Nico31Fr/cadreSelecteur/releases)
 
-**Étape 2 :** Extraiez le fichier ZIP dans un dossier de votre choix (par exemple : C:\CadreSelecteur ou sur votre bureau)
+**Étape 2 :** Extraire le fichier ZIP dans un dossier de votre choix (par exemple : C:\CadreSelecteur ou sur votre bureau)
 
 **Étape 3 :** Double-cliquez sur l'executable `cadreSelecteur.exe` pour lancer l'application
 
-**Étape 4 :** Utilisez l'application comme vous le feriez avec n'importe quel programme Windows classique !
-
-### Comment utiliser l'application une fois lancée :
-
-1. L'application affiche les cadres disponibles à gauche et le cadre sélectionné à droite
-2. Cliquez sur un cadre pour le sélectionner
-3. Cliquez sur "Appliquer" pour valider le choix
-4. Le cadre sera utilisé lors du prochain lancement de PiBooth
-
 ---
-
-## 🐧 Alternative : Mode Script Python (Pour utilisateurs avancés)
-
-**Cette méthode n'est utile que si :**
-- Vous êtes habitué à utiliser des scripts Python
-- Vous avez déjà Python installé sur votre système (Windows, Mac ou Linux)
-- Vous voulez exécuter l'application directement depuis le terminal sans executable
-
-### Installation des dépendances :
-
-Cette méthode nécessite d'avoir Python installé. Téléchargez Python depuis [python.org](https://www.python.org/downloads/) si vous ne l'avez pas.
-
-```bash 
-pip install -r requirements.txt
-```
-
-### Démarrage :
-
-Ouvrez un terminal dans le répertoire de l'application et exécutez :
-
-```bash 
-python3 -m CadreSelecteur
-```
-
-**Note :** Les deux méthodes (executable et script Python) fournissent les mêmes fonctionnalités. L'executable est recommandé pour la simplicité !
-
 
 ## Fonctionnalités
 
@@ -157,3 +117,19 @@ La zone de contrôle inclut les calques suivantes :
 - **Déplacement** : Sélectionnez le calque et glissez/déposez (drag and drop) le calque actif.
 - **Zoom** : Utilisez la molette de la souris pour agrandir ou rétrécir le calque actif.
 
+---
+
+### Méthode d'installation alternative : Mode Script Python (Pour utilisateurs avancés)
+
+**Cette méthode est utile seulement pour :**
+- Utiliser CadreSelecteur sous Mac ou Linux
+- Modifier le script.
+
+Cette méthode nécessite d'avoir Python et pip installé.
+
+```bash 
+pip install -r requirements.txt
+python3 -m CadreSelecteur
+```
+
+**Note :** Les deux méthodes (executable et script Python) fournissent les mêmes fonctionnalités. L'executable est recommandé pour la simplicité !
