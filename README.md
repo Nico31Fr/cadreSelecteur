@@ -19,16 +19,12 @@
 
 ### Démarrage de l'application
 
-1. **Initialisation** : Lors de l'exécution, l'application vérifie la présence des répertoires et du template par défaut. Les erreurs de configuration sont signalées via un message d'erreur.
+1. **Initialisation** : Lors de l'exécution, l'application vérifie la présence des répertoires obligatoire, ils sont automatiquement crée si il n'existe pas.
 
    - **Répertoires requis** :
      - `Templates` : Contenant les cadres et templates disponibles.
      - `Cadres` : Destination pour les cadres sélectionnés. (PiBooth est configuré pour venir chercher le cadre à utiliser ici)
      - `Fonts` : contient les polices utilisables dans l'outil (vous pouvez en ajouter !)
-
-   - **Fichiers nécessaires** :
-     - `template_x.xml` : Template par défaut utilisé en l'absence de fichier associé.
-
 
 2. **Affichage** : L'application affiche une liste de vignettes des cadres disponibles à gauche et le cadre installé à droite.
     
