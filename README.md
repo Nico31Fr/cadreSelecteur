@@ -94,12 +94,21 @@ La zone de contrôle inclut les calques suivantes :
 
 1. **Texte** :
    - **Saisie** : Entrez votre texte.
-   - **Police** : Cliquez sur `Police` pour choisir le style et la taille.
+   - **Police** : Cliquez sur `Police` pour choisir le style et la taille (côte à côte avec `Couleur`).
    - **Couleur** : Bouton `Couleur` pour la couleur du texte.
+   - **Position et taille** : Champs X, Y et Taille modifiables (mise à jour en direct, taille bornée entre 4 et 200).
 
 2. **Image** :
    - **Importer** : Bouton `Image` pour sélectionner une image à importer.
    - **Effacer** : Supprime l'image importée.
+   - **Position et dimensions** : Champs X, Y, Largeur, Hauteur modifiables (mise à jour en direct, ratio d'origine toujours conservé).
+
+3. **Déplacement et zoom (calques image et texte)** :
+   - **Croix directionnelle** : Boutons `▲ ▼ ◄ ►` pour déplacer le calque.
+   - **Boutons `+` / `-`** : Agrandir ou réduire.
+
+4. **Zone d'insertion photo** :
+   - Définie par le template XML, **non modifiable** (affichage seul).
 
 3. **Couleur de fond** :
    - **Sélecteur** : Cliquez sur `couleur du fond` pour ouvrir le sélecteur de couleurs.
@@ -111,8 +120,9 @@ La zone de contrôle inclut les calques suivantes :
 
 ### Manipulation de la composition
 
-- **Déplacement** : Sélectionnez le calque et glissez/déposez (drag and drop) le calque actif.
-- **Zoom** : Utilisez la molette de la souris pour agrandir ou rétrécir le calque actif.
+- **Déplacement** : Sélectionnez le calque et glissez/déposez (drag and drop) le calque actif, ou utilisez la croix directionnelle `▲ ▼ ◄ ►` (les champs X/Y suivent en temps réel).
+- **Zoom** : Utilisez la molette de la souris pour agrandir ou rétrécir le calque actif, ou les boutons `+` / `-`.
+- **Édition directe** : Les champs de dimensions du calque actif (position, taille) sont modifiables et mettent à jour le canvas en direct pendant la frappe.
 
 ---
 

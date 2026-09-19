@@ -93,9 +93,9 @@ Files: `CadreSelecteur/i18n/translator.py`, `resources/{lang}.json`
 **Inheritance tree**:
 ```
 Layer (base class - position, visibility, locking)
-├── LayerImage (drag+scale images, respects aspect ratio)
-├── LayerText (render fonts, font selection via FileBrowser)
-└── LayerExcluZone (transparency mask for frame borders)
+├── LayerImage (drag+scale images, original aspect ratio always locked)
+├── LayerText (render fonts, font selection via FileBrowser, size clamped to [4, 200])
+└── LayerExcluZone (transparency mask for frame borders, template-driven, NOT editable)
 ```
 
 **Data flow**:
@@ -107,6 +107,33 @@ Layer (base class - position, visibility, locking)
 **Key invariant**: All coordinates scale by `RATIO` (canvas → image space)
 
 Example: `LayerImage.resize()` updates both display and image position
+
+**Param-zone editing (two-way sync)**:
+- `Layer.set_display_position(x, y)` — sets canvas position + syncs export position (× `RATIO`).
+- `LayerImage`: editable X/Y/W/H entries (`set_position`/`set_size`); H is always
+  recomputed from the **original** image aspect (master = field that changed vs current size).
+- `LayerText`: editable X/Y/font-size entries (`set_position`/`set_font_size`);
+  size clamped to `[MIN_FONT_SIZE, MAX_FONT_SIZE]` = [4, 200] (see Gotchas).
+- `LayerExcluZone.update_param_zone()` is display-only (zones come from the XML template).
+- Live update: entries use `trace_add('write')` (silent, invalid keystrokes ignored) +
+  `<Return>`/`<FocusOut>` (with validation dialogs). No "Apply" buttons.
+- Mouse → fields: `ImageEditor.drag_drop()`/`resize()` call `layer.sync_param_zone()`
+  after `update_canvas()`.
+- **Anti-recursion**: programmatic var writes run under `self._syncing = True`;
+  live trace handlers must return early when set (else keystroke → set → trace → loop).
+- `param_frame` is 250×300 (`pack_propagate(False)`); keep new controls compact
+  (square buttons `width=2`, side-by-side rows).
+
+**Rendering performance rules**:
+- `LayerImage.resize()`/`set_size()` rebuild ONLY the display-size image and set
+  `_export_dirty = True`; the 3× export image is rebuilt on demand in
+  `draw_on_image(export=True)` via `_ensure_export_image()`. Never resize the
+  export image on interactive paths (wheel/drag/typing).
+- `LayerText` caches `pil_font` (display) + `pil_font_export` (× `RATIO`) via
+  `_rebuild_fonts()` — called on every font/size change, never per-draw.
+  Never call `ImageFont.truetype()` inside `draw_on_image()`.
+- `ImageEditor.drag_drop()` redraws via `request_canvas_update()` (`after_idle`
+  coalescing: N motion events → 1 redraw). Wheel resize stays synchronous.
 
 ### 4. Configuration Loading (Runtime Defaults)
 
@@ -203,6 +230,8 @@ PiBooth expects frame selection result at `Cadres/cadre_1.png` or `Cadres/cadre_
 | Config not persisting | Writing to read-only _MEIPASS | All writes must go to tempdir or user data dir |
 | Translations missing | Language file not in resources/ | Ensure `resources/{lang}.json` exists and is valid JSON |
 | Canvas not rendering | Layer coordinates using wrong scale (display vs. image) | Check `RATIO` multiplication in layer coordinate methods |
+| Blocking error-popup cascade | Huge font size (typed, font-chooser, or loaded JSON) makes PIL allocate giant glyph bitmaps on every redraw | Font size is clamped to [4, 200] (`clamp_font_size`, enforced in setters, `from_dict`, `callback_font`, `draw_on_image`); keep the clamp |
+| Trace recursion / redundant redraws | Setting entry StringVars programmatically fires `trace_add('write')` handlers | Wrap programmatic sets with `self._syncing = True` + early return in live handlers |
 | Tests fail with i18n errors | Import order issue or missing test setup | Run tests with `python3 run_tests.py` (sets up logging) |
 
 ## Key Files Reference
@@ -219,7 +248,7 @@ PiBooth expects frame selection result at `Cadres/cadre_1.png` or `Cadres/cadre_
 
 ---
 
-**Last Updated**: 2026-03-18  
+**Last Updated**: 2026-09-19  
 **Python**: 3.10+  
 **Maintainer Concerns**: PyInstaller compatibility, i18n consistency, layer architecture scalability
 
