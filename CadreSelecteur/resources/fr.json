@@ -103,7 +103,19 @@
   },
   "layerimage": {
     "label": {
-      "info": "Calque {name}\nNom : {filename}\nPosition : {position}\nTaille : {size}"
+      "info": "Calque {name}\nNom : {filename}\nPosition : {position}\nTaille : {size}",
+      "title": "Calque {name}",
+      "file": "Fichier : {filename}",
+      "x": "X :",
+      "y": "Y :",
+      "width": "Largeur :",
+      "height": "Hauteur :"
+    },
+    "msg": {
+      "error": {
+        "invalid_title": "Valeur invalide",
+        "invalid_message": "Saisir des nombres entiers. Largeur >= 15 et Hauteur >= 10 requises."
+      }
     }
   },
   "layer": {
@@ -113,7 +125,10 @@
     "default_text": "Texte",
     "default_name": "Texte {n}",
     "label": {
-      "layer": "calque {name}"
+      "layer": "calque {name}",
+      "x": "X :",
+      "y": "Y :",
+      "font_size": "Taille :"
     },
     "preview": "Aperçu : {family}",
     "chosen_font": "Police choisie : {font}",

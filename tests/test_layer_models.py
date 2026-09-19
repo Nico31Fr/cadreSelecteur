@@ -14,6 +14,12 @@ class DummyStringVar:
     def get(self):
         return self._v
 
+    def trace_add(self, *args, **kwargs):
+        return ""
+
+    def trace(self, *args, **kwargs):
+        return ""
+
 
 def test_layerimage_to_from_dict(tmp_path):
     # create a small image file

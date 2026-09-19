@@ -103,7 +103,19 @@
   },
   "layerimage": {
     "label": {
-      "info": "Layer {name}\nName : {filename}\nPosition : {position}\nSize : {size}"
+      "info": "Layer {name}\nName : {filename}\nPosition : {position}\nSize : {size}",
+      "title": "Layer {name}",
+      "file": "File: {filename}",
+      "x": "X:",
+      "y": "Y:",
+      "width": "Width:",
+      "height": "Height:"
+    },
+    "msg": {
+      "error": {
+        "invalid_title": "Invalid value",
+        "invalid_message": "Enter integer numbers. Width >= 15 and Height >= 10 required."
+      }
     }
   },
   "layer": {
@@ -113,7 +125,10 @@
     "default_text": "Text",
     "default_name": "Text {n}",
     "label": {
-      "layer": "layer {name}"
+      "layer": "layer {name}",
+      "x": "X:",
+      "y": "Y:",
+      "font_size": "Size:"
     },
     "preview": "Preview : {family}",
     "chosen_font": "Chosen font : {font}",

@@ -28,6 +28,26 @@ class LayerExcluZone(Layer):
     def set_exclusion_zone(self, value):
         self.exclusion_zone = value
 
+    def update_zone(self, index, x, y, w, h, angle=0):
+        """
+        Met à jour une zone d'exclusion (coordonnées canvas).
+
+        Args :
+            index (int) : Indice de la zone dans exclusion_zone.
+            x, y (float) : Position canvas.
+            w, h (float) : Dimensions canvas (doivent être > 0).
+            angle (float) : Angle de rotation en degrés.
+
+        Raises :
+            IndexError : si index hors limites.
+            ValueError : si dimensions invalides.
+        """
+        if not 0 <= index < len(self.exclusion_zone):
+            raise IndexError(f"Zone {index} hors limites")
+        if w <= 0 or h <= 0:
+            raise ValueError("Largeur et hauteur doivent être > 0")
+        self.exclusion_zone[index] = (float(x), float(y), float(w), float(h), float(angle))
+
     def draw_on_image(self, image: Image.Image, export=False):
         """
         Dessine les zones d'exclusion et, en mode édition, les images de substitution.
@@ -104,6 +124,7 @@ class LayerExcluZone(Layer):
                     draw_i.rectangle((i_x, i_y, i_x + i_w, i_y + i_h), fill=(255, 255, 255, 0))
 
     def update_param_zone(self, frame):
+        # Zone non éditable : pilotée par le template XML, affichage seul.
         for widget in frame.winfo_children():
             widget.destroy()
         tk.Label(frame, text=t('layer.exclusion_name')).pack(anchor='nw')

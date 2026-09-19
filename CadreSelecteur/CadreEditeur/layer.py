@@ -29,6 +29,13 @@ class Layer:
         self.locked = False
         self.layer_type = "generic"
         self.name = name
+        # Champs d'édition de la zone de paramètres (StringVar Tk).
+        # Renseigné par update_param_zone() des sous-classes ; lu par
+        # sync_param_zone() pour repousser les valeurs après une modif souris.
+        self._param_vars = None
+        # Garde anti-récursion : True pendant une synchro programme → vue
+        # (les trace_add 'write' des champs doivent alors s'ignorer).
+        self._syncing = False
 
     def drag(self, event, start_pos):
         """
@@ -63,6 +70,18 @@ class Layer:
         """
         pass  # À spécialiser dans les sous-classes.
 
+    def set_display_position(self, x, y):
+        """
+        Définit la position d'affichage (canvas) et synchronise
+        la position image (export) via RATIO.
+
+        Args :
+            x (int/float) : Abscisse canvas.
+            y (int/float) : Ordonnée canvas.
+        """
+        self.display_position = (x, y)
+        self.image_position = (x * self.RATIO, y * self.RATIO)
+
     def update_param_zone(self, frame):
         """
         Méthode à spécialiser. Met à jour la zone de paramétrage du calque
@@ -73,6 +92,14 @@ class Layer:
             None
         """
         pass  # À spécialiser dans les sous-classes.
+
+    def sync_param_zone(self):
+        """
+        Repousse les valeurs courantes du calque vers les champs d'édition
+        (ex : après un drag ou un resize à la souris).
+        À spécialiser dans les sous-classes (défaut : ne fait rien).
+        """
+        pass
 
     def clone(self, tk_parent, parent):
         """

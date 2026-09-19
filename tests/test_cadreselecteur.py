@@ -60,12 +60,20 @@ class DummyCanvas(DummyWidget):
 
 def test_create_src_thumbnail_no_gui(tmp_path, monkeypatch):
     # Use a real image from the Templates folder
+    # Layout actuel : Templates/<Projet>/<Projet>_1.png + _4.png
     tpl_dir = cs.template_path
     assert os.path.isdir(tpl_dir)
-    # pick a file that ends with _1.png
-    filenames = [f for f in os.listdir(tpl_dir) if f.lower().endswith('_1.png')]
-    assert filenames, "Aucune image template *_1.png trouvée"
-    filename = filenames[0]
+    # pick a project subdir containing a *_1.png
+    project_dirs = [
+        d for d in os.listdir(tpl_dir)
+        if os.path.isdir(os.path.join(tpl_dir, d))
+        and any(
+            f.lower().endswith('_1.png')
+            for f in os.listdir(os.path.join(tpl_dir, d))
+        )
+    ]
+    assert project_dirs, "Aucun projet avec *_1.png trouvé dans Templates/"
+    project_dir_name = project_dirs[0]
 
     # Monkeypatch Tkinter widgets used in the module
     monkeypatch.setattr(cs, 'Frame', DummyFrame)
@@ -91,7 +99,7 @@ def test_create_src_thumbnail_no_gui(tmp_path, monkeypatch):
     obj.master = DummyWidget()
 
     # Call the function under test - should not raise
-    obj.create_src_thumbnail(filename)
+    obj.create_src_thumbnail(project_dir_name)
 
     # After call, image_ref_manager should contain at least the two thumbnails
     assert obj.image_ref_manager.get_count('thumbnails') >= 2

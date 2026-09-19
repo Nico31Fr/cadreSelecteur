@@ -107,7 +107,7 @@ class ImageEditor:
                                     borderwidth=2,
                                     relief="groove",
                                     width=250,
-                                    height=150,
+                                    height=300,
                                     padx=10,
                                     pady=10)
         self.param_frame.pack(side='right')
@@ -129,6 +129,7 @@ class ImageEditor:
             # Fallback
             self.canvas.bind("<MouseWheel>", self.resize)  # <MouseWheel> par défaut
         self.start_drag_pos = None
+        self._redraw_pending = False  # coalescing des redraws (drag)
 
         self.add_zone_exclu_layer()
 
@@ -222,6 +223,16 @@ class ImageEditor:
             if layer.layer_type == 'ZoneEx':
                 layer.set_exclusion_zone(exclusion_zone)
 
+        # Si la zone d'exclusion active est affichée, reconstruire ses champs
+        # (le nombre de zones a pu changer avec le template).
+        if 0 <= self.active_layer_idx < len(self.layers):
+            active = self.layers[self.active_layer_idx]
+            if getattr(active, 'layer_type', None) == 'ZoneEx':
+                try:
+                    active.update_param_zone(self.param_frame)
+                except Exception as exc:
+                    logger.warning(f"update_param_zone après template: {exc}")
+
         self.update_canvas()
 
     def delete_layer(self):
@@ -303,12 +314,38 @@ class ImageEditor:
     def drag_drop(self, event):
         """
         Effectue le déplacement drag&drop du calque actif.
+        Le redraw est coalescé via after_idle : les events motion
+        arrivent en rafale, un seul redessin par cycle suffit.
         """
         if 0 <= self.active_layer_idx < len(self.layers):
             layer = self.layers[self.active_layer_idx]
             if hasattr(layer, '_drag_pos') and layer._drag_pos:
                 layer._drag_pos = layer.drag(event, layer._drag_pos)
-                self.update_canvas()
+                self.request_canvas_update()
+                sync = getattr(layer, 'sync_param_zone', None)
+                if callable(sync):
+                    try:
+                        sync()
+                    except Exception as exc:
+                        logger.warning(f"sync_param_zone après drag: {exc}")
+
+    def request_canvas_update(self):
+        """Planifie un redessin (coalescé : pas de doublon en attente)."""
+        if getattr(self, '_redraw_pending', False):
+            return
+        self._redraw_pending = True
+        try:
+            self.root.after_idle(self._do_pending_canvas_update)
+        except Exception:
+            # Root détruite (fermeture) : redessine directement ou ignore.
+            self._redraw_pending = False
+
+    def _do_pending_canvas_update(self):
+        self._redraw_pending = False
+        try:
+            self.update_canvas()
+        except Exception:
+            pass
 
     def resize(self, event):
         """
@@ -336,6 +373,12 @@ class ImageEditor:
                     delta = 2 if event.delta > 0 else -2
                     layer.resize_font(delta)
             self.update_canvas()
+            sync = getattr(layer, 'sync_param_zone', None)
+            if callable(sync):
+                try:
+                    sync()
+                except Exception as exc:
+                    logger.warning(f"sync_param_zone après resize: {exc}")
 
     def select_background_color(self):
         """ Ouvrir une boîte de dialogue de sélection de couleur """
