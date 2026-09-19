@@ -9406,3 +9406,286 @@ CadreSelecteur.exceptions.FileOperationError: test error
 2026-09-19 12:01:35,165 - CadreSelecteur.validators - DEBUG - Layer data validated: Image 'Layer1'
 2026-09-19 12:01:35,170 - CadreSelecteur.validators - DEBUG - JSON structure validated: dict
 2026-09-19 12:01:35,172 - CadreSelecteur.validators - DEBUG - JSON structure validated: list
+2026-09-19 12:08:06,070 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:08:06,070 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:08:06,070 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:08:06,075 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:08:06,076 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:08:06,076 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:08:06,076 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:08:06,076 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:08:06,167 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:08:06,167 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:08:06,167 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:08:06,171 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:08:06,171 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:08:06,171 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:08:06,171 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:08:06,171 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:08:06,202 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:08:06,202 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:08:06,202 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:08:06,241 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-09-19 12:08:06,251 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-09-19 12:08:06,253 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-09-19 12:08:06,381 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:08:06,381 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:08:06,482 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:08:06,482 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:08:06,606 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:08:06,606 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:08:06,699 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:08:06,699 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:08:06,791 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:08:06,791 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:08:06,880 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:08:06,881 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-09-19 12:08:11,290 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-09-19 12:12:29,818 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:12:29,818 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:12:29,818 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:12:29,822 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:12:29,822 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:12:29,822 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:12:29,822 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:12:29,822 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:30,213 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:30,213 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:30,213 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:19:30,217 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:30,217 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:30,217 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:19:30,217 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:30,217 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,529 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:59,529 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:59,529 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:19:59,533 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:59,533 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,533 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:19:59,533 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,534 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,622 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:59,622 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:59,622 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:19:59,626 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:19:59,626 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,626 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:19:59,626 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,626 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:19:59,660 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:19:59,660 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:19:59,661 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:19:59,696 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-09-19 12:19:59,703 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-09-19 12:19:59,714 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-09-19 12:19:59,831 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:19:59,831 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:19:59,931 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:19:59,931 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:20:00,057 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:20:00,057 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:20:00,149 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:20:00,149 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:20:00,240 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:20:00,240 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:20:00,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:20:00,345 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-09-19 12:20:04,111 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:20:04,112 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:20:04,112 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:20:04,138 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,151 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,165 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,177 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,194 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,222 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,250 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,278 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,305 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts
+2026-09-19 12:20:04,361 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,374 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,437 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,466 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,494 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,507 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,519 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,548 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,576 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,589 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,601 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,629 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,657 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-09-19 12:20:04,657 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-09-19 12:20:04,657 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/Templates/BonneSoiree/BonneSoiree.json
+2026-09-19 12:20:04,659 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,687 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:20:04,764 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-09-19 12:20:06,304 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 10 PhotoImage refs from category 'thumbnails'
+2026-09-19 12:20:06,304 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-09-19 12:20:06,496 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:20:06,496 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:20:06,606 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:20:06,606 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:20:06,721 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:20:06,722 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:20:06,810 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:20:06,810 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:20:06,897 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:20:06,897 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:20:06,986 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:20:06,986 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-09-19 12:24:36,708 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:36,708 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:36,708 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:24:36,713 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:36,713 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:24:36,713 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:24:36,713 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:24:36,713 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:24:36,806 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:36,806 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:36,806 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:24:36,810 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:36,811 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:24:36,811 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:24:36,811 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:24:36,811 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:24:36,845 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:24:36,845 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:24:36,846 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:24:36,880 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-09-19 12:24:36,884 - CadreSelecteur.splash - DEBUG - Splash: fenêtre affichée, timeout=5000ms
+2026-09-19 12:24:36,889 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-09-19 12:24:37,035 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:24:37,035 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:24:37,135 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:24:37,135 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:24:37,259 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:24:37,259 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:24:37,353 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:24:37,353 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:24:37,446 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:24:37,446 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:24:37,538 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:24:37,538 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-09-19 12:24:41,951 - CadreSelecteur.splash - DEBUG - Splash: timeout atteint, fermeture
+2026-09-19 12:24:43,499 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:24:43,499 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:24:43,500 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:24:43,524 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,537 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,552 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,567 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,580 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,613 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,642 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,669 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,696 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts
+2026-09-19 12:24:43,753 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,766 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,829 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,857 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,886 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,899 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,911 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,940 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,969 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,981 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:43,993 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:44,022 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:44,050 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-09-19 12:24:44,050 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-09-19 12:24:44,050 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/Templates/BonneSoiree/BonneSoiree.json
+2026-09-19 12:24:44,053 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:44,081 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:24:45,581 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 10 PhotoImage refs from category 'thumbnails'
+2026-09-19 12:24:45,582 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-09-19 12:24:45,773 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:24:45,774 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:24:45,884 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:24:45,884 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:24:46,002 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:24:46,002 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:24:46,092 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:24:46,092 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:24:46,182 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:24:46,182 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:24:46,270 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:24:46,271 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-09-19 12:52:20,189 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:52:20,190 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:52:20,190 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:52:20,196 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:52:20,196 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:52:20,196 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:52:20,196 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:52:20,196 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:53:01,241 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:01,241 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:01,241 - CadreSelecteur.path_resolver - DEBUG - Resolved file: config.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/config.json
+2026-09-19 12:53:01,246 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:01,246 - CadreSelecteur.path_resolver - DEBUG - Resolved file: fr.json → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:53:01,246 - CadreSelecteur.path_resolver - DEBUG - Found i18n in resources: fr.json
+2026-09-19 12:53:01,246 - CadreSelecteur.i18n.translator - DEBUG - Attempting to load translations from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:53:01,246 - CadreSelecteur.i18n.translator - DEBUG - Loaded translations for 'fr' from: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources/fr.json
+2026-09-19 12:53:01,270 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:53:01,270 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:53:01,270 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:53:01,303 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 1)
+2026-09-19 12:53:01,311 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'icons' (total: 2)
+2026-09-19 12:53:01,444 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:53:01,444 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:53:01,549 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:53:01,549 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:53:01,699 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:53:01,699 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:53:01,795 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:53:01,795 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:53:01,887 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:53:01,887 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:53:01,980 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:53:01,980 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
+2026-09-19 12:53:05,835 - CadreSelecteur.ttk_theme - DEBUG - Thèmes ttk disponibles: ('clam', 'alt', 'default', 'classic')
+2026-09-19 12:53:05,836 - CadreSelecteur.ttk_theme - WARNING - Thème 'winnative' non disponible. Utilisation de 'clam'
+2026-09-19 12:53:05,836 - CadreSelecteur.ttk_theme - DEBUG - Styles personnalisés appliqués
+2026-09-19 12:53:05,844 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:05,874 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:05,901 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:05,921 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:05,935 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:05,969 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,000 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,027 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,056 - CadreSelecteur.path_resolver - DEBUG - Found package file: Fonts → /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/Fonts
+2026-09-19 12:53:06,112 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,124 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,188 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,218 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,247 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,259 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,271 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,299 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,327 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,340 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,353 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,381 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,409 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Template changed to template_1.xml
+2026-09-19 12:53:06,409 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project name updated to: BonneSoiree
+2026-09-19 12:53:06,409 - CadreSelecteur.CadreEditeur.imageeditorapp - DEBUG - Project file path set to: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/Templates/BonneSoiree/BonneSoiree.json
+2026-09-19 12:53:06,411 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:06,440 - CadreSelecteur.path_resolver - DEBUG - Using cached resources_dir: /home/nico/PycharmProjects/cadreSelecteur/CadreSelecteur/resources
+2026-09-19 12:53:09,021 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 10 PhotoImage refs from category 'thumbnails'
+2026-09-19 12:53:09,021 - CadreSelecteur.image_ref_manager - DEBUG - Cleared 2 PhotoImage refs from category 'dest_canvas'
+2026-09-19 12:53:09,212 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 1)
+2026-09-19 12:53:09,212 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'dest_canvas' (total: 2)
+2026-09-19 12:53:09,322 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 1)
+2026-09-19 12:53:09,322 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 2)
+2026-09-19 12:53:09,439 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 3)
+2026-09-19 12:53:09,439 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 4)
+2026-09-19 12:53:09,528 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 5)
+2026-09-19 12:53:09,528 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 6)
+2026-09-19 12:53:09,617 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 7)
+2026-09-19 12:53:09,617 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 8)
+2026-09-19 12:53:09,706 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 9)
+2026-09-19 12:53:09,706 - CadreSelecteur.image_ref_manager - DEBUG - Added PhotoImage ref to category 'thumbnails' (total: 10)
