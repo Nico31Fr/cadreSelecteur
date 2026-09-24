@@ -114,3 +114,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+/start-opencode-tli.sh
