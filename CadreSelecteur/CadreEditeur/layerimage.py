@@ -365,13 +365,13 @@ class LayerImage(Layer):
 
         _step = 5
         _bw = 2  # boutons carrés compacts (param_frame étroit : 250 px)
-        tk.Button(pad_frame, text='▲', width=_bw,
+        tk.Button(pad_frame, text='˄', width=_bw,
                   command=lambda: _nudge(0, -_step)).grid(row=0, column=1)
-        tk.Button(pad_frame, text='◄', width=_bw,
+        tk.Button(pad_frame, text='˂', width=_bw,
                   command=lambda: _nudge(-_step, 0)).grid(row=1, column=0)
-        tk.Button(pad_frame, text='►', width=_bw,
+        tk.Button(pad_frame, text='˃', width=_bw,
                   command=lambda: _nudge(_step, 0)).grid(row=1, column=2)
-        tk.Button(pad_frame, text='▼', width=_bw,
+        tk.Button(pad_frame, text='˅', width=_bw,
                   command=lambda: _nudge(0, _step)).grid(row=2, column=1)
         tk.Button(pad_frame, text='+', width=_bw,
                   command=lambda: _zoom(10)).grid(row=0, column=3, padx=(6, 0))
